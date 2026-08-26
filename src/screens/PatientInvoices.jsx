@@ -156,7 +156,7 @@ export default function PatientInvoices() {
             <button
               key={f.id}
               onClick={() => detayAc(f)}
-              className="w-full text-left bg-white border border-gray-200 rounded-xl px-4 py-3.5 hover:border-gray-300 hover:shadow-sm transition-all flex items-center gap-4"
+              className="w-full text-start bg-white border border-gray-200 rounded-xl px-4 py-3.5 hover:border-gray-300 hover:shadow-sm transition-all flex items-center gap-4"
             >
               <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center shrink-0">
                 <Receipt className="w-4.5 h-4.5 text-gray-400" />
@@ -174,7 +174,7 @@ export default function PatientInvoices() {
                 </div>
               </div>
 
-              <div className="text-right shrink-0">
+              <div className="text-end shrink-0">
                 <p className="font-bold text-gray-900 tabular-nums">{paraBicimi(f.grand_total, f.currency, dil)}</p>
               </div>
 

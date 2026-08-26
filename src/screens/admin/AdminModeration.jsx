@@ -462,10 +462,10 @@ export default function AdminModeration() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/60">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.moderation.colReportedContent')}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[130px]">{t('admin.moderation.colAuthor')}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[130px]">{t('admin.moderation.colReporter')}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[140px]">{t('admin.moderation.colReason')}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.moderation.colReportedContent')}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs w-[130px]">{t('admin.moderation.colAuthor')}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs w-[130px]">{t('admin.moderation.colReporter')}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs w-[140px]">{t('admin.moderation.colReason')}</th>
                   <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[90px]">{t('admin.moderation.colTime')}</th>
                   <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[90px]">{t('common.status')}</th>
                   <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[140px]">{t('common.actions')}</th>

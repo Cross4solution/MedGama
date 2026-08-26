@@ -89,7 +89,7 @@ export default function DoctorsTab({ doctors = [] }) {
               key={doc.id}
               type="button"
               onClick={() => navigate(doctorPath)}
-              className="bg-white border border-gray-200 rounded-xl p-4 flex items-start gap-4 hover:border-teal-300 hover:shadow-md transition-all text-left group"
+              className="bg-white border border-gray-200 rounded-xl p-4 flex items-start gap-4 hover:border-teal-300 hover:shadow-md transition-all text-start group"
             >
               <img
                 src={resolveStorageUrl(doc.avatar)}

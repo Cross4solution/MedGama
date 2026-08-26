@@ -181,8 +181,8 @@ function TicketDrawer({ ticketId, onClose }) {
                   }`}>
                     {isStaff ? <Shield className="w-3.5 h-3.5" /> : (msg.user?.fullname?.charAt(0) || '?')}
                   </div>
-                  <div className={`flex-1 max-w-[80%] ${isStaff ? 'text-right' : ''}`}>
-                    <div className={`inline-block rounded-2xl px-4 py-3 text-left ${
+                  <div className={`flex-1 max-w-[80%] ${isStaff ? 'text-end' : ''}`}>
+                    <div className={`inline-block rounded-2xl px-4 py-3 text-start ${
                       isStaff ? 'bg-purple-50 border border-purple-100' : 'bg-white border border-gray-200'
                     }`}>
                       <p className="text-sm text-gray-800 whitespace-pre-wrap">{msg.body}</p>
@@ -197,7 +197,7 @@ function TicketDrawer({ ticketId, onClose }) {
                         </div>
                       )}
                     </div>
-                    <p className={`text-[10px] text-gray-400 mt-1 ${isStaff ? 'text-right' : ''}`}>
+                    <p className={`text-[10px] text-gray-400 mt-1 ${isStaff ? 'text-end' : ''}`}>
                       {isStaff ? 'Admin' : msg.user?.fullname} · {timeAgo(msg.created_at)}
                       {msg.is_internal && <span className="ml-1 text-amber-500 font-semibold">[Internal]</span>}
                     </p>
@@ -464,13 +464,13 @@ export default function AdminSupport() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/60">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.ticketId', "Ticket ID")}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.user', "User")}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.subject', "Subject")}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.category', "Category")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.ticketId', "Ticket ID")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.user', "User")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.subject', "Subject")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.category', "Category")}</th>
                   <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.priority', "Priority")}</th>
                   <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.status', "Status")}</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.lastUpdate', "Last Update")}</th>
+                  <th className="text-end px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.lastUpdate', "Last Update")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -515,7 +515,7 @@ export default function AdminSupport() {
                       <td className="px-4 py-3 text-center">
                         <StatusBadge status={t.status} />
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-4 py-3 text-end">
                         <span className="text-[11px] text-gray-400">{timeAgo(t.updated_at)}</span>
                       </td>
                     </tr>

@@ -150,7 +150,7 @@ const CookieBanner = () => {
                     <button
                       type="button"
                       onClick={() => setExpandedCategory(isExpanded ? null : cat.key)}
-                      className="flex items-center gap-2 text-left flex-1 min-w-0"
+                      className="flex items-center gap-2 text-start flex-1 min-w-0"
                     >
                       {isExpanded ? (
                         <ChevronUp className="w-4 h-4 text-gray-400 flex-shrink-0" />

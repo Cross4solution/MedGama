@@ -111,8 +111,8 @@ export default function PrivacyPolicyPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Legal Basis</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Purpose</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Legal Basis</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Purpose</th>
                   </tr>
                 </thead>
                 <tbody className="text-gray-600">
@@ -197,10 +197,10 @@ export default function PrivacyPolicyPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Servis</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Amaç</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Bölge</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Yasal Dayanak</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Servis</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Amaç</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Bölge</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Yasal Dayanak</th>
                   </tr>
                 </thead>
                 <tbody className="text-gray-600">
@@ -282,9 +282,9 @@ export default function PrivacyPolicyPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Data Category</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Retention Period</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Basis</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Data Category</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Retention Period</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Basis</th>
                   </tr>
                 </thead>
                 <tbody className="text-gray-600">

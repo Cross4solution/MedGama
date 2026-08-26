@@ -57,7 +57,7 @@ export default function ClinicSearchBar({
             onChange={onSpecialtyChange}
             placeholder={t('search.allSpecialties')}
             hideChevron
-            triggerClassName={`w-full pl-3 pr-3 py-2 border border-gray-300 rounded-lg text-base md:text-sm bg-white text-left`}
+            triggerClassName={`w-full pl-3 pr-3 py-2 border border-gray-300 rounded-lg text-base md:text-sm bg-white text-start`}
           />
         </div>
         {/* Price Range */}
@@ -70,7 +70,7 @@ export default function ClinicSearchBar({
             placeholder={t('search.allPrices')}
             hideChevron
             searchable={false}
-            triggerClassName={`w-full pl-3 pr-3 py-2 border border-gray-300 rounded-lg text-base md:text-sm bg-white text-left`}
+            triggerClassName={`w-full pl-3 pr-3 py-2 border border-gray-300 rounded-lg text-base md:text-sm bg-white text-start`}
           />
         </div>
         {/* Submit */}

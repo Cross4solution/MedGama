@@ -87,7 +87,7 @@ const TimelineCard = ({ entry, isLast, t }) => {
       </div>
       <div className="flex-1 pb-5">
         <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm hover:shadow-md transition-shadow">
-          <button onClick={() => setExpanded(!expanded)} className="w-full flex items-center justify-between px-4 py-3 text-left">
+          <button onClick={() => setExpanded(!expanded)} className="w-full flex items-center justify-between px-4 py-3 text-start">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm font-bold text-gray-900">{entry.title}</span>

@@ -236,7 +236,7 @@ const CRMFaq = () => {
             <div key={faq.id} className={`border rounded-xl overflow-hidden transition-all ${faq.is_active ? 'border-gray-200/60 hover:shadow-sm' : 'border-gray-200/40 opacity-60'}`}>
               <button
                 onClick={() => setOpenId(openId === faq.id ? null : faq.id)}
-                className="w-full text-left px-5 py-4 flex items-center gap-3 bg-white hover:bg-gray-50/50 transition-colors"
+                className="w-full text-start px-5 py-4 flex items-center gap-3 bg-white hover:bg-gray-50/50 transition-colors"
               >
                 <GripVertical className="w-4 h-4 text-gray-300 flex-shrink-0" />
                 <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center flex-shrink-0">

@@ -214,7 +214,7 @@ export default function MapboxSearchInput({
             <button
               key={place.id}
               onClick={() => handleSelect(place)}
-              className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 ${
+              className={`w-full px-4 py-3 text-start hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 ${
                 index === selectedIndex ? 'bg-teal-50' : ''
               }`}
             >

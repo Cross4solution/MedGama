@@ -157,7 +157,7 @@ export default function LocationPicker({ onLocated }) {
                         key={c.id}
                         type="button"
                         onClick={() => pickCity(c)}
-                        className={`w-full text-left px-3 py-2 text-sm hover:bg-teal-50 transition-colors ${
+                        className={`w-full text-start px-3 py-2 text-sm hover:bg-teal-50 transition-colors ${
                           c.id === cityId ? 'bg-teal-50 text-teal-700 font-medium' : 'text-gray-700'
                         }`}
                       >

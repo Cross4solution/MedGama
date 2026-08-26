@@ -495,7 +495,7 @@ const CreateAppointmentModal = ({ isOpen, onClose, onCreated, defaultDate, defau
                   <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-white ${cfg.bg}`}>
                     <Icon className="w-5 h-5" />
                   </div>
-                  <div className="text-left flex-1">
+                  <div className="text-start flex-1">
                     <p className="text-sm font-bold text-gray-900">{t(cfg.labelKey)}</p>
                     <p className="text-xs text-gray-500">
                       {key === 'inPerson' && t('crm.appointments.typeInPersonDesc')}

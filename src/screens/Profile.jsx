@@ -503,7 +503,7 @@ export default function Profile() {
       <button
         type="button"
         onClick={() => setActive(id)}
-        className={`w-full text-left px-3 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 ${
+        className={`w-full text-start px-3 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 ${
           isActive
             ? 'bg-gradient-to-r from-teal-50 to-emerald-50/60 text-teal-700 shadow-sm ring-1 ring-teal-100'
             : 'text-gray-600 hover:bg-gray-50/80 hover:text-gray-900'

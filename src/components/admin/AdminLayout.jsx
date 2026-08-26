@@ -315,7 +315,7 @@ const AdminLayout = ({ children }) => {
             <div className={iconBoxCls(childActive)}>
               <item.icon className={iconCls(childActive)} />
             </div>
-            <span className="flex-1 text-left">{t(item.labelKey)}</span>
+            <span className="flex-1 text-start">{t(item.labelKey)}</span>
             <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''} ${childActive ? 'text-purple-400' : 'text-gray-400'}`} />
           </button>
           {userMenuOpen && (

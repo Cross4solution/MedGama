@@ -359,7 +359,7 @@ export default function AdminVerificationReview() {
                 <button
                   key={vr.id}
                   onClick={() => setActiveDocIdx(idx)}
-                  className={`w-full text-left rounded-xl border p-3.5 transition-all ${
+                  className={`w-full text-start rounded-xl border p-3.5 transition-all ${
                     isActive
                       ? 'bg-indigo-50 border-indigo-300 shadow-sm ring-1 ring-indigo-200'
                       : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm'

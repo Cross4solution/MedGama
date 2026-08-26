@@ -24,7 +24,7 @@ export default function AddToCalendar({ appointment, className = '' }) {
   const ics = icsDataUri(appointment);
   if (!google) return null;
 
-  const item = 'block w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50';
+  const item = 'block w-full text-start px-3 py-2 text-xs text-gray-700 hover:bg-gray-50';
 
   return (
     <div className={`relative ${className}`} ref={ref}>

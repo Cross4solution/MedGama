@@ -221,7 +221,7 @@ export default function BrowseTreatments() {
             <div className="absolute z-20 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-72 overflow-y-auto">
               {tagResults.map(r => (
                 <button key={r.id} type="button" onClick={() => pickTagFromSearch(r)}
-                  className="w-full text-left px-4 py-2.5 hover:bg-teal-50 flex items-center justify-between gap-2 border-b border-gray-50 last:border-0">
+                  className="w-full text-start px-4 py-2.5 hover:bg-teal-50 flex items-center justify-between gap-2 border-b border-gray-50 last:border-0">
                   <span className="text-sm text-gray-800">{loc(r.name)}</span>
                   {r.specialty && <span className="text-[11px] text-gray-400">{loc(r.specialty.name)}</span>}
                 </button>

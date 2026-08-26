@@ -110,7 +110,7 @@ const LoginForm = ({
       </div>
       <div className="space-y-3 sm:space-y-6 flex flex-col items-center">
         <div className="w-full">
-          <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+          <label className="block text-sm font-medium text-gray-700 mb-2 text-start">
             {t('common.email')}
           </label>
           <div className="relative">
@@ -120,7 +120,7 @@ const LoginForm = ({
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full pl-8 sm:pl-10 pr-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm sm:text-base ${
+              className={`w-full pl-8 sm:pl-10 pr-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-start text-sm sm:text-base ${
                 errors.email ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('loginForm.nameExampleCom', "name@example.com")}
@@ -129,7 +129,7 @@ const LoginForm = ({
           {errors.email && <p className="text-red-500 text-xs sm:text-sm mt-1 text-center">{errors.email}</p>}
         </div>
         <div className="w-full">
-          <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+          <label className="block text-sm font-medium text-gray-700 mb-2 text-start">
             {t('common.password')}
           </label>
           <div className="relative">
@@ -139,7 +139,7 @@ const LoginForm = ({
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              className={`w-full pl-8 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm sm:text-base ${
+              className={`w-full pl-8 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-start text-sm sm:text-base ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('auth.passwordPlaceholder')}

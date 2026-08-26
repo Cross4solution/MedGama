@@ -317,13 +317,13 @@ const DoctorsTab = ({ t }) => {
         ) : (
           <>
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
+              <table className="w-full text-start">
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50/50">
                     <th className="px-4 py-3 text-[10px] font-semibold text-gray-500 uppercase">{t('crm.manager.doctor', 'Doctor')}</th>
                     <th className="px-4 py-3 text-[10px] font-semibold text-gray-500 uppercase">{t('crm.manager.specialty', 'Specialty')}</th>
                     <th className="px-4 py-3 text-[10px] font-semibold text-gray-500 uppercase text-center">{t('crm.manager.appts', 'Appts')}</th>
-                    <th className="px-4 py-3 text-[10px] font-semibold text-gray-500 uppercase text-right">{t('crm.manager.revenue', 'Revenue')}</th>
+                    <th className="px-4 py-3 text-[10px] font-semibold text-gray-500 uppercase text-end">{t('crm.manager.revenue', 'Revenue')}</th>
                     <th className="px-4 py-3 text-[10px] font-semibold text-gray-500 uppercase text-center">{t('crm.manager.rating', 'Rating')}</th>
                     <th className="px-4 py-3 text-[10px] font-semibold text-gray-500 uppercase text-center">{t('crm.manager.actions', 'Actions')}</th>
                   </tr>
@@ -350,7 +350,7 @@ const DoctorsTab = ({ t }) => {
                           <span className="text-sm font-semibold text-gray-900">{fmtInt(s.appointments?.total)}</span>
                           <span className="text-[10px] text-gray-400 block">{fmtInt(s.appointments?.month)} {t('crm.manager.thisMonth', 'this mo.')}</span>
                         </td>
-                        <td className="px-4 py-3 text-right">
+                        <td className="px-4 py-3 text-end">
                           <span className="text-sm font-semibold text-gray-900">€{fmt(s.revenue?.total)}</span>
                           <span className="text-[10px] text-gray-400 block">€{fmt(s.revenue?.month)} {t('crm.manager.thisMonth', 'this mo.')}</span>
                         </td>
@@ -425,13 +425,13 @@ const FinancialsTab = ({ t }) => {
             <h3 className="text-sm font-bold text-gray-900">{t('crm.manager.monthlyBreakdown', 'Monthly Breakdown')}</h3>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full text-start">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
                   <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase">{t('crm.manager.period', 'Period')}</th>
-                  <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase text-right">{t('crm.manager.gross', 'Gross')}</th>
-                  <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase text-right">{t('crm.manager.commShort', 'Comm.')}</th>
-                  <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase text-right">{t('crm.manager.net', 'Net')}</th>
+                  <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase text-end">{t('crm.manager.gross', 'Gross')}</th>
+                  <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase text-end">{t('crm.manager.commShort', 'Comm.')}</th>
+                  <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase text-end">{t('crm.manager.net', 'Net')}</th>
                   <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase text-center">{t('crm.manager.invoiceCount', 'Invoices')}</th>
                 </tr>
               </thead>
@@ -439,9 +439,9 @@ const FinancialsTab = ({ t }) => {
                 {data.monthly.map(m => (
                   <tr key={m.period} className="hover:bg-gray-50/50">
                     <td className="px-4 py-2.5 text-xs font-medium text-gray-700">{m.period}</td>
-                    <td className="px-4 py-2.5 text-xs text-gray-900 text-right font-semibold">€{fmt(m.gross)}</td>
-                    <td className="px-4 py-2.5 text-xs text-red-500 text-right">-€{fmt(m.commission)}</td>
-                    <td className="px-4 py-2.5 text-xs text-teal-600 text-right font-semibold">€{fmt(m.net)}</td>
+                    <td className="px-4 py-2.5 text-xs text-gray-900 text-end font-semibold">€{fmt(m.gross)}</td>
+                    <td className="px-4 py-2.5 text-xs text-red-500 text-end">-€{fmt(m.commission)}</td>
+                    <td className="px-4 py-2.5 text-xs text-teal-600 text-end font-semibold">€{fmt(m.net)}</td>
                     <td className="px-4 py-2.5 text-xs text-gray-500 text-center">{m.invoice_count}</td>
                   </tr>
                 ))}
@@ -458,13 +458,13 @@ const FinancialsTab = ({ t }) => {
             <h3 className="text-sm font-bold text-gray-900">{t('crm.manager.revenueByDoctor', 'Revenue by Doctor')}</h3>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full text-start">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
                   <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase">{t('crm.manager.doctor', 'Doctor')}</th>
-                  <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase text-right">{t('crm.manager.gross', 'Gross')}</th>
-                  <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase text-right">{t('crm.manager.commShort', 'Comm.')}</th>
-                  <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase text-right">{t('crm.manager.net', 'Net')}</th>
+                  <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase text-end">{t('crm.manager.gross', 'Gross')}</th>
+                  <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase text-end">{t('crm.manager.commShort', 'Comm.')}</th>
+                  <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase text-end">{t('crm.manager.net', 'Net')}</th>
                   <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase text-center">{t('crm.manager.invoiceCount', 'Invoices')}</th>
                 </tr>
               </thead>
@@ -477,9 +477,9 @@ const FinancialsTab = ({ t }) => {
                         <span className="text-xs font-medium text-gray-900">{dr.fullname}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-gray-900 text-right font-semibold">€{fmt(dr.total_revenue)}</td>
-                    <td className="px-4 py-2.5 text-xs text-red-500 text-right">-€{fmt(dr.commission)}</td>
-                    <td className="px-4 py-2.5 text-xs text-teal-600 text-right font-semibold">€{fmt(dr.net)}</td>
+                    <td className="px-4 py-2.5 text-xs text-gray-900 text-end font-semibold">€{fmt(dr.total_revenue)}</td>
+                    <td className="px-4 py-2.5 text-xs text-red-500 text-end">-€{fmt(dr.commission)}</td>
+                    <td className="px-4 py-2.5 text-xs text-teal-600 text-end font-semibold">€{fmt(dr.net)}</td>
                     <td className="px-4 py-2.5 text-xs text-gray-500 text-center">{dr.invoice_count}</td>
                   </tr>
                 ))}

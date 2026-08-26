@@ -335,7 +335,7 @@ export default function GlobalSuggest({
               disabled={disabled}
               placeholder={tags.length === 0 ? (placeholder || defaultPlaceholder) : (multi ? 'Add more...' : '')}
               autoComplete="off"
-              className="flex-1 outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 text-sm bg-transparent placeholder:text-gray-400 disabled:cursor-not-allowed text-left"
+              className="flex-1 outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 text-sm bg-transparent placeholder:text-gray-400 disabled:cursor-not-allowed text-start"
             />
             {loading && <Loader2 className="w-3.5 h-3.5 text-teal-500 animate-spin flex-shrink-0" />}
           </div>
@@ -367,7 +367,7 @@ export default function GlobalSuggest({
                 type="button"
                 onMouseEnter={() => setActiveIndex(idx)}
                 onClick={() => addTag(item)}
-                className={`w-full text-left px-4 py-2.5 flex items-center gap-3 transition-colors border-b border-gray-50 last:border-0 ${
+                className={`w-full text-start px-4 py-2.5 flex items-center gap-3 transition-colors border-b border-gray-50 last:border-0 ${
                   activeIndex === idx ? getHoverColor(item) : 'hover:bg-gray-50'
                 }`}
               >

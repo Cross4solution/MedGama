@@ -52,7 +52,7 @@ export default function PricesTab({ services, selectedService, setSelectedServic
             key={service.id}
             type="button"
             onClick={() => setSelectedService(selectedService === service.id ? null : service.id)}
-            className={`text-left p-4 rounded-xl border transition-all duration-200 ${selectedService === service.id ? 'border-teal-500 bg-teal-50 shadow-sm' : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'}`}
+            className={`text-start p-4 rounded-xl border transition-all duration-200 ${selectedService === service.id ? 'border-teal-500 bg-teal-50 shadow-sm' : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'}`}
           >
             <div className="flex items-center gap-2.5 mb-1.5">
               <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center flex-shrink-0">
@@ -85,10 +85,10 @@ export default function PricesTab({ services, selectedService, setSelectedServic
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50/80">
-                  <th className="px-4 py-2.5 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-2.5 text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                     {t('clinicDetail.procedure', 'Procedure')}
                   </th>
-                  <th className="px-4 py-2.5 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-2.5 text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                     {t('clinicDetail.priceRange', 'Price Range')}
                   </th>
                 </tr>

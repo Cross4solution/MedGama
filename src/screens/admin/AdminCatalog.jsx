@@ -607,10 +607,10 @@ export default function AdminCatalog() {
                   {/* Specialties columns */}
                   {activeTab === 'specialties' && (
                     <>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[50px]">{t('admin.catalog.colIcon')}</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.catalog.colName', { lang: displayLang.toUpperCase() })}</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[90px]">{t('admin.catalog.colCode')}</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('common.description')}</th>
+                      <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs w-[50px]">{t('admin.catalog.colIcon')}</th>
+                      <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.catalog.colName', { lang: displayLang.toUpperCase() })}</th>
+                      <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs w-[90px]">{t('admin.catalog.colCode')}</th>
+                      <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs">{t('common.description')}</th>
                       <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[60px]">{t('admin.catalog.colOrder')}</th>
                       <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">{t('admin.catalog.colLangs')}</th>
                       <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">{t('common.actions')}</th>
@@ -619,8 +619,8 @@ export default function AdminCatalog() {
                   {/* Cities columns */}
                   {activeTab === 'cities' && (
                     <>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[100px]">{t('admin.catalog.colCode')}</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.catalog.colName', { lang: displayLang.toUpperCase() })}</th>
+                      <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs w-[100px]">{t('admin.catalog.colCode')}</th>
+                      <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.catalog.colName', { lang: displayLang.toUpperCase() })}</th>
                       <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">{t('admin.catalog.colLangs')}</th>
                       <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">{t('common.actions')}</th>
                     </>
@@ -628,10 +628,10 @@ export default function AdminCatalog() {
                   {/* Treatments columns */}
                   {activeTab === 'treatments' && (
                     <>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[120px]">{t('admin.catalog.slug')}</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.catalog.colName', { lang: displayLang.toUpperCase() })}</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.catalog.specialty')}</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.catalog.colAliases')}</th>
+                      <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs w-[120px]">{t('admin.catalog.slug')}</th>
+                      <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.catalog.colName', { lang: displayLang.toUpperCase() })}</th>
+                      <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.catalog.specialty')}</th>
+                      <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.catalog.colAliases')}</th>
                       <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[60px]">{t('admin.catalog.colOrder')}</th>
                       <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">{t('common.actions')}</th>
                     </>

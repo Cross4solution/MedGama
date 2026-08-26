@@ -101,7 +101,7 @@ function TimelineFilterSidebar({
                   value={initialCountryName}
                   onChange={handleCountryChange}
                   placeholder={t('medstream.all')}
-                  triggerClassName="w-full h-9 border border-gray-200 rounded-lg px-3 text-sm bg-gray-50/50 text-left hover:bg-white hover:border-gray-300 transition-all"
+                  triggerClassName="w-full h-9 border border-gray-200 rounded-lg px-3 text-sm bg-gray-50/50 text-start hover:bg-white hover:border-gray-300 transition-all"
                   getFlagUrl={(name) => {
                     try {
                       const code = getFlagCode(name);
@@ -118,7 +118,7 @@ function TimelineFilterSidebar({
                   onChange={handleSpecialtyChange}
                   placeholder={t('medstream.all')}
                   hideChevron
-                  triggerClassName="w-full h-9 pl-3 pr-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50/50 text-left hover:bg-white hover:border-gray-300 transition-all"
+                  triggerClassName="w-full h-9 pl-3 pr-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50/50 text-start hover:bg-white hover:border-gray-300 transition-all"
                 />
               </div>
             </div>
@@ -133,7 +133,7 @@ function TimelineFilterSidebar({
                 value={initialCountryName}
                 onChange={handleCountryChange}
                 placeholder={t('medstream.allCountries')}
-                triggerClassName="w-full h-9 border border-gray-200 rounded-lg px-3 text-sm bg-gray-50/50 text-left hover:bg-white hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
+                triggerClassName="w-full h-9 border border-gray-200 rounded-lg px-3 text-sm bg-gray-50/50 text-start hover:bg-white hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
                 getFlagUrl={(name) => {
                   try {
                     const code = getFlagCode(name);
@@ -151,7 +151,7 @@ function TimelineFilterSidebar({
                 onChange={handleSpecialtyChange}
                 placeholder={t('timelineFilterSidebar.all', "All")}
                 hideChevron
-                triggerClassName="w-full h-9 pl-3 pr-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50/50 text-left hover:bg-white hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
+                triggerClassName="w-full h-9 pl-3 pr-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50/50 text-start hover:bg-white hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
               />
             </div>
           </div>

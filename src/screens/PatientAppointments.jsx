@@ -386,7 +386,7 @@ export default function PatientAppointments() {
                 {t('hastaRandevu.areYouSureYouWant', 'Are you sure you want to cancel this appointment? This action cannot be undone.')}
               </p>
 
-              <div className="bg-gray-50 rounded-xl p-4 text-left mb-6 space-y-2">
+              <div className="bg-gray-50 rounded-xl p-4 text-start mb-6 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">{t('hastaRandevu.doctor', 'Doctor')}</span>
                   <span className="font-medium text-gray-900">

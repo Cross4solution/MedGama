@@ -138,7 +138,7 @@ function DoctorDocumentsPanel({ doctor, documents, token, actionLoading, onAppro
   return (
     <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
       {/* Doctor Header Row */}
-      <button onClick={() => setExpanded(v => !v)} className="w-full px-5 py-4 flex items-center gap-4 hover:bg-gray-50/50 transition-colors text-left">
+      <button onClick={() => setExpanded(v => !v)} className="w-full px-5 py-4 flex items-center gap-4 hover:bg-gray-50/50 transition-colors text-start">
         <img
           src={resolveStorageUrl(doctor?.avatar) || '/images/default/default-avatar.svg'}
           alt="" className="w-11 h-11 rounded-xl object-cover border border-gray-200 flex-shrink-0"
@@ -555,10 +555,10 @@ export default function AdminVerification() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-gray-100 bg-gray-50/60">
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('common.doctor')}</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('common.email')}</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('common.clinic')}</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('admin.verification.colRegistered')}</th>
+                      <th className="text-start px-4 py-3 font-semibold text-gray-600">{t('common.doctor')}</th>
+                      <th className="text-start px-4 py-3 font-semibold text-gray-600">{t('common.email')}</th>
+                      <th className="text-start px-4 py-3 font-semibold text-gray-600">{t('common.clinic')}</th>
+                      <th className="text-start px-4 py-3 font-semibold text-gray-600">{t('admin.verification.colRegistered')}</th>
                       <th className="text-center px-4 py-3 font-semibold text-gray-600">{t('common.status')}</th>
                       <th className="text-center px-4 py-3 font-semibold text-gray-600">{t('common.actions')}</th>
                     </tr>

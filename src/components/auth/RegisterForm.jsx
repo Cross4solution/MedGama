@@ -131,7 +131,7 @@ const RegisterForm = ({
            {step === 1 && (
            <>
            <div className="w-full max-w-md mb-2">
-             <label className="block text-xs font-medium text-gray-500 mb-2 text-left">{t('auth.registerAs')}</label>
+             <label className="block text-xs font-medium text-gray-500 mb-2 text-start">{t('auth.registerAs')}</label>
              <div className="inline-flex w-full rounded-xl bg-gray-100 p-1 gap-1">
                {[
                  { key: 'patient', label: t('common.patient'), Icon: User },
@@ -159,7 +159,7 @@ const RegisterForm = ({
            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-md">
         <div>
-          <label htmlFor="kayit-firstName" className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
+          <label htmlFor="kayit-firstName" className="block text-sm font-medium text-gray-700 mb-1.5 text-start">
             {t('auth.firstName')}
           </label>
           <div className="relative">
@@ -172,18 +172,18 @@ const RegisterForm = ({
               aria-describedby={(errors.firstName || localErrors.firstName) ? 'kayit-firstName-hata' : undefined}
               value={fd.firstName ?? ''}
               onChange={handleInputChange}
-              className={`w-full h-11 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-left text-sm ${
+              className={`w-full h-11 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
                 (errors.firstName || localErrors.firstName) ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('auth.firstNamePlaceholder')}
             />
           </div>
           {(errors.firstName || localErrors.firstName) && (
-            <p id="kayit-firstName-hata" role="alert" className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.firstName || localErrors.firstName}</p>
+            <p id="kayit-firstName-hata" role="alert" className="text-red-500 text-xs mt-1 text-center md:text-start">{errors.firstName || localErrors.firstName}</p>
           )}
         </div>
         <div>
-          <label htmlFor="kayit-lastName" className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
+          <label htmlFor="kayit-lastName" className="block text-sm font-medium text-gray-700 mb-1.5 text-start">
             {t('auth.lastName')}
           </label>
           <div className="relative">
@@ -196,20 +196,20 @@ const RegisterForm = ({
               aria-describedby={(errors.lastName || localErrors.lastName) ? 'kayit-lastName-hata' : undefined}
               value={fd.lastName ?? ''}
               onChange={handleInputChange}
-              className={`w-full h-11 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-left text-sm ${
+              className={`w-full h-11 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
                 (errors.lastName || localErrors.lastName) ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('auth.lastNamePlaceholder')}
             />
           </div>
           {(errors.lastName || localErrors.lastName) && (
-            <p id="kayit-lastName-hata" role="alert" className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.lastName || localErrors.lastName}</p>
+            <p id="kayit-lastName-hata" role="alert" className="text-red-500 text-xs mt-1 text-center md:text-start">{errors.lastName || localErrors.lastName}</p>
           )}
         </div>
 
         {/* @handle — kullanıcı kendi seçer; canlı müsaitlik göstergeli */}
         <div className="md:col-span-2">
-          <label htmlFor="kayit-username" className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
+          <label htmlFor="kayit-username" className="block text-sm font-medium text-gray-700 mb-1.5 text-start">
             {t('auth.username', 'Kullanıcı adı')}
           </label>
           <div className="relative">
@@ -224,13 +224,13 @@ const RegisterForm = ({
               onChange={(e) => handleInputChange({ target: { name: 'username', value: e.target.value.toLowerCase().replace(/[^a-z0-9._]/g, '') } })}
               maxLength={30}
               autoComplete="off"
-              className={`w-full h-11 pl-8 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-left text-sm ${
+              className={`w-full h-11 pl-8 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
                 (errors.username || localErrors.username || ['taken', 'invalid', 'reserved'].includes(unameStatus)) ? 'border-red-400' : unameStatus === 'ok' ? 'border-emerald-400' : 'border-gray-300'
               }`}
               placeholder={t('auth.usernamePlaceholder', 'kullanici.adi')}
             />
           </div>
-          <p className={`text-xs mt-1 text-left ${
+          <p className={`text-xs mt-1 text-start ${
             unameStatus === 'ok' ? 'text-emerald-600' : unameStatus && unameStatus !== 'checking' ? 'text-red-500' : 'text-gray-400'
           }`}>
             {unameStatus === 'checking' && t('auth.usernameChecking', 'Kontrol ediliyor…')}
@@ -241,12 +241,12 @@ const RegisterForm = ({
             {!unameStatus && t('auth.usernameHint', 'Medstream profil adresiniz: medagama.com/@kullaniciadi')}
           </p>
           {(errors.username || localErrors.username) && (
-            <p id="kayit-username-hata" role="alert" className="text-red-500 text-xs mt-1 text-left">{errors.username || localErrors.username}</p>
+            <p id="kayit-username-hata" role="alert" className="text-red-500 text-xs mt-1 text-start">{errors.username || localErrors.username}</p>
           )}
         </div>
         {(fd.role === 'clinic') && (
         <div>
-          <label htmlFor="kayit-clinicName" className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
+          <label htmlFor="kayit-clinicName" className="block text-sm font-medium text-gray-700 mb-1.5 text-start">
             {t('auth.clinicName') || 'Clinic Name'}
           </label>
           <div className="relative">
@@ -259,21 +259,21 @@ const RegisterForm = ({
               aria-describedby={(errors.clinicName || localErrors.clinicName) ? 'kayit-clinicName-hata' : undefined}
               value={fd.clinicName ?? ''}
               onChange={handleInputChange}
-              className={`w-full h-11 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-left text-sm ${
+              className={`w-full h-11 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
                 (errors.clinicName || localErrors.clinicName) ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('auth.clinicNamePlaceholder')}
             />
           </div>
           {(errors.clinicName || localErrors.clinicName) && (
-            <p id="kayit-clinicName-hata" role="alert" className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.clinicName || localErrors.clinicName}</p>
+            <p id="kayit-clinicName-hata" role="alert" className="text-red-500 text-xs mt-1 text-center md:text-start">{errors.clinicName || localErrors.clinicName}</p>
           )}
         </div>
         )}
       </div>
              <div className="grid grid-cols-1 gap-1 w-full max-w-2xl mb-2 sm:mb-3">
         <div>
-          <label htmlFor="kayit-email" className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
+          <label htmlFor="kayit-email" className="block text-sm font-medium text-gray-700 mb-1.5 text-start">
             {t('auth.emailAddress')}
           </label>
           <div className="relative">
@@ -286,18 +286,18 @@ const RegisterForm = ({
               aria-describedby={(errors.email || localErrors.email) ? 'kayit-email-hata' : undefined}
               value={fd.email ?? ''}
               onChange={handleInputChange}
-              className={`w-full h-11 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-left text-sm ${
+              className={`w-full h-11 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
                 (errors.email || localErrors.email) ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('registerForm.nameExampleCom', "name@example.com")}
             />
           </div>
           {(errors.email || localErrors.email) && (
-            <p id="kayit-email-hata" role="alert" className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.email || localErrors.email}</p>
+            <p id="kayit-email-hata" role="alert" className="text-red-500 text-xs mt-1 text-center md:text-start">{errors.email || localErrors.email}</p>
           )}
         </div>
         <div>
-          <label htmlFor="kayit-password" className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
+          <label htmlFor="kayit-password" className="block text-sm font-medium text-gray-700 mb-1.5 text-start">
             {t('common.password')}
           </label>
           <div className="relative">
@@ -310,7 +310,7 @@ const RegisterForm = ({
               aria-describedby={errors.password ? 'kayit-password-hata' : undefined}
               value={fd.password ?? ''}
               onChange={handleInputChange}
-              className={`w-full h-11 pl-9 pr-10 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-left text-sm ${
+              className={`w-full h-11 pl-9 pr-10 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('auth.passwordPlaceholder')}
@@ -325,11 +325,11 @@ const RegisterForm = ({
             </button>
           </div>
           {errors.password && (
-            <p id="kayit-password-hata" role="alert" className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.password}</p>
+            <p id="kayit-password-hata" role="alert" className="text-red-500 text-xs mt-1 text-center md:text-start">{errors.password}</p>
           )}
         </div>
         <div>
-          <label htmlFor="kayit-confirmPassword" className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
+          <label htmlFor="kayit-confirmPassword" className="block text-sm font-medium text-gray-700 mb-1.5 text-start">
             {t('auth.confirmPassword')}
           </label>
           <div className="relative">
@@ -342,7 +342,7 @@ const RegisterForm = ({
               aria-describedby={errors.confirmPassword ? 'kayit-confirmPassword-hata' : undefined}
               value={fd.confirmPassword ?? ''}
               onChange={handleInputChange}
-              className={`w-full h-11 pl-9 pr-10 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-left text-sm ${
+              className={`w-full h-11 pl-9 pr-10 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
                 errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('auth.confirmPasswordPlaceholder')}
@@ -357,15 +357,15 @@ const RegisterForm = ({
             </button>
           </div>
           {errors.confirmPassword && (
-            <p id="kayit-confirmPassword-hata" role="alert" className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.confirmPassword}</p>
+            <p id="kayit-confirmPassword-hata" role="alert" className="text-red-500 text-xs mt-1 text-center md:text-start">{errors.confirmPassword}</p>
           )}
           {!errors.confirmPassword && fd.confirmPassword && fd.password && fd.confirmPassword !== fd.password && (
-            <p className="text-amber-500 text-xs mt-1 text-left flex items-center gap-1">
+            <p className="text-amber-500 text-xs mt-1 text-start flex items-center gap-1">
               <span>⚠</span> {t('auth.passwordsDoNotMatch')}
             </p>
           )}
           {!errors.confirmPassword && fd.confirmPassword && fd.password && fd.confirmPassword === fd.password && fd.password.length >= 6 && (
-            <p className="text-green-500 text-xs mt-1 text-left flex items-center gap-1">
+            <p className="text-green-500 text-xs mt-1 text-start flex items-center gap-1">
               <span>✓</span> {t('auth.passwordsMatch')}
             </p>
           )}
@@ -390,7 +390,7 @@ const RegisterForm = ({
         <>
         <div className="grid grid-cols-1 gap-2.5 w-full max-w-md">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5 text-start">
               {t('crm.patients.country')}
             </label>
             <div className="relative">
@@ -402,7 +402,7 @@ const RegisterForm = ({
                     handleInputChange({ target: { name: 'country', value: val } });
                   }}
                   placeholder={t('auth.selectCountryPlaceholder')}
-                  triggerClassName="w-full h-11 border border-gray-300 rounded-xl pl-10 pr-3 text-sm bg-white text-left flex items-center gap-2 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
+                  triggerClassName="w-full h-11 border border-gray-300 rounded-xl pl-10 pr-3 text-sm bg-white text-start flex items-center gap-2 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
                   getFlagUrl={(name) => {
                     try {
                       const code = getFlagCode(name);
@@ -412,28 +412,28 @@ const RegisterForm = ({
                 />
             </div>
             {errors.country && (
-              <p className="text-red-500 text-xs mt-1.5 text-left">{errors.country}</p>
+              <p className="text-red-500 text-xs mt-1.5 text-start">{errors.country}</p>
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5 text-left">{t('auth.phoneNumber')}</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5 text-start">{t('auth.phoneNumber')}</label>
             <PhoneNumberInput
               value={fd.phone ?? ''}
               countryName={fd.country ?? ''}
               onChange={(val) => handleInputChange({ target: { name: 'phone', value: val } })}
               allowedCountryNames={allCountries}
             />
-            {errors.phone && <p className="text-red-500 text-xs mt-1.5 text-left">{errors.phone}</p>}
+            {errors.phone && <p className="text-red-500 text-xs mt-1.5 text-start">{errors.phone}</p>}
           </div>
           <div>
-            <label htmlFor="kayit-guardianEmail" className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
+            <label htmlFor="kayit-guardianEmail" className="block text-sm font-medium text-gray-700 mb-1.5 text-start">
               {t('auth.dateOfBirth')} {(fd.role ?? 'patient') === 'patient' && <span className="text-red-500">*</span>}
             </label>
             <DateOfBirthPicker
               value={fd.birthDate ?? ''}
               onChange={(iso) => handleInputChange({ target: { name: 'birthDate', value: iso } })}
             />
-            {errors.birthDate && <p className="text-red-500 text-xs mt-1 text-left">{errors.birthDate}</p>}
+            {errors.birthDate && <p className="text-red-500 text-xs mt-1 text-start">{errors.birthDate}</p>}
           </div>
           {/* Parental consent — KVKK / GDPR Art. 8 — required when patient is under 18 */}
           {(() => {
@@ -463,13 +463,13 @@ const RegisterForm = ({
                     required
                   />
                 </div>
-                {errors.guardianEmail && <p className="text-red-500 text-xs mt-1 text-left">{errors.guardianEmail}</p>}
+                {errors.guardianEmail && <p className="text-red-500 text-xs mt-1 text-start">{errors.guardianEmail}</p>}
               </div>
             );
           })()}
           {(fd.role ?? 'patient') === 'patient' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
+              <label className="block text-sm font-medium text-gray-700 mb-1.5 text-start">
                 {t('profile.medicalHistory')} <span className="font-normal text-gray-400">({t('auth.medicalHistoryHint')})</span>
               </label>
               <GlobalSuggest
@@ -493,7 +493,7 @@ const RegisterForm = ({
               onChange={handleInputChange}
               className="w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500 mt-0.5 flex-shrink-0"
             />
-            <span className="text-sm text-gray-600 text-left leading-relaxed">
+            <span className="text-sm text-gray-600 text-start leading-relaxed">
               <span className="text-red-500">*</span>{' '}
               {t('auth.agreeToTerms')}{' '}
               <button
@@ -505,7 +505,7 @@ const RegisterForm = ({
               </button>
             </span>
           </label>
-          {errors.acceptTerms && <p className="text-red-500 text-xs ml-7 text-left">{errors.acceptTerms}</p>}
+          {errors.acceptTerms && <p className="text-red-500 text-xs ml-7 text-start">{errors.acceptTerms}</p>}
 
           {/* Privacy Policy — required (GDPR Art. 7) */}
           <label className="flex items-start gap-3 cursor-pointer group">
@@ -516,7 +516,7 @@ const RegisterForm = ({
               onChange={handleInputChange}
               className="w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500 mt-0.5 flex-shrink-0"
             />
-            <span className="text-sm text-gray-600 text-left leading-relaxed">
+            <span className="text-sm text-gray-600 text-start leading-relaxed">
               <span className="text-red-500">*</span>{' '}
               {t('auth.agreeToPrivacy')}{' '}
               <button
@@ -528,7 +528,7 @@ const RegisterForm = ({
               </button>
             </span>
           </label>
-          {errors.acceptPrivacy && <p className="text-red-500 text-xs ml-7 text-left">{errors.acceptPrivacy}</p>}
+          {errors.acceptPrivacy && <p className="text-red-500 text-xs ml-7 text-start">{errors.acceptPrivacy}</p>}
 
           {/* Health Data Consent — optional, for patients (GDPR Art. 9) */}
           {(fd.role ?? 'patient') === 'patient' && (
@@ -541,11 +541,11 @@ const RegisterForm = ({
                   onChange={handleInputChange}
                   className="w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500 mt-0.5 flex-shrink-0"
                 />
-                <span className="text-sm text-gray-500 text-left leading-relaxed">
+                <span className="text-sm text-gray-500 text-start leading-relaxed">
                   {t('auth.healthDataConsent')} <span className="text-red-500">*</span>
                 </span>
               </label>
-              {errors.acceptHealthData && <p className="text-red-500 text-xs ml-7 text-left">{errors.acceptHealthData}</p>}
+              {errors.acceptHealthData && <p className="text-red-500 text-xs ml-7 text-start">{errors.acceptHealthData}</p>}
             </>
           )}
 
@@ -558,7 +558,7 @@ const RegisterForm = ({
               onChange={handleInputChange}
               className="w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500 mt-0.5 flex-shrink-0"
             />
-            <span className="text-sm text-gray-500 text-left leading-relaxed">
+            <span className="text-sm text-gray-500 text-start leading-relaxed">
               {t('auth.marketingConsent')} <span className="text-gray-400 text-xs">({t('auth.optionalUnsubscribe')})</span>
             </span>
           </label>

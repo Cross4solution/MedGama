@@ -165,7 +165,7 @@ const CreateInvoiceModal = ({ onClose, onCreated, t }) => {
             <span className="col-span-4 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">{t('crm.billing.description', 'Description')}</span>
             <span className="col-span-3 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">{t('crm.billing.category', 'Category')}</span>
             <span className="col-span-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wide text-center">{t('crm.billing.qty', 'Qty')}</span>
-            <span className="col-span-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wide text-right">{t('crm.billing.price', 'Price')}</span>
+            <span className="col-span-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wide text-end">{t('crm.billing.price', 'Price')}</span>
             <span className="col-span-1" />
           </div>
 
@@ -186,7 +186,7 @@ const CreateInvoiceModal = ({ onClose, onCreated, t }) => {
                   <input type="number" min="0" step="0.01" placeholder="0.00" value={item.unit_price}
                     onChange={e => updateItem(i, 'unit_price', e.target.value)}
                     onKeyDown={blockNonNumeric}
-                    className="col-span-3 sm:col-span-2 h-9 px-2 text-xs border border-gray-200 rounded-lg text-right focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none bg-white" />
+                    className="col-span-3 sm:col-span-2 h-9 px-2 text-xs border border-gray-200 rounded-lg text-end focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none bg-white" />
                   <div className="col-span-12 sm:col-span-1 flex items-center justify-center">
                     {items.length > 1 && (
                       <button onClick={() => removeItem(i)} className="w-8 h-8 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
@@ -213,14 +213,14 @@ const CreateInvoiceModal = ({ onClose, onCreated, t }) => {
             <ModalInput type="number" min="0" max="100" step="0.01" value={form.tax_rate}
               onChange={e => setForm({ ...form, tax_rate: e.target.value })}
               onKeyDown={blockNonNumeric}
-              className="text-right" />
+              className="text-end" />
           </div>
           <div>
             <ModalLabel>{t('crm.billing.discount', 'Discount')}</ModalLabel>
             <ModalInput type="number" min="0" step="0.01" value={form.discount_amount}
               onChange={e => setForm({ ...form, discount_amount: e.target.value })}
               onKeyDown={blockNonNumeric}
-              className="text-right" />
+              className="text-end" />
           </div>
           <div>
             <ModalLabel icon={CreditCard}>{t('crm.billing.paymentMethod', 'Payment')}</ModalLabel>
@@ -571,13 +571,13 @@ const CRMBilling = () => {
               <table className="w-full min-w-[800px]">
                 <thead>
                   <tr className="border-b border-gray-100">
-                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('crm.billing.invoice', 'Invoice')}</th>
-                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.patient')}</th>
-                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.billing.date', 'Date')}</th>
-                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.amount')}</th>
-                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.billing.paid', 'Paid')}</th>
+                    <th className="text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('crm.billing.invoice', 'Invoice')}</th>
+                    <th className="text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.patient')}</th>
+                    <th className="text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.billing.date', 'Date')}</th>
+                    <th className="text-end text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.amount')}</th>
+                    <th className="text-end text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.billing.paid', 'Paid')}</th>
                     <th className="text-center text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.status')}</th>
-                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('common.actions')}</th>
+                    <th className="text-end text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('common.actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -615,14 +615,14 @@ const CRMBilling = () => {
                         <p className="text-xs text-gray-700">{inv.issue_date}</p>
                         {inv.due_date && <p className="text-[10px] text-gray-400">{t('crm.billing.due', 'Due')}: {inv.due_date}</p>}
                       </td>
-                      <td className="px-3 py-3.5 text-right">
+                      <td className="px-3 py-3.5 text-end">
                         <span className="text-sm font-bold text-gray-900">{fmt(inv.grand_total, inv.currency)}</span>
                       </td>
-                      <td className="px-3 py-3.5 text-right">
+                      <td className="px-3 py-3.5 text-end">
                         <span className="text-sm font-medium text-emerald-600">{fmt(inv.paid_amount, inv.currency)}</span>
                       </td>
                       <td className="px-3 py-3.5 text-center"><StatusBadge status={inv.status} /></td>
-                      <td className="px-5 py-3.5 text-right">
+                      <td className="px-5 py-3.5 text-end">
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button onClick={() => handleDownloadPdf(inv.id)}
                             className="w-7 h-7 rounded-lg hover:bg-blue-50 flex items-center justify-center text-gray-400 hover:text-blue-600" title={t('crm.billing.downloadPdf', 'Download PDF')}>
@@ -711,7 +711,7 @@ const CRMBilling = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="text-right flex-shrink-0">
+                      <div className="text-end flex-shrink-0">
                         <p className="text-lg font-bold text-red-600">{fmt(entry.total_owed)}</p>
                         <p className="text-[10px] text-gray-400 mt-0.5">{t('crm.billing.invoiceCount', '{{count}} invoice(s)', { count: entry.invoice_count })}</p>
                       </div>

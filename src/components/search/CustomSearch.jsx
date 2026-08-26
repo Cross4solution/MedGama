@@ -228,7 +228,7 @@ export default function CustomSearch() {
             value={country}
             onChange={(val) => { setCountry((val || '').trim()); setCity(''); }}
             placeholder={t('search.selectCountry')}
-            triggerClassName="w-full h-10 border border-gray-300 rounded-xl px-3 text-sm bg-white text-left hover:border-gray-400 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
+            triggerClassName="w-full h-10 border border-gray-300 rounded-xl px-3 text-sm bg-white text-start hover:border-gray-400 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
             getFlagUrl={(name) => {
               const code = getFlagCode(name);
               return code ? `https://flagcdn.com/24x18/${code}.png` : null;
@@ -284,7 +284,7 @@ export default function CustomSearch() {
             loading={loadingCities}
             wheelFactor={1}
             placeholder={country ? t('search.selectPlaceholder') : t('search.chooseCountryFirst')}
-            triggerClassName={`w-full h-10 border border-gray-300 rounded-xl px-3 text-sm bg-white text-left transition-all ${!country ? 'opacity-50 cursor-not-allowed' : 'hover:border-gray-400 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400'}`}
+            triggerClassName={`w-full h-10 border border-gray-300 rounded-xl px-3 text-sm bg-white text-start transition-all ${!country ? 'opacity-50 cursor-not-allowed' : 'hover:border-gray-400 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400'}`}
           />
         </div>
 

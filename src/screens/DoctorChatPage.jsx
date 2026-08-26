@@ -539,7 +539,7 @@ const DoctorChatPage = () => {
                   {mobilePaginatedThreads.map((t, idx)=> (
                     <button
                       key={t.id}
-                      className={`w-full text-left px-4 py-3.5 hover:bg-gray-50/60 transition-colors ${idx > 0 ? 'border-t border-gray-100' : ''} ${activeThreadId === t.id ? 'bg-teal-50/40' : ''}`}
+                      className={`w-full text-start px-4 py-3.5 hover:bg-gray-50/60 transition-colors ${idx > 0 ? 'border-t border-gray-100' : ''} ${activeThreadId === t.id ? 'bg-teal-50/40' : ''}`}
                       onClick={()=>handleSelectThread(t.id)}
                     >
                       <div className="flex items-start gap-3">

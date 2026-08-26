@@ -267,7 +267,7 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
           const finalValue = digits ? `${newCode} ${digits}`.trim() : newCode;
           onChange && onChange(finalValue);
         }}
-        className="w-full h-11 pl-24 pr-4 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm border-gray-300"
+        className="w-full h-11 pl-24 pr-4 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-start text-sm border-gray-300"
         placeholder={phonePlaceholder(phoneCode)}
       />
       {showPhoneCodes && createPortal(
@@ -320,7 +320,7 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
                 const finalValue = digits ? `${c} ${digits}`.trim() : c;
                 onChange && onChange(finalValue);
               }}
-              className={`w-full text-left px-3 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-3 rounded-md ${ displayPhone.startsWith(c) ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
+              className={`w-full text-start px-3 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-3 rounded-md ${ displayPhone.startsWith(c) ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
             >
               {iso && <img src={getFlagUrlByIso(iso)} alt="" width={20} height={15} className="inline-block rounded-sm" />}
               <span className="flex-1 truncate">{meta.name || t('common.country')}</span>

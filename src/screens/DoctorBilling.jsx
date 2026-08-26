@@ -121,7 +121,7 @@ function PatientSearchDropdown({ value, onChange }) {
               key={p.id}
               type="button"
               onClick={() => handleSelect(p)}
-              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-teal-50 transition-colors text-left"
+              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-teal-50 transition-colors text-start"
             >
               <div className="w-7 h-7 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
                 {p.avatar
@@ -311,7 +311,7 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
                     step="0.01"
                     onChange={e => updateItem(idx, 'unit_price', e.target.value)}
                     placeholder={t('billing.price')}
-                    className="w-24 px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40 text-right"
+                    className="w-24 px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40 text-end"
                   />
                   {form.items.length > 1 && (
                     <button type="button" onClick={() => removeItem(idx)}
@@ -625,12 +625,12 @@ export default function DoctorBilling() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50/60">
-                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-5 py-3">{t('billing.invoiceNumber')}</th>
-                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-3 py-3">{t('common.patient')}</th>
-                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-3 py-3">{t('common.date')}</th>
-                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-3 py-3">{t('common.amount')}</th>
+                    <th className="text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-5 py-3">{t('billing.invoiceNumber')}</th>
+                    <th className="text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-3 py-3">{t('common.patient')}</th>
+                    <th className="text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-3 py-3">{t('common.date')}</th>
+                    <th className="text-end text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-3 py-3">{t('common.amount')}</th>
                     <th className="text-center text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-3 py-3">{t('common.status')}</th>
-                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-5 py-3">{t('common.actions')}</th>
+                    <th className="text-end text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-5 py-3">{t('common.actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -655,7 +655,7 @@ export default function DoctorBilling() {
                           {inv.issue_date ? new Date(inv.issue_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
                         </div>
                       </td>
-                      <td className="px-3 py-3.5 text-right">
+                      <td className="px-3 py-3.5 text-end">
                         <span className="text-sm font-bold text-gray-900">{fmt(inv.grand_total, inv.currency)}</span>
                         {inv.paid_amount > 0 && inv.status !== 'paid' && (
                           <p className="text-[11px] text-emerald-600 font-medium">{fmt(inv.paid_amount, inv.currency)} {t('billing.paidSuffix')}</p>
@@ -664,7 +664,7 @@ export default function DoctorBilling() {
                       <td className="px-3 py-3.5 text-center">
                         <StatusBadge status={inv.status} />
                       </td>
-                      <td className="px-5 py-3.5 text-right">
+                      <td className="px-5 py-3.5 text-end">
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           {inv.status === 'pending' && (
                             <button

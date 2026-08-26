@@ -190,11 +190,11 @@ export default function CookiePolicyPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Cookie / Storage</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Provider</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Purpose</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Category</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Duration</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Cookie / Storage</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Provider</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Purpose</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Category</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Duration</th>
                   </tr>
                 </thead>
                 <tbody>

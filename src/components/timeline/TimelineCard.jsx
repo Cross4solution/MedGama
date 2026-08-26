@@ -281,7 +281,7 @@ function DocumentPreview({ m, className, onClick }) {
           <button
             type="button"
             onClick={onClick}
-            className="flex-1 min-w-0 text-left"
+            className="flex-1 min-w-0 text-start"
             title={name}
           >
             <p className="text-sm font-semibold text-gray-800 truncate">{name}</p>
@@ -537,7 +537,7 @@ function MedyaKaresi({ m, alt, className, onAc }) {
 
   if (tur === 'image') {
     return (
-      <button type="button" onClick={onAc} className="block w-full text-left">
+      <button type="button" onClick={onAc} className="block w-full text-start">
         <MediaItem m={m} alt={alt} className={className} />
       </button>
     );

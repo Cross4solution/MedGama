@@ -305,7 +305,7 @@ const TicketDetail = ({ ticketId, onBack, isAdmin, t }) => {
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold ${isStaff ? 'bg-violet-100 text-violet-600' : 'bg-teal-100 text-teal-600'}`}>
                   {msg.user?.fullname?.charAt(0) || '?'}
                 </div>
-                <div className={`flex-1 max-w-[80%] ${isStaff ? 'text-right' : ''}`}>
+                <div className={`flex-1 max-w-[80%] ${isStaff ? 'text-end' : ''}`}>
                   <div className={`inline-block rounded-2xl px-4 py-3 ${isStaff ? 'bg-violet-50 border border-violet-100' : 'bg-gray-50 border border-gray-100'}`}>
                     <p className="text-sm text-gray-800 whitespace-pre-wrap">{msg.body}</p>
                     {msg.attachments?.length > 0 && (
@@ -319,7 +319,7 @@ const TicketDetail = ({ ticketId, onBack, isAdmin, t }) => {
                       </div>
                     )}
                   </div>
-                  <p className={`text-[10px] text-gray-400 mt-1 ${isStaff ? 'text-right' : ''}`}>
+                  <p className={`text-[10px] text-gray-400 mt-1 ${isStaff ? 'text-end' : ''}`}>
                     {msg.user?.fullname} · {timeAgo(msg.created_at)}
                     {msg.is_internal && <span className="ml-1 text-amber-500 font-semibold">[Internal]</span>}
                   </p>
@@ -500,7 +500,7 @@ const CRMSupport = () => {
           <div className="divide-y divide-gray-50">
             {tickets.map(ticket => (
               <button key={ticket.id} onClick={() => openTicket(ticket.id)}
-                className="w-full text-left px-5 py-4 hover:bg-gray-50/50 transition-colors group">
+                className="w-full text-start px-5 py-4 hover:bg-gray-50/50 transition-colors group">
                 <div className="flex items-start gap-3">
                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 ${
                     ticket.priority === 'urgent' ? 'bg-red-50' : ticket.priority === 'high' ? 'bg-orange-50' : 'bg-gray-50'

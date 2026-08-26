@@ -77,7 +77,7 @@ export default function PostComposer() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="flex-1 text-left p-3 bg-gray-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600 hover:bg-gray-100"
+          className="flex-1 text-start p-3 bg-gray-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600 hover:bg-gray-100"
         >
           Make a Post...
         </button>

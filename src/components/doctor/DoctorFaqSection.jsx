@@ -46,7 +46,7 @@ export default function DoctorFaqSection({ doctorId }) {
           <div key={faq.id} className="border border-gray-200/60 rounded-xl overflow-hidden hover:shadow-sm transition-shadow">
             <button
               onClick={() => setOpenId(openId === faq.id ? null : faq.id)}
-              className="w-full text-left px-5 py-4 flex items-center gap-3 bg-white hover:bg-gray-50/50 transition-colors"
+              className="w-full text-start px-5 py-4 flex items-center gap-3 bg-white hover:bg-gray-50/50 transition-colors"
             >
               <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center flex-shrink-0">
                 <HelpCircle className="w-4 h-4 text-teal-600" />

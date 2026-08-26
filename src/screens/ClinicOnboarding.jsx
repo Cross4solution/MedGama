@@ -398,7 +398,7 @@ export default function ClinicOnboarding() {
                     const selected = selectedSpecialties.some(s => s.id === sp.id);
                     return (
                       <button key={sp.id} onClick={() => toggleSpecialty(sp)}
-                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold border transition-all text-left ${
+                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold border transition-all text-start ${
                           selected
                             ? 'bg-teal-600 text-white border-teal-600 shadow-md'
                             : 'bg-white text-gray-600 border-gray-200 hover:border-teal-400 hover:bg-teal-50/40'

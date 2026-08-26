@@ -219,11 +219,11 @@ export default function AdminFinancials() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/60">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.user', "User")}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.plan', "Plan")}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.amount', "Amount")}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.started', "Started")}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.nextBilling', "Next Billing")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.user', "User")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.plan', "Plan")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.amount', "Amount")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.started', "Started")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.nextBilling', "Next Billing")}</th>
                   <th className="text-center px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.status', "Status")}</th>
                 </tr>
               </thead>

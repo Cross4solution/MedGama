@@ -34,7 +34,7 @@ const ForgotPasswordForm = ({
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            className={`w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm ${
+            className={`w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-start text-xs sm:text-sm ${
               errors.email ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder={t('forgotPasswordForm.nameExampleCom', "name@example.com")}

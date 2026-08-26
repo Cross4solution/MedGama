@@ -348,7 +348,7 @@ const LeadDrawer = ({ leadId, onClose, onChanged, salespeople, isManager }) => {
 const LeadCard = ({ lead, onClick }) => {
   const { t } = useTranslation();
   return (
-  <button onClick={onClick} className="w-full text-left bg-white rounded-xl border border-gray-200/80 p-3 hover:shadow-md transition-all">
+  <button onClick={onClick} className="w-full text-start bg-white rounded-xl border border-gray-200/80 p-3 hover:shadow-md transition-all">
     <div className="flex items-start justify-between gap-2">
       <h4 className="text-sm font-bold text-gray-900 truncate">{lead.full_name}</h4>
       {lead.estimated_value != null && (

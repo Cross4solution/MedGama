@@ -173,7 +173,7 @@ export default function GlobalSearch() {
                         aria-selected={activeIndex === flatIdx}
                         onMouseEnter={() => setActiveIndex(flatIdx)}
                         onClick={() => onSelect({ ...t, _type: 'treatment' })}
-                        className={`w-full text-left px-4 py-2.5 flex items-center gap-3 transition-all duration-100 ${activeIndex === flatIdx ? 'bg-emerald-50/70' : 'hover:bg-gray-50'}`}
+                        className={`w-full text-start px-4 py-2.5 flex items-center gap-3 transition-all duration-100 ${activeIndex === flatIdx ? 'bg-emerald-50/70' : 'hover:bg-gray-50'}`}
                       >
                         <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-100 flex items-center justify-center">
                           <Tag className="w-5 h-5 text-emerald-500" />
@@ -219,7 +219,7 @@ export default function GlobalSearch() {
                         aria-selected={activeIndex === flatIdx}
                         onMouseEnter={() => setActiveIndex(flatIdx)}
                         onClick={() => onSelect({ ...d, _type: 'doctor' })}
-                        className={`w-full text-left px-4 py-2.5 flex items-center gap-3 transition-all duration-100 ${activeIndex === flatIdx ? 'bg-teal-50/70' : 'hover:bg-gray-50'}`}
+                        className={`w-full text-start px-4 py-2.5 flex items-center gap-3 transition-all duration-100 ${activeIndex === flatIdx ? 'bg-teal-50/70' : 'hover:bg-gray-50'}`}
                       >
                         {/* Avatar */}
                         <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-100 flex items-center justify-center overflow-hidden">
@@ -273,7 +273,7 @@ export default function GlobalSearch() {
                         aria-selected={activeIndex === flatIdx}
                         onMouseEnter={() => setActiveIndex(flatIdx)}
                         onClick={() => onSelect({ ...c, _type: 'clinic' })}
-                        className={`w-full text-left px-4 py-2.5 flex items-center gap-3 transition-all duration-100 ${activeIndex === flatIdx ? 'bg-teal-50/70' : 'hover:bg-gray-50'}`}
+                        className={`w-full text-start px-4 py-2.5 flex items-center gap-3 transition-all duration-100 ${activeIndex === flatIdx ? 'bg-teal-50/70' : 'hover:bg-gray-50'}`}
                       >
                         {/* Avatar */}
                         <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-teal-50 to-teal-100 border border-teal-100 flex items-center justify-center overflow-hidden">

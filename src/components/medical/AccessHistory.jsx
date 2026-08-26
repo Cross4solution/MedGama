@@ -56,7 +56,7 @@ export default function AccessHistory() {
     <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-4 text-start hover:bg-gray-50 transition-colors"
       >
         <span className="flex items-center gap-3">
           <span className="w-9 h-9 rounded-xl bg-teal-50 flex items-center justify-center flex-shrink-0">

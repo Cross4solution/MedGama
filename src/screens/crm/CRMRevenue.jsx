@@ -495,21 +495,21 @@ const CRMRevenue = () => {
               <table className="w-full min-w-[500px]">
                 <thead>
                   <tr className="border-b border-gray-100">
-                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase px-5 py-2.5">{t('crm.revenue.period', 'Period')}</th>
-                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase px-3 py-2.5">{t('crm.revenue.gross', 'Gross')}</th>
-                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase px-3 py-2.5">{t('crm.revenue.commission', 'Commission')}</th>
-                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase px-5 py-2.5">{t('crm.revenue.net', 'Net')}</th>
-                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase px-3 py-2.5">{t('crm.revenue.invoiceCount', 'Invoices')}</th>
+                    <th className="text-start text-[11px] font-semibold text-gray-500 uppercase px-5 py-2.5">{t('crm.revenue.period', 'Period')}</th>
+                    <th className="text-end text-[11px] font-semibold text-gray-500 uppercase px-3 py-2.5">{t('crm.revenue.gross', 'Gross')}</th>
+                    <th className="text-end text-[11px] font-semibold text-gray-500 uppercase px-3 py-2.5">{t('crm.revenue.commission', 'Commission')}</th>
+                    <th className="text-end text-[11px] font-semibold text-gray-500 uppercase px-5 py-2.5">{t('crm.revenue.net', 'Net')}</th>
+                    <th className="text-end text-[11px] font-semibold text-gray-500 uppercase px-3 py-2.5">{t('crm.revenue.invoiceCount', 'Invoices')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {payout.monthly.map((m) => (
                     <tr key={m.period} className="hover:bg-gray-50/50">
                       <td className="px-5 py-2.5 text-sm font-medium text-gray-900">{m.period}</td>
-                      <td className="px-3 py-2.5 text-sm text-right text-gray-700">{fmt(m.gross, currency)}</td>
-                      <td className="px-3 py-2.5 text-sm text-right text-red-500">-{fmt(m.commission, currency)}</td>
-                      <td className="px-5 py-2.5 text-sm text-right font-semibold text-teal-700">{fmt(m.net, currency)}</td>
-                      <td className="px-3 py-2.5 text-sm text-right text-gray-500">{m.invoice_count}</td>
+                      <td className="px-3 py-2.5 text-sm text-end text-gray-700">{fmt(m.gross, currency)}</td>
+                      <td className="px-3 py-2.5 text-sm text-end text-red-500">-{fmt(m.commission, currency)}</td>
+                      <td className="px-5 py-2.5 text-sm text-end font-semibold text-teal-700">{fmt(m.net, currency)}</td>
+                      <td className="px-3 py-2.5 text-sm text-end text-gray-500">{m.invoice_count}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -559,7 +559,7 @@ const CRMRevenue = () => {
                       <p className="text-xs font-semibold text-gray-900 truncate">{d.fullname}</p>
                       <p className="text-[10px] text-gray-400">{d.invoice_count} inv.</p>
                     </div>
-                    <div className="text-right">
+                    <div className="text-end">
                       <p className="text-xs font-bold text-gray-900">{fmt(d.total_revenue, currency)}</p>
                       <p className="text-[10px] text-violet-500">{t('crm.revenue.comm', 'Comm')}: {fmt(d.commission, currency)}</p>
                     </div>
@@ -596,12 +596,12 @@ const CRMRevenue = () => {
           <table className="w-full min-w-[650px]">
             <thead>
               <tr className="border-b border-gray-100">
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('crm.revenue.invoice', 'Invoice')}</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.patient', 'Patient')}</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.date', 'Date')}</th>
-                <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.amount', 'Amount')}</th>
-                <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.revenue.paidAmt', 'Paid')}</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('common.status', 'Status')}</th>
+                <th className="text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('crm.revenue.invoice', 'Invoice')}</th>
+                <th className="text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.patient', 'Patient')}</th>
+                <th className="text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.date', 'Date')}</th>
+                <th className="text-end text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.amount', 'Amount')}</th>
+                <th className="text-end text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.revenue.paidAmt', 'Paid')}</th>
+                <th className="text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('common.status', 'Status')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -610,8 +610,8 @@ const CRMRevenue = () => {
                   <td className="px-5 py-3"><span className="text-xs font-mono font-medium text-teal-600">{inv.invoice_number}</span></td>
                   <td className="px-3 py-3"><p className="text-sm font-medium text-gray-900">{inv.patient?.fullname || '—'}</p></td>
                   <td className="px-3 py-3"><span className="text-xs text-gray-600">{inv.issue_date}</span></td>
-                  <td className="px-3 py-3 text-right"><span className="text-sm font-bold text-gray-900">{fmt(inv.grand_total, inv.currency)}</span></td>
-                  <td className="px-3 py-3 text-right"><span className="text-sm text-emerald-600">{fmt(inv.paid_amount, inv.currency)}</span></td>
+                  <td className="px-3 py-3 text-end"><span className="text-sm font-bold text-gray-900">{fmt(inv.grand_total, inv.currency)}</span></td>
+                  <td className="px-3 py-3 text-end"><span className="text-sm text-emerald-600">{fmt(inv.paid_amount, inv.currency)}</span></td>
                   <td className="px-5 py-3"><PaymentStatusBadge status={inv.status} /></td>
                 </tr>
               ))}

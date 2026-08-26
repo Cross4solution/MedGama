@@ -284,7 +284,7 @@ const AuthPages = () => {
           {/* Desktop Layout */}
           <div className="hidden lg:flex w-full max-w-6xl items-center justify-center gap-16">
             {/* Left Side */}
-            <div className="flex-1 max-w-md text-left">
+            <div className="flex-1 max-w-md text-start">
               <div className="text-white">
                 <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-8 border border-white/20">
                   <Heart className="w-10 h-10" />

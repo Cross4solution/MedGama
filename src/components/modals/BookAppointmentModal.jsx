@@ -217,7 +217,7 @@ export default function BookAppointmentModal({ open, onClose, targetId, targetNa
             <p className="text-sm text-gray-500 mb-6">
               {t('booking.appointmentConfirmMsg', { name: targetName })}
             </p>
-            <div className="bg-gray-50 rounded-xl p-4 text-left space-y-2 mb-6">
+            <div className="bg-gray-50 rounded-xl p-4 text-start space-y-2 mb-6">
               {isClinic && selectedDoctor && (
                 <div className="flex justify-between text-sm"><span className="text-gray-500">{t('common.doctor')}</span><span className="font-medium text-gray-900">{selectedDoctor.fullname}</span></div>
               )}

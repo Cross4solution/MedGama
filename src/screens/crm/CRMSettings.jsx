@@ -600,7 +600,7 @@ const CRMSettings = ({ standalone = false }) => {
                   data-tab={tab.key}
                   onClick={() => { if (!tab.locked) setActiveTab(tab.key); }}
                   disabled={tab.locked}
-                  className={`flex items-center gap-2.5 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors w-full text-left ${
+                  className={`flex items-center gap-2.5 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors w-full text-start ${
                     tab.locked
                       ? 'text-gray-400 cursor-not-allowed opacity-60'
                       : activeTab === tab.key
@@ -1533,7 +1533,7 @@ const CRMSettings = ({ standalone = false }) => {
                     <p className="text-base font-bold text-teal-800">{t('crm.settings.professionalPlan', 'Professional Plan')}</p>
                     <p className="text-xs text-teal-600 mt-0.5">{t('crm.settings.planFeatures', 'Unlimited patients · All features · Priority support')}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-end">
                     <p className="text-xl font-bold text-teal-800">€99<span className="text-xs font-normal text-teal-600">{t('crm.settings.perMonth', '/mo')}</span></p>
                     <p className="text-[10px] text-teal-500">{t('crm.settings.nextBilling', 'Next billing')}: Mar 1, 2026</p>
                   </div>

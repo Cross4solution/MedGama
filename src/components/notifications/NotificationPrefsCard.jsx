@@ -91,7 +91,7 @@ export default function NotificationPrefsCard() {
                   key={key}
                   onClick={() => toggle(key)}
                   disabled={saving === key}
-                  className="w-full flex items-center justify-between gap-3 px-2.5 py-2.5 rounded-xl text-left hover:bg-gray-50/80 transition-colors disabled:opacity-60"
+                  className="w-full flex items-center justify-between gap-3 px-2.5 py-2.5 rounded-xl text-start hover:bg-gray-50/80 transition-colors disabled:opacity-60"
                 >
                   <span className="text-[13px] text-gray-700 leading-snug">{t(anahtar, yedek)}</span>
                   <span

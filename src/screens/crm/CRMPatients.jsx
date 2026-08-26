@@ -409,18 +409,18 @@ const CRMPatients = () => {
           <table className="w-full min-w-[900px]">
             <thead>
               <tr className="border-b border-gray-100">
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">
+                <th className="text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">
                   <button onClick={() => toggleSort('fullname')} className="min-h-6 py-1 flex items-center gap-1 hover:text-gray-700">
                     {t('common.patient')}
                     <ArrowUpDown className="w-3 h-3" />
                   </button>
                 </th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.patients.contact')}</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.patients.tags', 'Tags')}</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.patients.stage', 'Stage')}</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.patients.lastVisit')}</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.patients.visits', 'Visits')}</th>
-                <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('common.actions')}</th>
+                <th className="text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.patients.contact')}</th>
+                <th className="text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.patients.tags', 'Tags')}</th>
+                <th className="text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.patients.stage', 'Stage')}</th>
+                <th className="text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.patients.lastVisit')}</th>
+                <th className="text-start text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.patients.visits', 'Visits')}</th>
+                <th className="text-end text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -535,7 +535,7 @@ const CRMPatients = () => {
                         <span className="text-xs font-semibold text-gray-700">{p.total_visits || 0}</span>
                       </td>
                       {/* Actions */}
-                      <td className="px-5 py-3.5 text-right">
+                      <td className="px-5 py-3.5 text-end">
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button onClick={() => navigate(`/crm/patient-360?id=${p.id}`)}
                             className="w-8 h-8 rounded-lg hover:bg-teal-50 flex items-center justify-center text-gray-400 hover:text-teal-600 transition-colors"

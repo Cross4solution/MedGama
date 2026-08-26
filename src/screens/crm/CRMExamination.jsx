@@ -194,7 +194,7 @@ const TreatmentTagSearch = ({ selectedDiagnoses, onAdd, onRemove, t }) => {
                   key={item.code}
                   onClick={() => handleSelect(item)}
                   disabled={isSelected}
-                  className={`w-full text-left px-4 py-3 flex items-start gap-3 transition-colors border-b border-gray-50 last:border-0 ${
+                  className={`w-full text-start px-4 py-3 flex items-start gap-3 transition-colors border-b border-gray-50 last:border-0 ${
                     isSelected ? 'bg-teal-50/50 opacity-60 cursor-not-allowed' : 'hover:bg-gray-50 cursor-pointer'
                   }`}
                 >
@@ -303,7 +303,7 @@ const PrescriptionBuilder = ({ medications, setMedications, t }) => {
               <button
                 key={i}
                 onClick={() => addMedication(tpl)}
-                className="text-left px-3 py-2 bg-white rounded-lg border border-blue-100 hover:border-blue-300 hover:shadow-sm transition-all group"
+                className="text-start px-3 py-2 bg-white rounded-lg border border-blue-100 hover:border-blue-300 hover:shadow-sm transition-all group"
               >
                 <p className="text-xs font-semibold text-gray-900 group-hover:text-teal-700">{tpl.name}</p>
                 <p className="text-[10px] text-gray-500 mt-0.5">{tpl.dosage} · {tpl.duration}</p>
@@ -1395,7 +1395,7 @@ const CRMExamination = () => {
                           </div>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          <div className="text-right hidden sm:block">
+                          <div className="text-end hidden sm:block">
                             {vitalsData.systolic && (
                               <p className="text-[10px] text-gray-400">{t('cRMExamination.bp', "BP:")} <span className="font-medium text-gray-600">{vitalsData.systolic}/{vitalsData.diastolic}</span></p>
                             )}

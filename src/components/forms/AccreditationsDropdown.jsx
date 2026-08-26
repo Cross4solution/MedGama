@@ -72,7 +72,7 @@ export default function AccreditationsDropdown({ selected = [], onChange, disabl
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-left transition-all flex items-center justify-between ${
+        className={`w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-start transition-all flex items-center justify-between ${
           isOpen ? 'border-teal-500 bg-teal-50' : 'hover:border-gray-300 bg-white'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
       >
@@ -113,7 +113,7 @@ export default function AccreditationsDropdown({ selected = [], onChange, disabl
                     key={acc.id}
                     type="button"
                     onClick={() => handleToggle(acc.id)}
-                    className={`w-full text-left px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors flex items-start justify-between gap-3 ${
+                    className={`w-full text-start px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors flex items-start justify-between gap-3 ${
                       isSelected ? 'bg-teal-50' : ''
                     }`}
                   >

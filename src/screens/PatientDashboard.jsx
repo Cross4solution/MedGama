@@ -472,7 +472,7 @@ const PatientDashboard = () => {
                     <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${action.color} flex items-center justify-center shadow-sm`}>
                       <action.icon className="w-4 h-4 text-white" />
                     </div>
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 flex-1 text-left">{action.label}</span>
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 flex-1 text-start">{action.label}</span>
                     <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors" />
                   </button>
                 ))}

@@ -341,7 +341,7 @@ function InfoRow({ label, value }) {
   return (
     <div className="flex items-center justify-between">
       <span className="text-gray-500 text-xs font-medium">{label}</span>
-      <span className="text-gray-900 text-xs font-semibold text-right max-w-[60%] truncate">{value}</span>
+      <span className="text-gray-900 text-xs font-semibold text-end max-w-[60%] truncate">{value}</span>
     </div>
   );
 }
@@ -551,12 +551,12 @@ export default function AdminUserManagement() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/60">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminUserManagement.user', "User")}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminUserManagement.email', "Email")}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminUserManagement.role', "Role")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600">{t('adminUserManagement.user', "User")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600">{t('adminUserManagement.email', "Email")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600">{t('adminUserManagement.role', "Role")}</th>
                   <th className="text-center px-4 py-3 font-semibold text-gray-600">{t('adminUserManagement.verified', "Verified")}</th>
                   <th className="text-center px-4 py-3 font-semibold text-gray-600">{t('adminUserManagement.status', "Status")}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminUserManagement.registered', "Registered")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600">{t('adminUserManagement.registered', "Registered")}</th>
                   <th className="text-center px-4 py-3 font-semibold text-gray-600 w-[220px]">{t('adminUserManagement.actions', "Actions")}</th>
                 </tr>
               </thead>
@@ -597,7 +597,7 @@ export default function AdminUserManagement() {
                                 key={r.key}
                                 onClick={() => handleRoleChange(u.id, r.key)}
                                 disabled={r.key === u.role_id || isLoadingThis}
-                                className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-gray-50 text-left transition-colors ${
+                                className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-gray-50 text-start transition-colors ${
                                   r.key === u.role_id ? 'bg-gray-50 font-semibold text-gray-900' : 'text-gray-600'
                                 } disabled:opacity-50`}
                               >

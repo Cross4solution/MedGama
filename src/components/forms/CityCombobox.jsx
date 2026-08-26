@@ -90,7 +90,7 @@ export default function CityCombobox({
         className={
           triggerClassName && triggerClassName.length > 0
             ? `${triggerClassName} ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`.trim()
-            : `w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm bg-white text-left shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#1C6A83]/20 transition-shadow ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`
+            : `w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm bg-white text-start shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#1C6A83]/20 transition-shadow ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`
         }
         onClick={() => !disabled && setOpen((o) => !o)}
         disabled={disabled}
@@ -158,7 +158,7 @@ function SlowScrollList({ className = '', items = [], onSelect, wheelFactor = 1,
         <li key={opt}>
           <button
             type="button"
-            className="w-full text-left px-3 py-2 hover:bg-gray-50"
+            className="w-full text-start px-3 py-2 hover:bg-gray-50"
             onClick={() => onSelect && onSelect(opt)}
           >
             {opt}

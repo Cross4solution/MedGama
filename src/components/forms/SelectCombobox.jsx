@@ -105,7 +105,7 @@ export default function SelectCombobox({
         className={
           triggerClassName && triggerClassName.length > 0
             ? triggerClassName
-            : `w-full ${leftIcon ? 'pl-10' : 'pl-3'} pr-10 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-base md:text-sm font-medium appearance-none cursor-pointer bg-white hover:bg-gray-50 hover:border-gray-400 text-left`
+            : `w-full ${leftIcon ? 'pl-10' : 'pl-3'} pr-10 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-base md:text-sm font-medium appearance-none cursor-pointer bg-white hover:bg-gray-50 hover:border-gray-400 text-start`
         }
         onClick={() => setOpen((o) => !o)}
       >
@@ -150,7 +150,7 @@ export default function SelectCombobox({
             renderItem={(opt) => (
               <button
                 type="button"
-                className={`w-full text-left px-3.5 py-2.5 transition-colors ${opt.value === value ? 'bg-teal-50 text-teal-700 font-medium' : 'text-gray-700 hover:bg-gray-50'}`}
+                className={`w-full text-start px-3.5 py-2.5 transition-colors ${opt.value === value ? 'bg-teal-50 text-teal-700 font-medium' : 'text-gray-700 hover:bg-gray-50'}`}
                 onClick={() => {
                   onChange && onChange(opt.value);
                   setOpen(false);

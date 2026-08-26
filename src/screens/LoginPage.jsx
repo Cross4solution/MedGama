@@ -444,7 +444,7 @@ const LoginPage = ({ role = 'patient' }) => {
               id={`email-${varyant}`} name="email" type="email" value={formData.email} onChange={handleInputChange}
               aria-invalid={errors.email ? 'true' : undefined}
               aria-describedby={errors.email ? `email-hata-${varyant}` : undefined}
-              className={`w-full pl-8 sm:pl-10 pr-4 py-2.5 sm:py-3 border rounded-xl ${config.inputFocus} focus:ring-2 focus:border-transparent transition-colors text-left text-sm sm:text-base ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full pl-8 sm:pl-10 pr-4 py-2.5 sm:py-3 border rounded-xl ${config.inputFocus} focus:ring-2 focus:border-transparent transition-colors text-start text-sm sm:text-base ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
               placeholder={config.placeholder} required
             />
           </div>
@@ -465,7 +465,7 @@ const LoginPage = ({ role = 'patient' }) => {
               id={`password-${varyant}`} name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleInputChange}
               aria-invalid={errors.password ? 'true' : undefined}
               aria-describedby={errors.password ? `password-hata-${varyant}` : undefined}
-              className={`w-full pl-8 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 border rounded-xl ${config.inputFocus} focus:ring-2 focus:border-transparent transition-colors text-left text-sm sm:text-base ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full pl-8 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 border rounded-xl ${config.inputFocus} focus:ring-2 focus:border-transparent transition-colors text-start text-sm sm:text-base ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
               placeholder="••••••••" required
             />
             <button type="button" onClick={() => setShowPassword(s => !s)}
@@ -635,7 +635,7 @@ const LoginPage = ({ role = 'patient' }) => {
             {/* Desktop Layout */}
             <div className="hidden lg:flex w-full max-w-6xl items-center justify-center gap-16">
               {/* Left Side */}
-              <div className="flex-1 max-w-md text-left">
+              <div className="flex-1 max-w-md text-start">
                 {renderLeftSide()}
               </div>
               {/* Right Side - Form */}

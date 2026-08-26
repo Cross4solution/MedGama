@@ -169,7 +169,7 @@ const CRMContactInbox = () => {
                 <button
                   key={msg.id}
                   onClick={() => handleSelect(msg)}
-                  className={`w-full flex items-start gap-3 px-4 py-3.5 text-left hover:bg-gray-50 transition-colors border-b border-gray-50 ${
+                  className={`w-full flex items-start gap-3 px-4 py-3.5 text-start hover:bg-gray-50 transition-colors border-b border-gray-50 ${
                     selected?.id === msg.id ? 'bg-teal-50/40 border-l-2 border-l-teal-500' : ''
                   }`}
                 >

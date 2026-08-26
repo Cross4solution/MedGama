@@ -319,7 +319,7 @@ const CRMMessages = () => {
                     key={h.id}
                     onClick={() => konusmaBaslat(h)}
                     disabled={!!baslatiliyor}
-                    className="w-full flex items-center gap-3 px-5 py-3 text-left hover:bg-gray-50 transition-colors disabled:opacity-60"
+                    className="w-full flex items-center gap-3 px-5 py-3 text-start hover:bg-gray-50 transition-colors disabled:opacity-60"
                   >
                     <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0">
                       {getInitials(h.fullname)}
@@ -393,7 +393,7 @@ const CRMMessages = () => {
                 <button
                   key={conv.id}
                   onClick={() => handleSelectConversation(conv.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-gray-50 transition-colors border-b border-gray-50 ${
+                  className={`w-full flex items-center gap-3 px-4 py-3.5 text-start hover:bg-gray-50 transition-colors border-b border-gray-50 ${
                     activeConversation === conv.id ? 'bg-teal-50/40 border-l-2 border-l-teal-500' : ''
                   }`}
                 >

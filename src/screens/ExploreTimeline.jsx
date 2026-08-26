@@ -689,7 +689,7 @@ export default function ExploreTimeline() {
                     onChange={setSpecialty}
                     placeholder={t('medstream.all')}
                     hideChevron
-                    triggerClassName="h-9 px-3 rounded-full border border-gray-200 bg-gray-50/60 text-[13px] text-left min-w-[132px] hover:bg-white transition-colors"
+                    triggerClassName="h-9 px-3 rounded-full border border-gray-200 bg-gray-50/60 text-[13px] text-start min-w-[132px] hover:bg-white transition-colors"
                   />
                 </div>
               )}
@@ -712,7 +712,7 @@ export default function ExploreTimeline() {
                       <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 ring-2 ring-teal-100 ring-offset-1">
                         <img alt={user?.name || 'User'} loading="lazy" className="w-full h-full object-cover object-center" src={resolveStorageUrl(user?.avatar)} onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
                       </div>
-                      <button type="button" onClick={()=>{ if (!isUnverifiedDoctor) setIsComposerOpen(true); }} disabled={isUnverifiedDoctor} className={`flex-1 text-left px-4 py-3 bg-gray-50/80 rounded-xl border border-gray-200/60 focus:outline-none focus:ring-2 focus:ring-teal-500/30 text-gray-500 transition-all duration-200 text-sm ${isUnverifiedDoctor ? 'cursor-not-allowed opacity-60' : 'hover:bg-gray-100/80 hover:border-gray-300/60'}`}>
+                      <button type="button" onClick={()=>{ if (!isUnverifiedDoctor) setIsComposerOpen(true); }} disabled={isUnverifiedDoctor} className={`flex-1 text-start px-4 py-3 bg-gray-50/80 rounded-xl border border-gray-200/60 focus:outline-none focus:ring-2 focus:ring-teal-500/30 text-gray-500 transition-all duration-200 text-sm ${isUnverifiedDoctor ? 'cursor-not-allowed opacity-60' : 'hover:bg-gray-100/80 hover:border-gray-300/60'}`}>
                         {isUnverifiedDoctor ? t('medstream.postingDisabledPending') : t('medstream.makePost')}
                       </button>
                     </div>

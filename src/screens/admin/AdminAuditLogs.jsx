@@ -438,7 +438,7 @@ export default function AdminAuditLogs() {
               <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                 {userResults.map(u => (
                   <button key={u.id} onClick={() => selectUser(u)}
-                    className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-left">
+                    className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-start">
                     <img src={resolveStorageUrl(u.avatar) || '/images/default/default-avatar.svg'} alt="" className="w-5 h-5 rounded-full object-cover" />
                     <div>
                       <p className="text-xs font-medium text-gray-900">{u.fullname}</p>
@@ -489,12 +489,12 @@ export default function AdminAuditLogs() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/60">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[160px]">{t('adminAuditLogs.timestamp', "Timestamp")}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminAuditLogs.user', "User")}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminAuditLogs.action', "Action")}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminAuditLogs.resource', "Resource")}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[110px]">{t('adminAuditLogs.ipAddress', "IP Address")}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminAuditLogs.details', "Details")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs w-[160px]">{t('adminAuditLogs.timestamp', "Timestamp")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminAuditLogs.user', "User")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminAuditLogs.action', "Action")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminAuditLogs.resource', "Resource")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs w-[110px]">{t('adminAuditLogs.ipAddress', "IP Address")}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminAuditLogs.details', "Details")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">

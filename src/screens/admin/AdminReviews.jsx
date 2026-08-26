@@ -529,10 +529,10 @@ export default function AdminReviews() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/60">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[150px]">{t('common.patient')}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[150px]">{t('admin.reviews.colTarget')}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs w-[150px]">{t('common.patient')}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs w-[150px]">{t('admin.reviews.colTarget')}</th>
                   <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[110px]">{t('admin.reviews.colRating')}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.reviews.colComment')}</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.reviews.colComment')}</th>
                   <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">{t('common.date')}</th>
                   <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[90px]">{t('common.status')}</th>
                   <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[120px]">{t('common.actions')}</th>

@@ -14,7 +14,7 @@ export default function ContactActions({ onTelehealth, onBook, onMessage }) {
         <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/20 flex-shrink-0">
           <CalendarCheck className="w-[18px] h-[18px]" />
         </span>
-        <span className="flex-1 text-left">{t('clinicDetail.bookAppointment')}</span>
+        <span className="flex-1 text-start">{t('clinicDetail.bookAppointment')}</span>
         <ChevronRight className="w-4 h-4 opacity-60 group-hover:translate-x-0.5 transition-transform" />
       </button>
 
@@ -26,7 +26,7 @@ export default function ContactActions({ onTelehealth, onBook, onMessage }) {
         <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/70 text-indigo-600 flex-shrink-0">
           <Video className="w-[18px] h-[18px]" />
         </span>
-        <span className="flex-1 text-left">{t('clinicDetail.onlineConsultation')}</span>
+        <span className="flex-1 text-start">{t('clinicDetail.onlineConsultation')}</span>
       </button>
 
       {/* Tertiary — Send Message */}
@@ -37,7 +37,7 @@ export default function ContactActions({ onTelehealth, onBook, onMessage }) {
         <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/70 text-violet-600 flex-shrink-0">
           <MessageCircle className="w-[18px] h-[18px]" />
         </span>
-        <span className="flex-1 text-left">{t('clinicDetail.sendMessage')}</span>
+        <span className="flex-1 text-start">{t('clinicDetail.sendMessage')}</span>
       </button>
     </div>
   );

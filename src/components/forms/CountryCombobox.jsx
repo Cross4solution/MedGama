@@ -108,7 +108,7 @@ export default function CountryCombobox({ options = [], value, onChange, placeho
         className={
           triggerClassName && triggerClassName.length > 0
             ? `${triggerClassName} flex items-center overflow-hidden`
-            : 'w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm bg-white text-left flex items-center gap-2 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#1C6A83]/20 transition-shadow'
+            : 'w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm bg-white text-start flex items-center gap-2 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#1C6A83]/20 transition-shadow'
         }
         onClick={() => setOpen((o) => !o)}
       >
@@ -143,7 +143,7 @@ export default function CountryCombobox({ options = [], value, onChange, placeho
               <li key={opt}>
                 <button
                   type="button"
-                  className="w-full text-left px-3.5 py-2.5 hover:bg-gray-50 flex items-center gap-2 transition-colors"
+                  className="w-full text-start px-3.5 py-2.5 hover:bg-gray-50 flex items-center gap-2 transition-colors"
                   onClick={() => { onChange && onChange(opt); setOpen(false); setQuery(''); }}
                 >
                   {resolveFlagUrl(opt) && (

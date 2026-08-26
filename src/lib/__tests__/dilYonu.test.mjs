@@ -17,6 +17,13 @@ import path from 'node:path';
  * yerleşimin çoğu `gap` ve esnek kutu sırasıyla kuruluyor, ikisi de yönü
  * kendiliğinden izliyor.
  *
+ * Ama SAYMAK kötü bir kestirimdi; çizilene bakmak değil. Sonradan ölçüldüğünde
+ * on dört Arapça sayfanın sekizinde metin sola yaslıydı — CRM tablolarının
+ * başlıkları solda, sütun içeriği sağda duruyordu. Sebep `text-left` /
+ * `text-right`: bunlar fiziksel, `dir` ne olursa olsun dönmezler. Hepsi
+ * mantıksal karşılıklarıyla (`text-start` / `text-end`) değiştirildi ve
+ * çizilen sonucu tutan ölçüt `tests/e2e/yazi-yonu-hizasi.spec.js`.
+ *
  * Kırılganlık listede: yeni bir dil `LOCALES`'e eklenip `RTL_LOCALES`
  * gözden kaçarsa, o dil sessizce soldan sağa render edilir. Hiçbir şey
  * hata vermez; sayfa yalnız o dili okuyan için ters durur.

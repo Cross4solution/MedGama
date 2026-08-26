@@ -239,7 +239,7 @@ export default function Notifications() {
                       <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-teal-100/80' : 'bg-gray-100/80'} transition-colors`}>
                         <Icon className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500'}`} />
                       </span>
-                      <span className="flex-1 text-left">{t(c.labelKey)}</span>
+                      <span className="flex-1 text-start">{t(c.labelKey)}</span>
                       <span className={`text-[11px] font-semibold min-w-[20px] text-center ${active ? 'text-teal-600' : 'text-gray-400'}`}>{categoryCounts[c.id]}</span>
                     </button>
                   );

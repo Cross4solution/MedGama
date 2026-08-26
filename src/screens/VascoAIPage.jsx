@@ -141,7 +141,7 @@ function VascoAssistant() {
               <div className="grid sm:grid-cols-2 gap-3">
                 {result.doctors.map((d) => (
                   <button key={d.id} type="button" onClick={() => navigate(`/doctor/${d.id}`)}
-                    className="text-left bg-gray-50 border border-gray-200 rounded-2xl p-3 flex items-center gap-3 hover:border-teal-300 hover:bg-teal-50/30 transition-all">
+                    className="text-start bg-gray-50 border border-gray-200 rounded-2xl p-3 flex items-center gap-3 hover:border-teal-300 hover:bg-teal-50/30 transition-all">
                     <img src={resolveStorageUrl(d.avatar)} alt={d.fullname} loading="lazy"
                       className="w-12 h-12 rounded-full object-cover flex-shrink-0"
                       onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
@@ -202,7 +202,7 @@ export default function VascoAIPage() {
         <p className="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">
           {t('vascoAI.hero', 'Şikâyetinizi kendi cümlelerinizle yazın; Vasco doğru uzmanlık alanını ve platformdaki en uygun doktorları önersin. Tanı koymaz — doğru doktora ulaştırır.')}
         </p>
-        <div className="mt-8 text-left">
+        <div className="mt-8 text-start">
           <VascoAssistant />
         </div>
         <p className="mt-4 inline-flex items-center gap-1.5 text-xs text-gray-400">

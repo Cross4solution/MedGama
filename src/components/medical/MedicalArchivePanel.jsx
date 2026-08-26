@@ -70,7 +70,7 @@ export default function MedicalArchivePanel({ appointmentId }) {
     <div className="mt-3 border border-teal-100 rounded-xl bg-teal-50/30 overflow-hidden">
       <button
         onClick={toggle}
-        className="w-full flex items-center justify-between px-4 py-2.5 text-left hover:bg-teal-50/60 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-2.5 text-start hover:bg-teal-50/60 transition-colors"
       >
         <span className="flex items-center gap-2 text-xs font-semibold text-teal-800">
           <ShieldCheck className="w-4 h-4 text-teal-600" />
