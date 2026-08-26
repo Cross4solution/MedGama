@@ -169,6 +169,22 @@ class KatalogYazmaUclariTest extends TestCase
         $this->assertSame('Renamed', $hastalik->fresh()->getTranslation('name', 'en'));
     }
 
+    public function test_yonetici_onekindeki_ikiz_de_calisiyor(): void
+    {
+        // `admin/catalog/diseases/{id}` ile `catalog/diseases/{id}` aynı gövdeye
+        // gidiyor. İkisini de tutuyoruz; biri sertleşip diğeri unutulursa
+        // sessiz bir yol açık kalır.
+        $hastalik = $this->hastalik();
+
+        $this->actingAs($this->yonetici(), 'sanctum')
+            ->putJson("/api/admin/catalog/diseases/{$hastalik->id}", [
+                'name' => ['en' => 'Admin renamed', 'tr' => 'Yönetici değiştirdi'],
+            ])
+            ->assertOk();
+
+        $this->assertSame('Admin renamed', $hastalik->fresh()->getTranslation('name', 'en'));
+    }
+
     public function test_belirti_eslemesi_guncelleniyor(): void
     {
         $belirti = SymptomSpecialtyMapping::create([
