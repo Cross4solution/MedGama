@@ -9,6 +9,7 @@ import { adminAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 import StatusBadge from '../../components/ui/StatusBadge';
 import useModalDavranisi from '../../hooks/useModalDavranisi';
+import useBelgeBlobu from '../../hooks/useBelgeBlobu';
 
 const DOC_TYPE_KEYS = {
   diploma: 'admin.verification.docType.diploma',
@@ -22,14 +23,15 @@ const docTypeLabel = (t, type) => DOC_TYPE_KEYS[type] ? t(DOC_TYPE_KEYS[type]) :
 /* ═══════════════════════════════════════════
    Document Preview Modal
    ═══════════════════════════════════════════ */
-function DocumentPreviewModal({ vr, onClose, token }) {
+function DocumentPreviewModal({ vr, onClose }) {
   // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
   // Bayrak gerçek koşul: pencere yokken odak tuzağı kurulmamalı.
   const kokRef = useModalDavranisi(!!vr, onClose);
 
   const { t } = useTranslation();
+  // Kanca koşulsuz çağrılmalı; `vr` yokken kimlik `null` geçiliyor.
+  const { adres: url, hata: belgeHatasi } = useBelgeBlobu(vr?.id);
   if (!vr) return null;
-  const url = `${adminAPI.verificationDocumentUrl(vr.id)}?token=${token}`;
   const isPdf = vr.mime_type === 'application/pdf';
   const isImage = vr.mime_type?.startsWith('image/');
 
@@ -49,7 +51,7 @@ function DocumentPreviewModal({ vr, onClose, token }) {
               <p className="text-xs text-gray-500 mt-0.5">{docTypeLabel(t, vr.document_type)} · {vr.file_name}</p>
             </div>
             <div className="flex items-center gap-2">
-              <a href={url} download className="p-2 rounded-lg hover:bg-gray-100 transition-colors" title={t('common.download')}>
+              <a href={url || undefined} download={vr.file_name} className="p-2 rounded-lg hover:bg-gray-100 transition-colors" title={t('common.download')}>
                 <Download className="w-4 h-4 text-gray-500" />
               </a>
               <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
@@ -59,14 +61,26 @@ function DocumentPreviewModal({ vr, onClose, token }) {
           </div>
           <div className="flex-1 overflow-auto p-4 bg-gray-50 flex items-center justify-center min-h-[400px]">
             {isPdf ? (
-              <iframe src={url} className="w-full h-[70vh] rounded-lg border border-gray-200" title={t('admin.verification.documentPreview')} />
+              url
+                ? <iframe src={url} className="w-full h-[70vh] rounded-lg border border-gray-200" title={t('admin.verification.documentPreview')} />
+                : <p className="text-sm text-gray-500 py-10 text-center">
+                    {belgeHatasi
+                      ? t('common.loadFailedTitle', 'Could not load data')
+                      : t('common.loading', 'Loading...')}
+                  </p>
             ) : isImage ? (
-              <img src={url} alt={vr.file_name} className="max-w-full max-h-[70vh] rounded-lg shadow-sm" />
+              url
+                ? <img src={url} alt={vr.file_name} className="max-w-full max-h-[70vh] rounded-lg shadow-sm" />
+                : <p className="text-sm text-gray-500 py-10 text-center">
+                    {belgeHatasi
+                      ? t('common.loadFailedTitle', 'Could not load data')
+                      : t('common.loading', 'Loading...')}
+                  </p>
             ) : (
               <div className="text-center text-gray-400">
                 <FileText className="w-12 h-12 mx-auto mb-2 opacity-40" />
                 <p className="text-sm">{t('admin.verification.previewNotAvailable')}</p>
-                <a href={url} download className="text-teal-600 text-sm underline mt-2 inline-block">{t('admin.verification.downloadFile')}</a>
+                <a href={url || undefined} download={vr.file_name} className="text-teal-600 text-sm underline mt-2 inline-block">{t('admin.verification.downloadFile')}</a>
               </div>
             )}
           </div>
@@ -126,7 +140,7 @@ function ConfirmModal({ open, title, description, icon: Icon, iconColor, confirm
 /* ═══════════════════════════════════════════
    Doctor Documents Drawer (expandable per-doctor)
    ═══════════════════════════════════════════ */
-function DoctorDocumentsPanel({ doctor, documents, token, actionLoading, onApprove, onReject, onUndo, onRequestInfo, onPreview }) {
+function DoctorDocumentsPanel({ doctor, documents, actionLoading, onApprove, onReject, onUndo, onRequestInfo, onPreview }) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const pendingCount = documents.filter(d => d.status === 'pending').length;
@@ -263,14 +277,6 @@ export default function AdminVerification() {
   const [docSearch, setDocSearch] = useState('');
   const [docPage, setDocPage] = useState(1);
   const [docLastPage, setDocLastPage] = useState(1);
-
-  // Auth token for document preview
-  let token = '';
-  try {
-    const saved = localStorage.getItem('auth_state');
-    if (saved) token = JSON.parse(saved)?.token || '';
-  } catch {}
-  if (!token) token = localStorage.getItem('auth_token') || '';
 
   // ── Group requests by doctor ──
   const groupedByDoctor = useMemo(() => {
@@ -495,7 +501,6 @@ export default function AdminVerification() {
                   key={doctor?.id || `sira-${sira}`}
                   doctor={doctor}
                   documents={documents}
-                  token={token}
                   actionLoading={actionLoading}
                   onApprove={vr => openConfirm('approve', vr)}
                   onReject={vr => openConfirm('reject', vr)}
@@ -621,7 +626,7 @@ export default function AdminVerification() {
       )}
 
       {/* Document Preview Modal */}
-      <DocumentPreviewModal vr={previewVr} onClose={() => setPreviewVr(null)} token={token} />
+      <DocumentPreviewModal vr={previewVr} onClose={() => setPreviewVr(null)} />
 
       {/* Confirm Action Modal */}
       {modalConfig && (

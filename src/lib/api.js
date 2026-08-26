@@ -766,7 +766,17 @@ export const adminAPI = {
   rejectVerification: (id, reason) => api.put(`/admin/verification-requests/${id}/reject`, { reason }),
   undoVerification: (id) => api.put(`/admin/verification-requests/${id}/undo`),
   requestMoreInfo: (id, message) => api.put(`/admin/verification-requests/${id}/request-info`, { message }),
-  verificationDocumentUrl: (id) => `${api.defaults.baseURL}/admin/verification-requests/${id}/document`,
+  // Belge KİMLİKLİ istekle çekiliyor, adres olarak verilmiyor.
+  //
+  // Uç `auth:sanctum` arkasında ve jetonu `Authorization` başlığından okuyor.
+  // `<img src>` ve `<iframe src>` o başlığı göndermez, sorgudaki `?token=` de
+  // sunucuda okunmuyor — ölçüldü: 401. Yani inceleme ekranı belgeyi hiç
+  // gösteremiyordu.
+  //
+  // İmzalı bağlantı da bir seçenekti ama denetim kaydını bozardı: bu uç kimin
+  // baktığını yazıyor ve imzalı istekte oturum sahibi yok.
+  verificationDocument: (id) =>
+    api.get(`/admin/verification-requests/${id}/document`, { responseType: 'blob' }),
   // Review moderation (Doc §10)
   reviews: (params) => api.get('/admin/reviews', { params }),
   reviewStats: () => api.get('/admin/reviews/stats'),

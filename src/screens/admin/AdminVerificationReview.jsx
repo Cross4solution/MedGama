@@ -11,6 +11,7 @@ import { adminAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 import StatusBadge from '../../components/ui/StatusBadge';
 import useModalDavranisi from '../../hooks/useModalDavranisi';
+import useBelgeBlobu from '../../hooks/useBelgeBlobu';
 
 const DOC_TYPE_LABELS = {
   diploma: 'Diploma',
@@ -29,14 +30,15 @@ const STATUS_CONFIG = {
 /* ═══════════════════════════════════════════
    Document Viewer — Full-screen capable
    ═══════════════════════════════════════════ */
-function DocumentViewer({ vr, token, onClose }) {
+function DocumentViewer({ vr, onClose }) {
   const { t } = useTranslation();
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [fullscreen, setFullscreen] = useState(false);
 
+  // Kanca koşulsuz çağrılmalı; `vr` yokken kimlik `null` geçiliyor.
+  const { adres: url, hata: belgeHatasi } = useBelgeBlobu(vr?.id);
   if (!vr) return null;
-  const url = `${adminAPI.verificationDocumentUrl(vr.id)}?token=${token}`;
   const isPdf = vr.mime_type === 'application/pdf';
   const isImage = vr.mime_type?.startsWith('image/');
 
@@ -74,7 +76,7 @@ function DocumentViewer({ vr, token, onClose }) {
           <button onClick={() => setFullscreen(!fullscreen)} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors" title={t('adminVerificationReview.fullscreen', "Fullscreen")}>
             <Maximize2 className="w-4 h-4" />
           </button>
-          <a href={url} download className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors" title={t('adminVerificationReview.download', "Download")}>
+          <a href={url || undefined} download={vr.file_name} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors" title={t('adminVerificationReview.download', "Download")}>
             <Download className="w-4 h-4" />
           </a>
           {fullscreen && (
@@ -87,7 +89,13 @@ function DocumentViewer({ vr, token, onClose }) {
 
       {/* Preview Area */}
       <div className="flex-1 overflow-auto bg-gray-800 flex items-center justify-center p-4">
-        {isPdf ? (
+        {!url ? (
+          <p className="text-sm text-gray-400 py-16 text-center">
+            {belgeHatasi
+              ? t('common.loadFailedTitle', 'Could not load data')
+              : t('common.loading', 'Loading...')}
+          </p>
+        ) : isPdf ? (
           <iframe src={url} className="w-full h-full rounded-lg border border-gray-600" style={{ minHeight: fullscreen ? '100%' : '500px' }} title={t('adminVerificationReview.documentPreview', "Document Preview")} />
         ) : isImage ? (
           <div className="overflow-auto max-w-full max-h-full">
@@ -106,7 +114,7 @@ function DocumentViewer({ vr, token, onClose }) {
           <div className="text-center text-gray-400">
             <FileText className="w-16 h-16 mx-auto mb-3 opacity-30" />
             <p className="text-sm">{t('adminVerificationReview.previewNotAvailableForThis', "Preview not available for this file type.")}</p>
-            <a href={url} download className="text-teal-400 text-sm underline mt-2 inline-block">{t('adminVerificationReview.downloadFile', "Download file")}</a>
+            <a href={url || undefined} download={vr.file_name} className="text-teal-400 text-sm underline mt-2 inline-block">{t('adminVerificationReview.downloadFile', "Download file")}</a>
           </div>
         )}
       </div>
@@ -198,7 +206,6 @@ export default function AdminVerificationReview() {
   const [actionLoading, setActionLoading] = useState(null);
   const [rejectVr, setRejectVr] = useState(null);
 
-  const token = localStorage.getItem('auth_token') || '';
 
   const fetchData = useCallback(async () => {
     if (!doctorId) return;
@@ -396,7 +403,7 @@ export default function AdminVerificationReview() {
             {/* Document Viewer */}
             <div className="bg-gray-900 rounded-2xl overflow-hidden shadow-lg" style={{ minHeight: '500px' }}>
               {activeVr ? (
-                <DocumentViewer vr={activeVr} token={token} />
+                <DocumentViewer vr={activeVr} />
               ) : (
                 <div className="flex items-center justify-center h-[500px] text-gray-500">
                   <p className="text-sm">{t('admin.review.selectDoc', 'Select a document to preview')}</p>
