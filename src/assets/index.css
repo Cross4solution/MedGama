@@ -646,3 +646,42 @@ video::cue {
      koyultuldu, yani yüklenene kadar da yerinde duran bir zemin var. */
   background-color: #3d4242;
 }
+
+/* ─────────────────────────────────────────────────────────────
+   Dokunmatik ekranda küçük simge düğmelerinin vuruş alanı
+
+   Ölçüldüğünde dokuz ekranda 44 pikselin altında 149 hedef vardı; en
+   yaygın kalıp `w-6/w-7/w-8/w-9` boyutlu simge düğmeleriydi. WCAG 2.2
+   AA tabanı olan 24px karşılanıyor, AAA'nın istediği 44px karşılanmıyor.
+
+   Görsel boyut DEĞİŞMİYOR. Genişleyen şey yalnız dokunulabilir alan:
+   ortalanmış, görünmez bir sözde öğe. Düğmenin kendisine dolgu vermek
+   düzeni kaydırırdı.
+
+   Yalnız `pointer: coarse` altında — fare kullanıcısında 44px'lik
+   görünmez alanlar birbirine girip yanlış hedefi seçtirebilirdi.
+
+   `:where()` özgüllüğü sıfırlıyor: bileşenin kendi stilleri her zaman
+   kazanır.
+   ───────────────────────────────────────────────────────────── */
+@media (pointer: coarse) {
+  :where(button, a[href], [role='button']).w-6,
+  :where(button, a[href], [role='button']).w-7,
+  :where(button, a[href], [role='button']).w-8,
+  :where(button, a[href], [role='button']).w-9 {
+    position: relative;
+  }
+
+  :where(button, a[href], [role='button']).w-6::after,
+  :where(button, a[href], [role='button']).w-7::after,
+  :where(button, a[href], [role='button']).w-8::after,
+  :where(button, a[href], [role='button']).w-9::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+}
