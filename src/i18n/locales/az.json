@@ -2618,7 +2618,9 @@
       "toastApproved": "Rəy təsdiqləndi — artıq həkim profilində görünür",
       "toastHidden": "Rəy gizlədildi",
       "toastRejected": "Rəy rədd edildi",
-      "tryDifferentSearch": "Fərqli axtarış termini sınayın"
+      "tryDifferentSearch": "Fərqli axtarış termini sınayın",
+      "doctorReviews": "Həkim rəyləri",
+      "clinicReviews": "Klinika rəyləri"
     },
     "nav": {
       "sectionOverview": "Ümumi Baxış",

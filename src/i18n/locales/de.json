@@ -2945,7 +2945,9 @@
       "toastApproved": "Bewertung freigegeben — jetzt im Arztprofil sichtbar",
       "toastHidden": "Bewertung ausgeblendet",
       "toastRejected": "Bewertung abgelehnt",
-      "tryDifferentSearch": "Versuchen Sie einen anderen Suchbegriff"
+      "tryDifferentSearch": "Versuchen Sie einen anderen Suchbegriff",
+      "doctorReviews": "Arztbewertungen",
+      "clinicReviews": "Klinikbewertungen"
     },
     "nav": {
       "sectionOverview": "Überblick",

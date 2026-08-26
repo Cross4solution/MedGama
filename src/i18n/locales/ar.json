@@ -2945,7 +2945,9 @@
       "toastApproved": "تم اعتماد التقييم — أصبح ظاهرًا في ملف الطبيب",
       "toastHidden": "تم إخفاء التقييم",
       "toastRejected": "تم رفض التقييم",
-      "tryDifferentSearch": "جرّب كلمة بحث أخرى"
+      "tryDifferentSearch": "جرّب كلمة بحث أخرى",
+      "doctorReviews": "تقييمات الأطباء",
+      "clinicReviews": "تقييمات العيادات"
     },
     "nav": {
       "sectionOverview": "نظرة عامة",

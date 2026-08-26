@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Support\Sorgu;
+use App\Models\ClinicReview;
 use App\Models\DoctorReview;
 use App\Models\Appointment;
 use App\Models\AuditLog;
@@ -956,6 +957,30 @@ class SuperAdminService
     }
 
     /**
+     * Klinik yorumu listesi.
+     *
+     * Ayrı bir uç, doktor listesiyle birleştirilmiş tek sayfalama değil: iki
+     * tablonun birleşimini sayfalamak kırılgan olurdu ve iki yorum türünün
+     * alanları da aynı değil (biri hekime, diğeri kliniğe bağlı).
+     */
+    public function listClinicReviews(array $filters): LengthAwarePaginator
+    {
+        return ClinicReview::query()
+            ->with([
+                'clinic:id,name,fullname,avatar',
+                'patient:id,fullname,email,avatar',
+            ])
+            ->when($filters['status'] ?? null, fn ($q, $v) => $q->where('moderation_status', $v))
+            ->when($filters['clinic_id'] ?? null, fn ($q, $v) => $q->where('clinic_id', $v))
+            ->when($filters['search'] ?? null, function ($q, $s) {
+                $q->whereHas('patient', fn ($pq) => $pq->where('fullname', Sorgu::benzer(), "%{$s}%"))
+                  ->orWhereHas('clinic', fn ($cq) => $cq->where('name', Sorgu::benzer(), "%{$s}%"));
+            })
+            ->orderByDesc('created_at')
+            ->paginate($filters['per_page'] ?? 15);
+    }
+
+    /**
      * Approve a review — makes it visible.
      */
     public function approveReview(string $reviewId, string $moderatorId): DoctorReview
@@ -1104,5 +1129,75 @@ class SuperAdminService
             'description'   => $description,
             'created_at'    => now(),
         ]);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  Klinik yorumu denetimi
+    //
+    //  Doktor yorumları için üç karar vardı, klinik yorumları için hiç
+    //  yoktu. Ölçüldüğünde veritabanında 93 doktor, 113 klinik yorumu
+    //  vardı ve yönetici ekranı yalnız 93'ünü listeliyordu: bir klinik
+    //  hakkındaki yorum yazıldığı an yayına çıkıyor ve üründe onu
+    //  kaldıracak hiçbir yol bulunmuyordu.
+    //
+    //  Aşağıdaki üç yöntem doktor tarafındakilerin birebir karşılığı —
+    //  aynı durumlar, aynı görünürlük kuralı, aynı denetim kaydı.
+    // ═══════════════════════════════════════════════════════════════
+
+    public function approveClinicReview(string $reviewId, string $moderatorId): ClinicReview
+    {
+        return $this->klinikYorumunuKarara_bagla(
+            $reviewId, $moderatorId, 'approved', true, null, 'clinic_review_approved', 'Approved',
+        );
+    }
+
+    public function rejectClinicReview(string $reviewId, string $moderatorId, ?string $note = null): ClinicReview
+    {
+        return $this->klinikYorumunuKarara_bagla(
+            $reviewId, $moderatorId, 'rejected', false, $note, 'clinic_review_rejected', 'Rejected',
+        );
+    }
+
+    public function hideClinicReview(string $reviewId, string $moderatorId, ?string $note = null): ClinicReview
+    {
+        return $this->klinikYorumunuKarara_bagla(
+            $reviewId, $moderatorId, 'hidden', false, $note, 'clinic_review_hidden', 'Hidden',
+        );
+    }
+
+    /** Üç kararın ortak gövdesi: durum + görünürlük + puan yeniden hesabı + denetim. */
+    private function klinikYorumunuKarara_bagla(
+        string $reviewId,
+        string $moderatorId,
+        string $durum,
+        bool $gorunur,
+        ?string $not,
+        string $denetimEylemi,
+        string $aciklama,
+    ): ClinicReview {
+        $review = ClinicReview::findOrFail($reviewId);
+
+        $review->update([
+            'moderation_status' => $durum,
+            'is_visible'        => $gorunur,
+            'moderated_by'      => $moderatorId,
+            'moderated_at'      => now(),
+            'moderation_note'   => $not,
+        ]);
+
+        // Gizlenen ya da reddedilen yorum kliniğin ortalamasından da düşmeli;
+        // aksi halde kaldırılan bir yorum puanı etkilemeye devam ederdi.
+        ClinicReview::recalculateAggregatedRating($review->clinic_id);
+
+        $this->logAudit(
+            userId: $moderatorId,
+            action: $denetimEylemi,
+            resourceType: 'clinic_review',
+            resourceId: $review->id,
+            newValues: ['moderation_status' => $durum, 'note' => $not],
+            description: "{$aciklama} clinic review {$review->id}",
+        );
+
+        return $review->refresh();
     }
 }

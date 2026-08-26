@@ -2922,7 +2922,9 @@
       "pageShort": "Sayfa {{page}}/{{lastPage}}",
       "auditTitle": "Değerlendirme İşlemleri Kayıt Altına Alınır",
       "auditDescPart1": "Her değerlendirme kararı kaydedilir: \"Yönetici [Ad], #ID değerlendirmesini onayladı/reddetti\" zaman damgası ve gerekçesiyle birlikte. Değerlendirmeler ilk olarak",
-      "auditDescPart2": "durumunda başlar ve onaylanana kadar doktor profillerinde görünmez."
+      "auditDescPart2": "durumunda başlar ve onaylanana kadar doktor profillerinde görünmez.",
+      "doctorReviews": "Hekim yorumları",
+      "clinicReviews": "Klinik yorumları"
     },
     "nav": {
       "sectionOverview": "Genel Bakış",

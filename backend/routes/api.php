@@ -921,6 +921,12 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
     // Review moderation (Doc §10)
     Route::get('/reviews', [SuperAdminController::class, 'listReviews']);
     Route::get('/reviews/stats', [SuperAdminController::class, 'reviewStats']);
+    // Klinik yorumu denetimi — doktor yorumlarının birebir karşılığı.
+    Route::get('/clinic-reviews', [SuperAdminController::class, 'listClinicReviews']);
+    Route::put('/clinic-reviews/{id}/approve', [SuperAdminController::class, 'approveClinicReview']);
+    Route::put('/clinic-reviews/{id}/reject', [SuperAdminController::class, 'rejectClinicReview']);
+    Route::put('/clinic-reviews/{id}/hide', [SuperAdminController::class, 'hideClinicReview']);
+
     Route::put('/reviews/{id}/approve', [SuperAdminController::class, 'approveReview']);
     Route::put('/reviews/{id}/reject', [SuperAdminController::class, 'rejectReview']);
     Route::put('/reviews/{id}/hide', [SuperAdminController::class, 'hideReview']);

@@ -2909,7 +2909,9 @@
       "pageShort": "Page {{page}}/{{lastPage}}",
       "auditTitle": "Review Actions Are Audited",
       "auditDescPart1": "Every review decision is logged: \"Admin [Name] approved/rejected Review #ID\" with timestamp and reason. Reviews start as",
-      "auditDescPart2": "and are invisible on doctor profiles until approved."
+      "auditDescPart2": "and are invisible on doctor profiles until approved.",
+      "doctorReviews": "Doctor reviews",
+      "clinicReviews": "Clinic reviews"
     },
     "nav": {
       "sectionOverview": "Overview",

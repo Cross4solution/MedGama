@@ -2578,7 +2578,9 @@
       "toastApproved": "Avis validé — désormais visible sur le profil du médecin",
       "toastHidden": "Avis masqué",
       "toastRejected": "Avis refusé",
-      "tryDifferentSearch": "Essayez un autre terme de recherche"
+      "tryDifferentSearch": "Essayez un autre terme de recherche",
+      "doctorReviews": "Avis sur les médecins",
+      "clinicReviews": "Avis sur les cliniques"
     },
     "nav": {
       "sectionOverview": "Vue d'ensemble",

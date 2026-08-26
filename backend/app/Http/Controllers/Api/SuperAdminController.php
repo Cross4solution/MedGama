@@ -522,6 +522,54 @@ class SuperAdminController extends Controller
     /**
      * PUT /api/admin/reviews/{id}/approve — Approve a review
      */
+    /**
+     * PUT /api/admin/clinic-reviews/{id}/approve|reject|hide
+     *
+     * Klinik yorumlarının denetimi hiç yoktu: doktor yorumları için üç karar
+     * varken klinik yorumu yazıldığı an yayına çıkıyor ve kaldırılamıyordu.
+     */
+    public function listClinicReviews(Request $request): JsonResponse
+    {
+        return response()->json(
+            $this->superAdminService->listClinicReviews(
+                $request->only(['status', 'clinic_id', 'search', 'per_page']),
+            ),
+        );
+    }
+
+    public function approveClinicReview(string $id): JsonResponse
+    {
+        return response()->json([
+            'review' => $this->superAdminService->approveClinicReview($id, request()->user()->id),
+        ]);
+    }
+
+    public function rejectClinicReview(Request $request, string $id): JsonResponse
+    {
+        $request->validate(['note' => 'nullable|string|max:1000']);
+
+        return response()->json([
+            'review' => $this->superAdminService->rejectClinicReview(
+                $id,
+                $request->user()->id,
+                $request->input('note'),
+            ),
+        ]);
+    }
+
+    public function hideClinicReview(Request $request, string $id): JsonResponse
+    {
+        $request->validate(['note' => 'nullable|string|max:1000']);
+
+        return response()->json([
+            'review' => $this->superAdminService->hideClinicReview(
+                $id,
+                $request->user()->id,
+                $request->input('note'),
+            ),
+        ]);
+    }
+
     public function approveReview(string $id): JsonResponse
     {
         $review = $this->superAdminService->approveReview($id, request()->user()->id);

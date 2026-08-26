@@ -99,38 +99,102 @@ class YorumDenetimiTest extends TestCase
         ]);
     }
 
-    public function test_klinik_yorumlari_denetim_yuzeyinde_YOK(): void
+    public function test_klinik_yorumu_onaylanabiliyor_gizlenebiliyor_reddedilebiliyor(): void
     {
-        // Bu ölçüt bir EKSİĞİ sabitliyor, bir davranışı değil.
-        //
-        // Klinik yorumu için denetim ucu yok ve yönetici listesi onu
-        // içermiyor. Uç eklendiğinde bu test kırmızı yanacak — o an eksiğin
-        // kapandığını gösterir ve testin güncellenmesi gerekir. Amaç, eksiğin
-        // sessizce kalıcılaşmaması.
+        foreach ([
+            ['approve', 'approved', true],
+            ['hide', 'hidden', false],
+            ['reject', 'rejected', false],
+        ] as [$eylem, $beklenenDurum, $gorunurOlmali]) {
+            $yorum = $this->klinikYorumu();
+
+            $this->yonetici()
+                ->putJson("/api/admin/clinic-reviews/{$yorum->id}/{$eylem}", ['note' => 'ölçüm'])
+                ->assertOk();
+
+            $taze = $yorum->fresh();
+
+            $this->assertSame($beklenenDurum, $taze->moderation_status, "$eylem durumu yazmadı");
+            $this->assertSame($gorunurOlmali, (bool) $taze->is_visible, "$eylem görünürlüğü yazmadı");
+        }
+    }
+
+    public function test_klinik_yorumu_karari_denetime_yaziliyor(): void
+    {
+        $yorum = $this->klinikYorumu();
+
+        $this->yonetici()
+            ->putJson("/api/admin/clinic-reviews/{$yorum->id}/hide", ['note' => 'hakaret'])
+            ->assertOk();
+
+        $this->assertDatabaseHas('audit_logs', [
+            'action'      => 'clinic_review_hidden',
+            'resource_id' => $yorum->id,
+        ]);
+    }
+
+    public function test_gizlenen_klinik_yorumu_herkese_acik_listede_gorunmuyor(): void
+    {
+        // Asıl ölçüm bu: bayrak değil, yorumun GÖRÜNMEMESİ. Bu yetenek tam da
+        // bunun için eklendi — hakaret içeren bir yorumu kaldırabilmek.
+        $yorum = $this->klinikYorumu();
+
+        $this->yonetici()
+            ->putJson("/api/admin/clinic-reviews/{$yorum->id}/hide")
+            ->assertOk();
+
+        app('auth')->forgetGuards();
+
+        $liste = $this->getJson("/api/clinics/{$yorum->clinic_id}/reviews?per_page=100")
+            ->assertOk()
+            ->getContent();
+
+        $this->assertStringNotContainsString(
+            $yorum->id,
+            $liste,
+            'gizlenen klinik yorumu herkese açık listede duruyor',
+        );
+    }
+
+    public function test_klinik_yorumlari_yonetici_listesinde_gorunuyor(): void
+    {
+        $yorum = $this->klinikYorumu();
+
+        $liste = $this->yonetici()
+            ->getJson('/api/admin/clinic-reviews?per_page=100')
+            ->assertOk()
+            ->getContent();
+
+        $this->assertStringContainsString($yorum->id, $liste, 'klinik yorumu yönetici listesinde yok');
+    }
+
+    public function test_yonetici_olmayan_klinik_yorumuna_karar_veremiyor(): void
+    {
+        $yorum = $this->klinikYorumu();
+
+        $yabanci = User::factory()->doctor()->create(['is_verified' => true]);
+        $jeton = $yabanci->createToken('test')->plainTextToken;
+        app('auth')->forgetGuards();
+
+        $this->withHeader('Authorization', 'Bearer ' . $jeton)
+            ->putJson("/api/admin/clinic-reviews/{$yorum->id}/hide")
+            ->assertStatus(403);
+
+        $this->assertSame('pending', $yorum->fresh()->moderation_status);
+    }
+
+    private function klinikYorumu(): ClinicReview
+    {
         $sahip = User::factory()->clinicOwner()->create();
         $klinik = Clinic::factory()->create(['owner_id' => $sahip->id, 'is_active' => true]);
 
-        $klinikYorumu = ClinicReview::create([
+        return ClinicReview::create([
             'clinic_id'         => $klinik->id,
             'patient_id'        => User::factory()->patient()->create()->id,
             'rating'            => 1,
-            'comment'           => 'Denetlenemeyen klinik yorumu.',
+            'comment'           => 'Denetim ölçümü için klinik yorumu.',
             'moderation_status' => 'pending',
             'is_visible'        => true,
         ]);
-
-        // Yönetici listesi klinik yorumunu taşımıyor.
-        $liste = $this->yonetici()->getJson('/api/admin/reviews?per_page=100')->assertOk()->getContent();
-
-        $this->assertStringNotContainsString(
-            $klinikYorumu->id,
-            $liste,
-            'klinik yorumu artık denetim listesinde — bu ölçüt güncellenmeli',
-        );
-
-        // Hekim yorumu uçları klinik yorumunu tanımıyor.
-        $this->yonetici()
-            ->putJson("/api/admin/reviews/{$klinikYorumu->id}/hide")
-            ->assertStatus(404);
     }
 }

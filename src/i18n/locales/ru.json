@@ -2945,7 +2945,9 @@
       "toastApproved": "Отзыв одобрен — теперь он виден в профиле врача",
       "toastHidden": "Отзыв скрыт",
       "toastRejected": "Отзыв отклонён",
-      "tryDifferentSearch": "Попробуйте другой поисковый запрос"
+      "tryDifferentSearch": "Попробуйте другой поисковый запрос",
+      "doctorReviews": "Отзывы о врачах",
+      "clinicReviews": "Отзывы о клиниках"
     },
     "nav": {
       "sectionOverview": "Обзор",

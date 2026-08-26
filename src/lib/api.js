@@ -760,6 +760,12 @@ export const adminAPI = {
   approveReview: (id) => api.put(`/admin/reviews/${id}/approve`),
   rejectReview: (id, note) => api.put(`/admin/reviews/${id}/reject`, { note }),
   hideReview: (id, note) => api.put(`/admin/reviews/${id}/hide`, { note }),
+  // Klinik yorumları ayrı bir uç: iki yorum türü ayrı tablolarda duruyor ve
+  // alanları da farklı (biri hekime, diğeri kliniğe bağlı).
+  clinicReviews: (params) => api.get('/admin/clinic-reviews', { params }),
+  approveClinicReview: (id) => api.put(`/admin/clinic-reviews/${id}/approve`),
+  rejectClinicReview: (id, note) => api.put(`/admin/clinic-reviews/${id}/reject`, { note }),
+  hideClinicReview: (id, note) => api.put(`/admin/clinic-reviews/${id}/hide`, { note }),
   // Announcements (admin CRUD)
   announcements: (params) => api.get('/admin/announcements', { params }),
   createAnnouncement: (data) => api.post('/admin/announcements', data),

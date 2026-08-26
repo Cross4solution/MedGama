@@ -1086,7 +1086,11 @@
     "block": "Bloklash",
     "unblock": "Blokdan chiqarish",
     "signedInAs": "Ushbu hisob bilan kirdingiz",
-    "signInToPanel": "Boshqaruv paneliga kirish"
+    "signInToPanel": "Boshqaruv paneliga kirish",
+    "reviews": {
+      "doctorReviews": "Shifokor sharhlari",
+      "clinicReviews": "Klinika sharhlari"
+    }
   },
   "errors": {
     "notFound_title": "Sahifa topilmadi",

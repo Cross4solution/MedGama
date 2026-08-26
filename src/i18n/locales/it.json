@@ -2578,7 +2578,9 @@
       "toastApproved": "Recensione approvata: ora è visibile sul profilo del medico",
       "toastHidden": "Recensione nascosta",
       "toastRejected": "Recensione rifiutata",
-      "tryDifferentSearch": "Prova con un altro termine di ricerca"
+      "tryDifferentSearch": "Prova con un altro termine di ricerca",
+      "doctorReviews": "Recensioni medici",
+      "clinicReviews": "Recensioni cliniche"
     },
     "nav": {
       "sectionOverview": "Panoramica",

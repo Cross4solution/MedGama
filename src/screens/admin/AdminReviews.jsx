@@ -82,7 +82,9 @@ function JudgeModal({ review, loading, onClose, onApprove, onReject, onHide }) {
 
   if (!review) return null;
   const patient = review.patient || {};
-  const doctor = review.doctor || {};
+  // Klinik yorumlarında `doctor` yok, `clinic` var. Kart ikisini de
+  // gösterebilsin diye karşı taraf tek yerde çözülüyor.
+  const doctor = review.doctor || review.clinic || {};
   const isPending = review.moderation_status === 'pending';
 
   const handleReject = () => {
@@ -275,6 +277,9 @@ export default function AdminReviews() {
   const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0, hidden: 0 });
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('pending');
+  // Hangi yorum türü denetleniyor. Klinik yorumlarının denetimi hiç yoktu:
+  // 113 yorum yayındaydı ve kaldırılamıyordu.
+  const [yorumTuru, setYorumTuru] = useState('doctor');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -292,7 +297,9 @@ export default function AdminReviews() {
       const params = { per_page: 20, page };
       if (filter !== 'all') params.status = filter;
       if (search.trim()) params.search = search.trim();
-      const res = await adminAPI.reviews(params);
+      const res = yorumTuru === 'clinic'
+        ? await adminAPI.clinicReviews(params)
+        : await adminAPI.reviews(params);
       const data = res?.data || res;
       setYuklemeHatasi(false);
       setReviews(data?.data || []);
@@ -302,7 +309,7 @@ export default function AdminReviews() {
       setReviews([]);
     }
     setLoading(false);
-  }, [filter, page, search]);
+  }, [filter, page, search, yorumTuru]);
 
   const fetchStats = useCallback(async () => {
     try {
@@ -320,7 +327,7 @@ export default function AdminReviews() {
   const handleApprove = async (id) => {
     setActionLoading(id);
     try {
-      await adminAPI.approveReview(id);
+      await (yorumTuru === 'clinic' ? adminAPI.approveClinicReview(id) : adminAPI.approveReview(id));
       setReviews(prev => prev.map(r => r.id === id ? { ...r, moderation_status: 'approved' } : r));
       fetchStats();
       showSuccess(t('admin.reviews.toastApproved'));
@@ -332,7 +339,7 @@ export default function AdminReviews() {
   const handleReject = async (id, note) => {
     setActionLoading(id);
     try {
-      await adminAPI.rejectReview(id, note);
+      await (yorumTuru === 'clinic' ? adminAPI.rejectClinicReview(id, note) : adminAPI.rejectReview(id, note));
       setReviews(prev => prev.map(r => r.id === id ? { ...r, moderation_status: 'rejected', moderation_note: note } : r));
       fetchStats();
       showSuccess(t('admin.reviews.toastRejected'));
@@ -344,7 +351,7 @@ export default function AdminReviews() {
   const handleHide = async (id) => {
     setActionLoading(id);
     try {
-      await adminAPI.hideReview(id, null);
+      await (yorumTuru === 'clinic' ? adminAPI.hideClinicReview(id, null) : adminAPI.hideReview(id, null));
       setReviews(prev => prev.map(r => r.id === id ? { ...r, moderation_status: 'hidden' } : r));
       fetchStats();
       showSuccess(t('admin.reviews.toastHidden'));
@@ -424,6 +431,27 @@ export default function AdminReviews() {
           <p className="text-2xl font-bold text-gray-600">{stats.hidden || 0}</p>
           <p className="text-xs font-medium text-gray-500 mt-0.5">{t('admin.reviews.hidden')}</p>
         </div>
+      </div>
+
+      {/* Yorum türü — hekim / klinik.
+          Klinik yorumlarının denetimi hiç yoktu; ekran yalnız hekim
+          yorumlarını listeliyor ve "hasta değerlendirmelerini yönetin"
+          diyordu. İki tür ayrı tablolarda duruyor, o yüzden ayrı liste. */}
+      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
+        {[
+          ['doctor', t('admin.reviews.doctorReviews', 'Hekim yorumları')],
+          ['clinic', t('admin.reviews.clinicReviews', 'Klinik yorumları')],
+        ].map(([tur, etiket]) => (
+          <button
+            key={tur}
+            onClick={() => { setYorumTuru(tur); setPage(1); }}
+            className={`min-h-9 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              yorumTuru === tur ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            {etiket}
+          </button>
+        ))}
       </div>
 
       {/* Filters + Search */}
@@ -513,7 +541,7 @@ export default function AdminReviews() {
               <tbody className="divide-y divide-gray-100">
                 {reviews.map(review => {
                   const patient = review.patient || {};
-                  const doctor = review.doctor || {};
+                  const doctor = review.doctor || review.clinic || {};
                   const isPending = review.moderation_status === 'pending';
 
                   return (
