@@ -37,15 +37,54 @@ class HerkeseAcikProfilTest extends TestCase
         return $this->withHeader('Authorization', 'Bearer ' . $jeton);
     }
 
+    public function test_hasta_profili_herkese_acik_degil(): void
+    {
+        // Uç kimlik istemiyor. Hasta profili gerçek adı veriyordu: kullanıcı
+        // adını bilen biri, o kişinin burada HASTA olduğunu ve adını
+        // öğreniyordu. Bir sağlık platformunda hesabı olmak tedavi arıyor
+        // olmayı ima eder.
+        //
+        // 404 bekleniyor, 403 değil: uç o kullanıcı adının var olduğunu bile
+        // söylememeli.
+        User::factory()->patient()->create([
+            'username' => 'olcum_hasta',
+            'fullname' => 'Gizli Kalmasi Gereken',
+        ]);
+
+        $this->getJson('/api/medstream/u/olcum_hasta')->assertStatus(404);
+    }
+
+    public function test_saglayici_profili_acik_kaliyor(): void
+    {
+        // Aşırı kilitleyip özelliği bozmadığımızın kanıtı: hekim, klinik ve
+        // hastane profilleri hastaya gösterilmek için var.
+        foreach ([
+            ['doctor', 'olcum_hekim'],
+            ['clinicOwner', 'olcum_klinik'],
+            ['hospital', 'olcum_hastane'],
+        ] as [$rol, $kullaniciAdi]) {
+            User::factory()->create([
+                'role_id'  => $rol,
+                'username' => $kullaniciAdi,
+                'is_active' => true,
+            ]);
+
+            $this->getJson("/api/medstream/u/{$kullaniciAdi}")
+                ->assertOk()
+                ->assertJsonPath('user.username', $kullaniciAdi);
+        }
+    }
+
     public function test_profil_kisisel_iletisim_bilgisi_sizdirmiyor(): void
     {
-        $kullanici = User::factory()->patient()->create([
-            'username' => 'olcum_hasta',
+        $kullanici = User::factory()->create([
+            'role_id'  => 'doctor',
+            'username' => 'olcum_hekim2',
             'email'    => 'gizli-adres@ornek.test',
             'mobile'   => '+905550000000',
         ]);
 
-        $yanit = $this->getJson('/api/medstream/u/olcum_hasta')->assertOk();
+        $yanit = $this->getJson('/api/medstream/u/olcum_hekim2')->assertOk();
 
         foreach (self::SIZMAMALI as $alan) {
             $this->assertArrayNotHasKey(

@@ -520,6 +520,26 @@ class MedStreamController extends Controller
             return response()->json(['message' => 'Profile not found.'], 404);
         }
 
+        // Hastaların herkese açık profili YOK.
+        //
+        // Bu uç kimlik istemiyor: kullanıcı adını bilen herkes profili
+        // çözebiliyordu ve hasta profili GERÇEK ADI veriyordu. Bir sağlık
+        // platformunda burada hesabı olmak tedavi arıyor olmayı ima eder;
+        // adı bir kullanıcı adına bağlamak, o kişi hakkında bilmediğimiz
+        // kadarını söylemek demek.
+        //
+        // Sağlayıcılar (hekim, klinik, hastane) bunun dışında: profilleri
+        // ZATEN hastaya gösterilmek için var — arama sonuçlarında, randevu
+        // ekranında. Hasta ise akışın yalnız okuyucusu, gönderi paylaşamıyor.
+        //
+        // 404 seçildi, 403 değil: ucun o kullanıcı adının VAR OLDUĞUNU bile
+        // söylememesi gerekiyor.
+        $saglayiciRolleri = ['doctor', 'clinic', 'clinicOwner', 'hospital'];
+
+        if (!in_array($user->role_id, $saglayiciRolleri, true)) {
+            return response()->json(['message' => 'Profile not found.'], 404);
+        }
+
         // Bio: own column, falling back to doctor profile bio when present
         $bio = $user->bio ?: optional($user->doctorProfile()->first())->bio;
 
