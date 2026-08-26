@@ -56,6 +56,29 @@ return [
             'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
             'prefix' => '',
             'prefix_indexes' => true,
+            // Bağlantının saat dilimi SABİT.
+            //
+            // Sabitlenmediğinde MySQL oturumu `SYSTEM` kullanıyor, yani
+            // veritabanı SUNUCUSUNUN yerel saatini. `timestamp` sütunları
+            // yazarken ve okurken o dilime göre çevriliyor — şemada 193 sütun
+            // böyle.
+            //
+            // Ölçüldü: `+03:00` oturumunda yazılan 12:00, `+00:00` oturumunda
+            // 09:00 olarak okunuyor. Tek bir ortamda gidiş-dönüş tutarlı olduğu
+            // için hiçbir şey bozuk GÖRÜNMÜYOR; kayma sunucu taşındığında, saat
+            // dilimi değiştiğinde ya da başka dilimdeki bir kopyadan okunduğunda
+            // ortaya çıkıyor. Randevu saatlerinin kaydığı bir sağlık
+            // platformunda bunun bedeli yüksek.
+            //
+            // Uygulama zaten UTC (`config/app.php`); bağlantı da UTC olunca
+            // yazma ve okuma sunucunun yerel saatinden bağımsızlaşıyor.
+            //
+            // NOT: Veriyi UTC OLMAYAN bir oturumla yazmış bir kuruluma
+            // uygulanırsa geçmiş kayıtlar kaymış görünür. Uygulamadan önce
+            // `SELECT @@session.time_zone` bakılmalı; UTC ya da UTC'ye denk bir
+            // SYSTEM ise davranış değişmez, yalnız garanti altına alınır.
+            'timezone' => env('DB_TIMEZONE', '+00:00'),
+
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
