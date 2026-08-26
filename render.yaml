@@ -32,6 +32,13 @@ services:
       # güvenlik kararı üretim dosyasında YAZILI olmalı.
       - key: TELEHEALTH_RECORDING
         value: false
+      # Teşhis başlığı (Server-Timing, X-Sorgu-Sayisi): sorgu sayısını, süreyi
+      # ve istisna sınıfının adını yanıta yazıyor. Varsayılanı `false` ama
+      # dosyada BEYAN EDİLMEDİĞİ için Render panelinden verilen değer sessizce
+      # kazanıyordu — canlıda açıktı. Beyan edilince niyet dosyada duruyor ve
+      # panelden yapılan bir değişiklik açık bir sapma hâline geliyor.
+      - key: TIMING_HEADER
+        value: false
       - key: APP_KEY
         sync: false           # Set in Render dashboard → Environment
       - key: APP_URL
