@@ -40,6 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'set.locale'    => \App\Http\Middleware\SetLocale::class,
             'health.consent' => \App\Http\Middleware\EnsureHealthDataConsent::class,
             'cache.headers' => \App\Http\Middleware\CacheHeaders::class,
+            'teshis.anahtari' => \App\Http\Middleware\TeshisAnahtari::class,
         ]);
 
         // CORS handled by Laravel HandleCors (default global middleware).

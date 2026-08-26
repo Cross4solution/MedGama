@@ -144,8 +144,18 @@ Route::get('/system/init-db-status', function (\Illuminate\Http\Request $request
         abort(404);
     }
 
-    // Secret sourced from env (INIT_DB_KEY); legacy fallback in config — rotate ASAP.
-    if (!hash_equals((string) config('app.init_db_key'), (string) $request->query('key'))) {
+    // Kardeş uçla AYNI koruma. Bu satır eksikti ve boş anahtar varsayılanıyla
+    // birlikte bir delik açıyordu: `hash_equals('', null)` TRUE döndüğü için
+    // `INIT_DB_KEY` tanımsızken anahtarsız istek içeri giriyor, göç günlüğünü
+    // ve tablo sayılarını veriyordu. Üretimde ortam kapısı zaten 404 yapıyor,
+    // ama yerel ve ön izleme dağıtımları açıktaydı.
+    $anahtar = (string) config('app.init_db_key');
+
+    if ($anahtar === '') {
+        abort(404);
+    }
+
+    if (!hash_equals($anahtar, (string) $request->query('key'))) {
         return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
     }
 
@@ -188,15 +198,16 @@ Route::get('/demo-login/{rol}', \App\Http\Controllers\Api\DemoLoginController::c
 | Barındırma ortamında kabuk erişimi olmadığı için sunucunun okuduğu ayarı
 | başka türlü göremiyoruz. Teslimden önce kaldırılmalı.
 */
-Route::get('/system/broadcast-status', \App\Http\Controllers\Api\BroadcastStatusController::class);
+Route::get('/system/broadcast-status', \App\Http\Controllers\Api\BroadcastStatusController::class)
+    ->middleware('teshis.anahtari');
 
 Route::get('/system/mail-status', \App\Http\Controllers\Api\MailStatusController::class)
-    ->middleware('throttle:10,1');
+    ->middleware(['teshis.anahtari', 'throttle:10,1']);
 
 // GECICI: tasarim incelemesi icin her sablondan ornek gonderir.
 // Teslimden once MailPreviewController ile birlikte kaldirilacak.
 Route::get('/system/mail-preview', \App\Http\Controllers\Api\MailPreviewController::class)
-    ->middleware('throttle:3,1');
+    ->middleware(['teshis.anahtari', 'throttle:3,1']);
 
 /*
 |--------------------------------------------------------------------------

@@ -18,10 +18,8 @@ class BroadcastStatusController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
-        if ($request->query('key') !== config('app.init_db_key')) {
-            return response()->json(['error' => 'unauthorized'], 403);
-        }
-
+        // Anahtar kapısı `teshis.anahtari` ara katmanında; kopyası burada
+        // tutulmuyor ki ikisi ayrışmasın.
         $surucu = config('broadcasting.default');
 
         // ?user=<id> verilirse gerçek bir yayın denenir ve hata varsa

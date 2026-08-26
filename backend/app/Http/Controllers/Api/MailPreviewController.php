@@ -19,10 +19,8 @@ class MailPreviewController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
-        if ($request->query('key') !== config('app.init_db_key')) {
-            return response()->json(['error' => 'unauthorized'], 403);
-        }
-
+        // Anahtar kapısı `teshis.anahtari` ara katmanında; kopyası burada
+        // tutulmuyor ki ikisi ayrışmasın.
         $aliciListesi = array_filter(array_map('trim', explode(',', (string) $request->query('to'))));
         if (!$aliciListesi) {
             return response()->json(['error' => 'to parametresi gerekli'], 422);

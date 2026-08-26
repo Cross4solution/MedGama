@@ -24,10 +24,8 @@ class MailStatusController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
-        if (!hash_equals((string) config('app.init_db_key'), (string) $request->query('key'))) {
-            abort(404);
-        }
-
+        // Anahtar kapısı `teshis.anahtari` ara katmanında; kopyası burada
+        // tutulmuyor ki ikisi ayrışmasın.
         $anahtar = (string) config('services.resend.key');
 
         // Sürücü çözümlenebiliyor mu: paket eksikse Laravel burada patlar ve
