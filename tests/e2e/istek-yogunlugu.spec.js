@@ -40,7 +40,22 @@ test.describe('İstek yoğunluğu', () => {
     for (const yol of EKRANLAR) {
       let sayac = 0;
       const dinle = (istek) => {
-        if (new URL(istek.url()).pathname.startsWith('/api/')) sayac += 1;
+        const yol = new URL(istek.url()).pathname;
+        if (!yol.startsWith('/api/')) return;
+
+        // `csp-report` SAYILMIYOR — yerel koşuda gürültü, üretimde yok.
+        //
+        // İçerik güvenlik politikası `connect-src` listesinde üretim arka ucu
+        // yazılı (`medagama-backend.onrender.com`), yerel arka uç değil. Yani
+        // yerelde her API çağrısı ayrıca bir ihlal raporu doğuruyor ve sayaç
+        // ikiye katlanıyor. Ölçüldüğünde /crm/revenue 31 istek görünüyordu;
+        // 15'i bu rapordu, gerçek sayı 16.
+        //
+        // Sayılsaydı bu ölçüt yerelde "sınır aşılıyor" derdi ve olmayan bir
+        // sorunu kovalatırdı.
+        if (yol === '/api/csp-report') return;
+
+        sayac += 1;
       };
       page.on('request', dinle);
 

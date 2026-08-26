@@ -36,7 +36,7 @@ const oku = (p) => readFileSync(path.join(kok, p), 'utf8')
   .filter((satir) => !satir.trim().startsWith('//'))
   .join('\n');
 
-test('gelir ekranı seçili para birimini listeye göre düzeltiyor', () => {
+test('gelir ekranı gösterdiği para birimini sunucunun kullandığına eşitliyor', () => {
   const kaynak = oku('src/screens/crm/CRMRevenue.jsx');
 
   assert.match(
@@ -47,9 +47,43 @@ test('gelir ekranı seçili para birimini listeye göre düzeltiyor', () => {
 
   assert.match(
     kaynak,
-    /includes\(currency\)[\s\S]{0,120}setCurrency\(/,
-    'seçili para birimi listede yoksa düzeltilmiyor: açılır kutu bir şey gösterirken '
-    + 'veri başka bir para biriminden çekilir',
+    /sd\.currency[\s\S]{0,400}setCurrency\(/,
+    'gösterilen para birimi sunucunun kullandığına bağlanmıyor: açılır kutu bir '
+    + 'şey gösterirken veri başka bir para biriminden gelir',
+  );
+});
+
+test('ilk yükleme sunucunun seçmediği bir para birimini dayatmıyor', () => {
+  /*
+   * Ekran 'EUR' ile başlıyordu. Yalnız TL kesen bir klinikte ilk tur EUR için
+   * atılıyor, yanıt "TRY" deyince seçim değişiyor ve AYNI dört uç bir daha
+   * çağrılıyordu — sayfa başına dört gereksiz istek ve dört gereksiz
+   * veritabanı turu (ölçüldü: 16 istekten 4'ü).
+   *
+   * Doğrusu: kullanıcı seçmediyse parametre hiç gönderilmiyor. Sunucu
+   * kliniğin ilk mevcut para birimini kullanıyor ve hangisini seçtiğini
+   * yanıtta söylüyor, yani doğru veri ilk turda geliyor.
+   */
+  const kaynak = oku('src/screens/crm/CRMRevenue.jsx');
+
+  assert.match(
+    kaynak,
+    /useState\(null\)/,
+    'kullanıcının seçimi boş başlamıyor — ilk tur uydurma bir para birimiyle atılır',
+  );
+
+  assert.doesNotMatch(
+    kaynak,
+    /billingAPI\.stats\(\{\s*currency\s*\}/,
+    'ilk istek gösterim durumunu gönderiyor; o durum sunucudan gelmeden önce '
+    + 'yalnızca bir varsayılan, ve yanlış olduğunda ikinci bir tur doğuruyor',
+  );
+
+  assert.match(
+    kaynak,
+    /\}, \[secilenParaBirimi,/,
+    'veri çekme kullanıcının seçimine değil gösterim durumuna bağlı — gösterim '
+    + 'sunucu yanıtıyla değişince ikinci bir tur doğar',
   );
 });
 

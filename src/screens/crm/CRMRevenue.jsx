@@ -50,6 +50,15 @@ const CRMRevenue = () => {
   // State
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('monthly');
+  // `null` = "sunucu karar versin". Sunucu para birimi verilmediğinde
+  // kliniğin ilk mevcut para birimini kullanıyor ve hangisini seçtiğini
+  // yanıtta söylüyor — yani doğru veri İLK turda geliyor.
+  //
+  // Eskiden 'EUR' ile başlıyordu. Yalnız TL kesen bir klinikte ilk tur EUR
+  // için atılıyor, yanıt "TRY" deyince seçim değişiyor ve AYNI dört uç bir
+  // daha çağrılıyordu: sayfa başına dört gereksiz istek ve dört gereksiz
+  // veritabanı turu (ölçüldü: 16 isteğin 4'ü).
+  const [secilenParaBirimi, setSecilenParaBirimi] = useState(null);
   const [currency, setCurrency] = useState('EUR');
   const [currencies, setCurrencies] = useState(['EUR']);
   const [stats, setStats] = useState(null);
@@ -85,11 +94,15 @@ const CRMRevenue = () => {
       let basarisiz = 0;
       const dusur = (bos) => () => { basarisiz += 1; return bos; };
 
+      // Kullanıcı seçmediyse parametre HİÇ gönderilmiyor; sunucu kendi
+      // varsayılanını kullanıyor.
+      const pb = secilenParaBirimi || undefined;
+
       const [statsRes, chartRes, servicesRes, payoutRes] = await Promise.all([
-        billingAPI.stats({ currency }).catch(dusur({ data: null })),
-        billingAPI.revenueChart({ period, currency }).catch(dusur({ data: [] })),
-        financeAPI.topServices({ currency, limit: 8 }).catch(dusur({ data: [] })),
-        financeAPI.payout({ currency }).catch(dusur({ data: null })),
+        billingAPI.stats({ currency: pb }).catch(dusur({ data: null })),
+        billingAPI.revenueChart({ period, currency: pb }).catch(dusur({ data: [] })),
+        financeAPI.topServices({ currency: pb, limit: 8 }).catch(dusur({ data: [] })),
+        financeAPI.payout({ currency: pb }).catch(dusur({ data: null })),
       ]);
 
       // Başlıktaki rakamlar `stats`ten geliyor; o gelmediyse ekranda
@@ -109,8 +122,14 @@ const CRMRevenue = () => {
         // hâlâ EUR sanıyordu: ekranda "TRY (₺)" yazarken API'ye EUR sorulup
         // "€0 Toplam Gelir" çiziliyordu. Klinik 1500 TL kazanmışken ekran
         // sıfır diyordu.
-        if (!sd.available_currencies.includes(currency)) {
-          setCurrency(sd.available_currencies[0]);
+        // Görüntülenen para birimi sunucunun kullandığıdır. Bu YALNIZ
+        // gösterim durumu; veriyi çeken bağımlılık `secilenParaBirimi` ve
+        // ona dokunulmuyor, o yüzden ikinci bir tur doğmuyor.
+        const sunucununKullandigi = sd.currency
+          || (sd.available_currencies.includes(currency) ? currency : sd.available_currencies[0]);
+
+        if (sunucununKullandigi !== currency) {
+          setCurrency(sunucununKullandigi);
         }
       }
 
@@ -125,7 +144,7 @@ const CRMRevenue = () => {
 
       // Fetch platform overview if superadmin
       if (isSuperAdmin) {
-        const platformRes = await financeAPI.platformOverview({ currency }).catch(() => ({ data: null }));
+        const platformRes = await financeAPI.platformOverview({ currency: pb }).catch(() => ({ data: null }));
         setPlatformData(platformRes?.data || platformRes);
       }
     } catch (err) {
@@ -133,7 +152,7 @@ const CRMRevenue = () => {
     } finally {
       setLoading(false);
     }
-  }, [currency, period, isSuperAdmin]);
+  }, [secilenParaBirimi, period, isSuperAdmin]);
 
   // ── Fetch invoices ──
   const fetchInvoices = useCallback(async () => {
@@ -320,7 +339,11 @@ const CRMRevenue = () => {
           {/* Currency Selector */}
           <div className="flex items-center gap-1.5 bg-gray-50 rounded-xl px-2.5 py-1.5 border border-gray-200">
             <ArrowRightLeft className="w-3.5 h-3.5 text-gray-400" />
-            <select value={currency} onChange={(e) => setCurrency(e.target.value)}
+            {/* Kullanıcının SEÇİMİ veri çekmeyi tetikleyen durumdur; `currency`
+                yalnız ne gösterildiğini söyler. İkisi birlikte güncelleniyor. */}
+            <select
+              value={currency}
+              onChange={(e) => { setSecilenParaBirimi(e.target.value); setCurrency(e.target.value); }}
               className="bg-transparent text-xs font-semibold text-gray-700 outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 cursor-pointer">
               {currencies.map(c => <option key={c} value={c}>{c} ({CURRENCY_SYMBOLS[c] || c})</option>)}
             </select>
