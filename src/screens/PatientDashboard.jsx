@@ -366,7 +366,7 @@ const PatientDashboard = () => {
               </h2>
               <button
                 onClick={() => navigate('/telehealth-appointment')}
-                className="text-xs text-teal-600 font-semibold hover:text-teal-700 flex items-center gap-1"
+                className="min-h-6 py-1 text-xs text-teal-600 font-semibold hover:text-teal-700 flex items-center gap-1"
               >
                 {t('common.viewAll', 'View All')} <ChevronRight className="w-3.5 h-3.5" />
               </button>

@@ -177,7 +177,7 @@ export default function ClinicDashboard() {
                 <Stethoscope className="w-4 h-4 text-teal-600" />
                 <h3 className="text-sm font-bold text-gray-900">{t('clinicDashboard.teamOverview', 'Team Overview')}</h3>
               </div>
-              <Link to="/clinic/team" className="text-xs font-semibold text-teal-600 hover:text-teal-700">
+              <Link to="/clinic/team" className="min-h-6 py-1 text-xs font-semibold text-teal-600 hover:text-teal-700">
                 {t('common.viewAll', 'View All')} →
               </Link>
             </div>

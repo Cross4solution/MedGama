@@ -410,7 +410,7 @@ const CRMPatients = () => {
             <thead>
               <tr className="border-b border-gray-100">
                 <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">
-                  <button onClick={() => toggleSort('fullname')} className="flex items-center gap-1 hover:text-gray-700">
+                  <button onClick={() => toggleSort('fullname')} className="min-h-6 py-1 flex items-center gap-1 hover:text-gray-700">
                     {t('common.patient')}
                     <ArrowUpDown className="w-3 h-3" />
                   </button>
@@ -489,7 +489,7 @@ const CRMPatients = () => {
                         <div className="flex flex-wrap gap-1 max-w-[180px]">
                           {(p.tags || []).length === 0 ? (
                             <button onClick={() => setTagModal({ id: p.id, name: p.fullname })}
-                              className="text-[10px] text-gray-400 hover:text-teal-600 flex items-center gap-0.5">
+                              className="min-h-6 py-1 text-[10px] text-gray-400 hover:text-teal-600 flex items-center gap-0.5">
                               <Plus className="w-2.5 h-2.5" /> {t('crm.patients.tagLower')}
                             </button>
                           ) : (
@@ -514,7 +514,7 @@ const CRMPatients = () => {
                           </button>
                         ) : (
                           <button onClick={() => setStageModal({ id: p.id, name: p.fullname, stage: '' })}
-                            className="text-[10px] text-gray-400 hover:text-teal-600 flex items-center gap-0.5">
+                            className="min-h-6 py-1 text-[10px] text-gray-400 hover:text-teal-600 flex items-center gap-0.5">
                             <Plus className="w-2.5 h-2.5" /> {t('crm.patients.stageLower')}
                           </button>
                         )}

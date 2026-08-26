@@ -627,7 +627,7 @@ const CRMDashboard = () => {
           {/* Footer with Pagination */}
           <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/30">
             <div className="flex items-center justify-between">
-              <Link to="/crm/appointments" className="inline-flex items-center gap-1 text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">
+              <Link to="/crm/appointments" className="min-h-6 py-1 inline-flex items-center gap-1 text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">
                 {t('crm.dashboard.viewAll')} <ChevronRight className="w-3.5 h-3.5" />
               </Link>
               {!isFreeTier && totalPages > 1 && (
@@ -743,7 +743,7 @@ const CRMDashboard = () => {
                 </div>
                 <h2 className="text-sm font-bold text-gray-900">{t('crm.dashboard.recentPatients')}</h2>
               </div>
-              <Link to="/crm/patients" className="text-xs font-semibold text-teal-600 hover:text-teal-700">{t('crm.dashboard.viewAll')}</Link>
+              <Link to="/crm/patients" className="min-h-6 py-1 inline-flex items-center text-xs font-semibold text-teal-600 hover:text-teal-700">{t('crm.dashboard.viewAll')}</Link>
             </div>
             {isFreeTier ? (
               <UpgradeBanner t={t} label={t('crm.dashboard.upgradePatients', 'Upgrade to see your recent patients')} />

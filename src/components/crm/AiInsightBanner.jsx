@@ -220,8 +220,13 @@ export default function AiInsightBanner({ appointments, randevularBiliniyor = tr
 
       {/* Progress dots */}
       {insights.length > 1 && (
-        <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex items-center gap-1">
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex items-center">
           {insights.map((_, i) => (
+            /* Vuruş alanı 24px, nokta yine 4px.
+               Düğmenin kendisi `w-1 h-1` idi: parmakla 4 piksellik bir hedefe
+               isabet ettirmek mümkün değil. Nokta artık düğmenin İÇİNDE bir
+               span; görünüm birebir aynı, dokunulabilir alan WCAG 2.2 AA'nın
+               istediği 24×24'e çıktı. */
             <button
               key={i}
               type="button"
@@ -229,13 +234,18 @@ export default function AiInsightBanner({ appointments, randevularBiliniyor = tr
                 setIsAnimating(true);
                 setTimeout(() => { setActiveIndex(i); setIsAnimating(false); }, 200);
               }}
-              className={`rounded-full transition-all duration-300 ${
-                i === activeIndex % insights.length
-                  ? 'w-4 h-1 bg-violet-400'
-                  : 'w-1 h-1 bg-gray-300 hover:bg-gray-400'
-              }`}
+              className="flex h-6 w-6 items-center justify-center"
               aria-label={t('crm.dashboard.insightN', 'Insight {{n}}', { n: i + 1 })}
-            />
+            >
+              <span
+                aria-hidden="true"
+                className={`block rounded-full transition-all duration-300 ${
+                  i === activeIndex % insights.length
+                    ? 'w-4 h-1 bg-violet-400'
+                    : 'w-1 h-1 bg-gray-300'
+                }`}
+              />
+            </button>
           ))}
         </div>
       )}
