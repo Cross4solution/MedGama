@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use App\Listeners\BroadcastNotificationCreated;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -58,6 +59,23 @@ class AppServiceProvider extends ServiceProvider
         // çalışmış bir isteği 500'e çevirir. Yerelde ve testte gürültülü olması
         // yeterli — bir sonraki örneği paket kırmızı yanarak bildirir.
         Model::preventSilentlyDiscardingAttributes(!$this->app->isProduction());
+
+        // Üretimde istisna fırlatmıyoruz ama SESSİZ de bırakmıyoruz.
+        //
+        // Katı kip yalnız bir test o yola dokunduğunda işe yarar; testi olmayan
+        // bir yazma yolu canlıda hâlâ sessizce alan düşürebilir. İşleyici
+        // atılan alanları günlüğe yazıyor: davranış değişmiyor, yalnız bir
+        // dahaki sefere kimse dört ay sonra keşfetmiyor.
+        if ($this->app->isProduction()) {
+            Model::handleDiscardedAttributeViolationUsing(
+                static function (Model $model, array $alanlar): void {
+                    Log::warning('Toplu atamada alan düştü', [
+                        'model'  => $model::class,
+                        'alanlar' => $alanlar,
+                    ]);
+                },
+            );
+        }
 
         // Broadcast database notifications via WebSocket in real-time
         Event::listen(NotificationSent::class, BroadcastNotificationCreated::class);

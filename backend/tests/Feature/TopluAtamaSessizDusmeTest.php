@@ -100,6 +100,27 @@ class TopluAtamaSessizDusmeTest extends TestCase
         ]);
     }
 
+    public function test_uretimde_dusen_alan_gunluge_yaziliyor(): void
+    {
+        // Katı kip yalnız bir test o yola dokunduğunda yakalar. Testi olmayan
+        // bir yazma yolu canlıda hâlâ sessizce alan düşürebilirdi; işleyici
+        // bunu günlüğe yazıyor. Davranış değişmiyor — 500 vermiyoruz — ama
+        // bir dahaki örnek dört ay sonra tesadüfen bulunmuyor.
+        $kaynak = (string) file_get_contents(app_path('Providers/AppServiceProvider.php'));
+
+        $this->assertStringContainsString(
+            'handleDiscardedAttributeViolationUsing',
+            $kaynak,
+            'üretimde düşen alan hiçbir iz bırakmıyor',
+        );
+
+        $this->assertStringContainsString(
+            'Log::warning',
+            $kaynak,
+            'işleyici günlüğe yazmıyor: iz bırakmayan bir işleyici sessizlikle aynı şey',
+        );
+    }
+
     public function test_modeller_yasam_dongusu_bayragini_disaridan_almiyor(): void
     {
         // Diğer yönden savunma: birinin `is_active`i fillable yapıp sorunu
