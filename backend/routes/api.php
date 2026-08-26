@@ -707,7 +707,14 @@ Route::prefix('medstream')->group(function () {
         Route::get('/posts/{post}', [MedStreamController::class, 'showPost']);
         Route::get('/posts/{post}/comments', [MedStreamController::class, 'comments']);
         // Public Twitter-style profile by handle (@username)
-        Route::get('/u/{username}', [MedStreamController::class, 'profile']);
+        //
+        // Hız sınırı, kullanıcı adı HASADINA karşı. Uç kimlik istemiyor ve
+        // kullanıcı adını ad soyada çeviriyor; `auth/username-available`
+        // (60/dk) hangi adların var olduğunu söylediğine göre, ikisi sınırsız
+        // bir kimlik listesi çıkarma yolu oluyordu. Gerçek bir ziyaretçi
+        // dakikada otuz profil açmıyor.
+        Route::get('/u/{username}', [MedStreamController::class, 'profile'])
+            ->middleware('throttle:30,1');
     });
 
     // Secure file download (path-validated, no auth needed for public posts)

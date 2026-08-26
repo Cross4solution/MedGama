@@ -64,6 +64,22 @@ class HerkeseAcikProfilTest extends TestCase
         $this->assertSame($kullanici->id, $yanit->json('user.id'));
     }
 
+    public function test_profil_ucu_hiz_sinirli(): void
+    {
+        // Kimliksiz bir uç kullanıcı adını ad soyada çeviriyor ve
+        // `auth/username-available` hangi adların var olduğunu söylüyor. Hız
+        // sınırı olmadan ikisi birlikte sınırsız bir kimlik hasadı yolu.
+        $rotalar = (string) file_get_contents(base_path('routes/api.php'));
+        $konum = strpos($rotalar, "'/u/{username}'");
+
+        $this->assertNotFalse($konum, 'profil rotası bulunamadı — bu ölçüt güncellenmeli');
+        $this->assertStringContainsString(
+            'throttle:',
+            substr($rotalar, $konum, 200),
+            'herkese açık profil ucu hız sınırsız',
+        );
+    }
+
     public function test_olmayan_kullanici_adi_404(): void
     {
         $this->getJson('/api/medstream/u/hic-boyle-biri-yok')->assertStatus(404);
