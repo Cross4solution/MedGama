@@ -121,7 +121,8 @@
     "openOrDownload": "Открыть / скачать",
     "remove": "Удалить",
     "medium": "Средний",
-    "open": "Открыть"
+    "open": "Открыть",
+    "lastUpdated": "Последнее обновление"
   },
   "nav": {
     "home": "Главная",
@@ -573,7 +574,7 @@
       "priority_low": "Низкий",
       "priority_medium": "Средний",
       "priority_high": "Высокий",
-      "priority_urgent": "Срочный",
+      "priority_urgent": "Срочно",
       "totalTickets": "Всего",
       "urgent": "Срочно",
       "unassigned": "Не назначено",
@@ -1093,7 +1094,13 @@
       "prescriptionAnalysis": "Анализ рецептов",
       "operationalEfficiency": "Операционная эффективность",
       "revenueTrend": "График выручки",
-      "upcoming": "Отчёты появятся в ближайшее время"
+      "upcoming": "Отчёты появятся в ближайшее время",
+      "period": {
+        "week": "Неделя",
+        "month": "Месяц",
+        "quarter": "Квартал",
+        "year": "Год"
+      }
     },
     "documents": {
       "title": "Документы",
@@ -2644,7 +2651,8 @@
       "toastCommissionUpdated": "Ставка комиссии обновлена",
       "toastPricingUpdated": "Цены тарифов обновлены",
       "toastSettingUpdated": "Настройка обновлена",
-      "warningLabel": "Предупреждение:"
+      "warningLabel": "Предупреждение:",
+      "maintenanceOn": "Обслуживание ВКЛ"
     },
     "panel": "Панель администратора",
     "sidebar": {
@@ -3711,7 +3719,10 @@
     "saveClinicsFromSearchResults": "Сохраняйте клиники из результатов поиска или профилей клиник.",
     "saveDoctorsFromSearchResults": "Сохраняйте врачей из результатов поиска или профилей врачей.",
     "signInRequired": "Требуется вход",
-    "youNeedToSignIn": "Чтобы увидеть избранное, нужно войти."
+    "youNeedToSignIn": "Чтобы увидеть избранное, нужно войти.",
+    "savedCount": "сохранено: {{count}}",
+    "tabClinics": "Клиники",
+    "tabDoctors": "Врачи"
   },
   "selectCombobox": {
     "noResults": "Ничего не найдено",

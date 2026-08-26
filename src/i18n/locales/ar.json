@@ -121,7 +121,8 @@
     "openOrDownload": "فتح / تنزيل",
     "remove": "إزالة",
     "medium": "متوسط",
-    "open": "فتح"
+    "open": "فتح",
+    "lastUpdated": "آخر تحديث"
   },
   "nav": {
     "home": "الرئيسية",
@@ -573,7 +574,7 @@
       "priority_low": "منخفضة",
       "priority_medium": "متوسطة",
       "priority_high": "عالية",
-      "priority_urgent": "عاجلة",
+      "priority_urgent": "عاجل",
       "totalTickets": "الإجمالي",
       "urgent": "عاجلة",
       "unassigned": "غير مُسندة",
@@ -1093,7 +1094,13 @@
       "prescriptionAnalysis": "تحليل الوصفات",
       "operationalEfficiency": "الكفاءة التشغيلية",
       "revenueTrend": "رسم الإيرادات البياني",
-      "upcoming": "تقارير ستُضاف قريبًا"
+      "upcoming": "تقارير ستُضاف قريبًا",
+      "period": {
+        "week": "أسبوع",
+        "month": "شهر",
+        "quarter": "ربع سنة",
+        "year": "سنة"
+      }
     },
     "documents": {
       "title": "المستندات",
@@ -2644,7 +2651,8 @@
       "toastCommissionUpdated": "تم تحديث نسبة العمولة",
       "toastPricingUpdated": "تم تحديث أسعار الباقات",
       "toastSettingUpdated": "تم تحديث الإعداد",
-      "warningLabel": "تحذير:"
+      "warningLabel": "تحذير:",
+      "maintenanceOn": "الصيانة مفعّلة"
     },
     "panel": "لوحة الإدارة",
     "sidebar": {
@@ -3711,7 +3719,10 @@
     "saveClinicsFromSearchResults": "احفظ العيادات من نتائج البحث أو من ملفات العيادات.",
     "saveDoctorsFromSearchResults": "احفظ الأطباء من نتائج البحث أو من ملفات الأطباء.",
     "signInRequired": "تسجيل الدخول مطلوب",
-    "youNeedToSignIn": "عليك تسجيل الدخول لعرض مفضلتك."
+    "youNeedToSignIn": "عليك تسجيل الدخول لعرض مفضلتك.",
+    "savedCount": "{{count}} محفوظ",
+    "tabClinics": "العيادات",
+    "tabDoctors": "الأطباء"
   },
   "selectCombobox": {
     "noResults": "لا توجد نتائج",

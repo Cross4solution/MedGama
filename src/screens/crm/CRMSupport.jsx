@@ -22,7 +22,7 @@ const PRIORITY_CONFIG = {
   low:    { label: 'Low',    color: 'bg-gray-50 text-gray-600 border-gray-200' },
   medium: { label: 'Medium', color: 'bg-blue-50 text-blue-600 border-blue-200' },
   high:   { label: 'High',   color: 'bg-orange-50 text-orange-600 border-orange-200' },
-  urgent: { label: 'Urgent', color: 'bg-red-50 text-red-600 border-red-200' },
+  urgent: { label: 'Urgent',  color: 'bg-red-50 text-red-600 border-red-200' },
 };
 
 const StatusBadge = ({ status, t }) => {

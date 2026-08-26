@@ -123,7 +123,9 @@ export default function AdminDashboard() {
             }`}
           >
             <Wrench className="w-3.5 h-3.5" />
-            {maintenanceMode ? 'Maintenance ON' : 'Maintenance Mode'}
+            {maintenanceMode
+              ? t('admin.settings.maintenanceOn', 'Maintenance ON')
+              : t('admin.settings.maintenanceMode', 'Maintenance Mode')}
           </button>
           <button
             onClick={() => setAnnouncementOpen(v => !v)}

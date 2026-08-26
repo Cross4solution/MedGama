@@ -121,7 +121,8 @@
     "openOrDownload": "Aç / yüklə",
     "remove": "Sil",
     "medium": "Orta",
-    "open": "Aç"
+    "open": "Aç",
+    "lastUpdated": "Son yenilənmə"
   },
   "nav": {
     "home": "Ana səhifə",
@@ -913,7 +914,13 @@
       "prescriptionAnalysis": "Resept Analizi",
       "operationalEfficiency": "Əməliyyat Səmərəliliyi",
       "revenueTrend": "Gəlir qrafiki",
-      "upcoming": "Tezliklə əlavə olunacaq hesabatlar"
+      "upcoming": "Tezliklə əlavə olunacaq hesabatlar",
+      "period": {
+        "week": "Həftə",
+        "month": "Ay",
+        "quarter": "Rüb",
+        "year": "İl"
+      }
     },
     "documents": {
       "title": "Sənədlər",
@@ -2459,7 +2466,8 @@
       "toastCommissionUpdated": "Komissiya dərəcəsi yeniləndi",
       "toastPricingUpdated": "Paket qiymətləri yeniləndi",
       "toastSettingUpdated": "Parametr yeniləndi",
-      "warningLabel": "Xəbərdarlıq:"
+      "warningLabel": "Xəbərdarlıq:",
+      "maintenanceOn": "Baxım AÇIQ"
     },
     "announcements": {
       "activate": "Aktivləşdir",
@@ -3751,7 +3759,10 @@
     "saveClinicsFromSearchResults": "Axtarış nəticələrindən və ya klinika profillərindən klinika saxlayın.",
     "saveDoctorsFromSearchResults": "Axtarış nəticələrindən və ya həkim profillərindən həkim saxlayın.",
     "signInRequired": "Giriş etməlisiniz",
-    "youNeedToSignIn": "Sevimlilərinizi görmək üçün giriş etməlisiniz."
+    "youNeedToSignIn": "Sevimlilərinizi görmək üçün giriş etməlisiniz.",
+    "savedCount": "{{count}} saxlanılıb",
+    "tabClinics": "Klinikalar",
+    "tabDoctors": "Həkimlər"
   },
   "selectCombobox": {
     "noResults": "Nəticə yoxdur",

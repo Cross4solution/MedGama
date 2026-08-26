@@ -140,7 +140,8 @@
     "openOrDownload": "Open / download",
     "remove": "Remove",
     "medium": "Medium",
-    "open": "Open"
+    "open": "Open",
+    "lastUpdated": "Last updated"
   },
   "nav": {
     "home": "Home",
@@ -1128,7 +1129,13 @@
       "prescriptionAnalysis": "Prescription Analysis",
       "operationalEfficiency": "Operational Efficiency",
       "revenueTrend": "Revenue Trend",
-      "upcoming": "Reports Coming Soon"
+      "upcoming": "Reports Coming Soon",
+      "period": {
+        "week": "Week",
+        "month": "Month",
+        "quarter": "Quarter",
+        "year": "Year"
+      }
     },
     "documents": {
       "title": "Documents",
@@ -2641,7 +2648,8 @@
       "perAppointment": "Per Appointment (%)",
       "saveRate": "Save Rate",
       "commissionHint": "This rate is applied to every appointment and reflected in the Financials dashboard revenue calculations.",
-      "lastUpdatedValue": "Last updated: {{date}}"
+      "lastUpdatedValue": "Last updated: {{date}}",
+      "maintenanceOn": "Maintenance ON"
     },
     "catalog": {
       "title": "Catalog & System",
@@ -3597,7 +3605,10 @@
     "saveClinicsFromSearchResults": "Save clinics from search results or clinic profiles.",
     "noFavoriteDoctorsYet": "No favorite doctors yet",
     "saveDoctorsFromSearchResults": "Save doctors from search results or doctor profiles.",
-    "removeFromFavorites": "Remove from Favorites?"
+    "removeFromFavorites": "Remove from Favorites?",
+    "savedCount": "{{count}} saved",
+    "tabClinics": "Clinics",
+    "tabDoctors": "Doctors"
   },
   "forPatientsPage": {
     "doktorVeKlinikBulun": "Doktor ve klinik bulun",

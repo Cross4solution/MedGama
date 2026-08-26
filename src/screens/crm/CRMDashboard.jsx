@@ -46,9 +46,6 @@ import AiInsightBanner from '../../components/crm/AiInsightBanner';
 import ClinicVerificationModal from '../../components/crm/ClinicVerificationModal';
 import PremiumGate from '../../components/crm/PremiumGate';
 
-// ─── Mock Data ───────────────────────────────────────────────
-const TODAY = new Date();
-
 /** Selamlama dilimi — her çizimde okunuyor, modül yüklenirken değil. */
 const selamlamaDilimi = () => {
   const saat = new Date().getHours();
@@ -372,7 +369,14 @@ const CRMDashboard = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
           <h1 className="text-base sm:text-lg font-bold text-gray-900">
-            Good {TODAY.getHours() < 12 ? 'Morning' : TODAY.getHours() < 18 ? 'Afternoon' : 'Evening'}, {user?.name?.split(' ')[0] || 'Doctor'} 👋
+            {/* Panonun İKİNCİ selamlaması. Sabit İngilizceydi ve saati modül
+                yüklenirken bir kez okuyordu; yukarıdaki dal düzeltilirken bu
+                atlanmış, klinik rolü buraya düşüyor. Aynı yardımcıyı
+                kullanıyor: her çizimde tazeleniyor ve çevriliyor. */}
+            {t(`crm.dashboard.greeting.${selamlamaDilimi()}`, {
+              name: user?.name?.split(' ')[0] || t('common.doctor', 'Doctor'),
+              defaultValue: '{{name}}, hoş geldiniz',
+            })} 👋
           </h1>
         </div>
         <div className="flex items-center gap-2">

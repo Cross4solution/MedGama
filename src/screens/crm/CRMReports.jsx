@@ -239,8 +239,12 @@ const CRMReports = () => {
         </div>
         <div className="flex items-center gap-2">
           <div className="flex bg-gray-100 rounded-lg p-0.5">
+            {/* Etiketler ham anahtarın kendisiydi (`capitalize` ile "Week",
+                "Month"): Türkçe arayüzde de İngilizce görünüyordu. */}
             {['week', 'month', 'quarter', 'year'].map((p) => (
-              <button key={p} onClick={() => setPeriod(p)} className={`px-3 py-1.5 rounded-md text-xs font-medium capitalize transition-colors ${period === p ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>{p}</button>
+              <button key={p} onClick={() => setPeriod(p)} className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${period === p ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+                {t(`crm.reports.period.${p}`, p)}
+              </button>
             ))}
           </div>
           <div className="relative" ref={exportRef}>

@@ -124,7 +124,12 @@ export default function SavedClinics() {
           {/* Header */}
           <div className="mb-6">
             <h1 className="text-xl font-bold text-gray-900">{t('savedClinics.favorites', "Favorites")}</h1>
-            <p className="text-sm text-gray-500 mt-0.5">{totalCount} {totalCount === 1 ? 'item' : 'items'} saved</p>
+            {/* Sayı ve çoğul eki sabit İngilizceydi: Türkçe arayüzde
+                "0 items saved" yazıyordu. i18next çoğul kuralını dile göre
+                kendisi seçiyor. */}
+            <p className="text-sm text-gray-500 mt-0.5">
+              {t('savedClinics.savedCount', { count: totalCount, defaultValue: '{{count}} kayıt' })}
+            </p>
           </div>
 
           {/* Tabs */}
@@ -138,7 +143,7 @@ export default function SavedClinics() {
               }`}
             >
               <Building2 className="w-4 h-4" />
-              Clinics
+              {t('savedClinics.tabClinics', 'Klinikler')}
               {clinics.length > 0 && (
                 <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${activeTab === 'clinics' ? 'bg-teal-100 text-teal-700' : 'bg-gray-200 text-gray-600'}`}>
                   {clinics.length}
@@ -154,7 +159,7 @@ export default function SavedClinics() {
               }`}
             >
               <Stethoscope className="w-4 h-4" />
-              Doctors
+              {t('savedClinics.tabDoctors', 'Doktorlar')}
               {doctors.length > 0 && (
                 <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${activeTab === 'doctors' ? 'bg-teal-100 text-teal-700' : 'bg-gray-200 text-gray-600'}`}>
                   {doctors.length}

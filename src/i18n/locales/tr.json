@@ -121,7 +121,8 @@
     "openOrDownload": "Aç / İndir",
     "remove": "Kaldır",
     "medium": "Orta",
-    "open": "Aç"
+    "open": "Aç",
+    "lastUpdated": "Son güncelleme"
   },
   "nav": {
     "home": "Ana Sayfa",
@@ -1109,7 +1110,13 @@
       "prescriptionAnalysis": "Reçete Analizi",
       "operationalEfficiency": "Operasyonel Verimlilik",
       "revenueTrend": "Gelir Grafiği",
-      "upcoming": "Yakında Eklenecek Raporlar"
+      "upcoming": "Yakında Eklenecek Raporlar",
+      "period": {
+        "week": "Hafta",
+        "month": "Ay",
+        "quarter": "Çeyrek",
+        "year": "Yıl"
+      }
     },
     "documents": {
       "title": "Dökümanlar",
@@ -2654,7 +2661,8 @@
       "perAppointment": "Randevu Başına (%)",
       "saveRate": "Oranı Kaydet",
       "commissionHint": "Bu oran her randevuya uygulanır ve Finans panosundaki gelir hesaplamalarına yansıtılır.",
-      "lastUpdatedValue": "Son güncelleme: {{date}}"
+      "lastUpdatedValue": "Son güncelleme: {{date}}",
+      "maintenanceOn": "Bakım AÇIK"
     },
     "catalog": {
       "title": "Katalog ve Sistem",
@@ -3760,7 +3768,10 @@
     "saveClinicsFromSearchResults": "Arama sonuçlarından veya klinik profillerinden klinik kaydedin.",
     "noFavoriteDoctorsYet": "Henüz favori doktor yok",
     "saveDoctorsFromSearchResults": "Arama sonuçlarından veya doktor profillerinden doktor kaydedin.",
-    "removeFromFavorites": "Favorilerden çıkarılsın mı?"
+    "removeFromFavorites": "Favorilerden çıkarılsın mı?",
+    "savedCount": "{{count}} kayıt",
+    "tabClinics": "Klinikler",
+    "tabDoctors": "Doktorlar"
   },
   "forPatientsPage": {
     "doktorVeKlinikBulun": "Doktor ve klinik bulun",

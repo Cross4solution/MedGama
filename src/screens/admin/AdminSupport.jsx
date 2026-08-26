@@ -372,8 +372,8 @@ export default function AdminSupport() {
             { label: t('status.inProgress'),     value: stats.in_progress, icon: Clock,         bg: 'bg-amber-50',   ic: 'text-amber-500',   bd: 'border-amber-200' },
             { label: t('status.resolved'),       value: stats.resolved,    icon: CheckCircle2,  bg: 'bg-blue-50',    ic: 'text-blue-500',    bd: 'border-blue-200' },
             { label: t('status.closed'),         value: stats.closed,      icon: XCircle,       bg: 'bg-gray-50',    ic: 'text-gray-400',    bd: 'border-gray-200' },
-            { label: 'Urgent',      value: stats.urgent,      icon: AlertTriangle, bg: 'bg-red-50',     ic: 'text-red-500',     bd: 'border-red-200' },
-            { label: 'Unassigned',  value: stats.unassigned,  icon: Users,         bg: 'bg-purple-50',  ic: 'text-purple-500',  bd: 'border-purple-200' },
+            { label: t('priority.urgent', 'Urgent'),         value: stats.urgent,      icon: AlertTriangle, bg: 'bg-red-50',     ic: 'text-red-500',     bd: 'border-red-200' },
+            { label: t('crm.leads.unassigned', 'Unassigned'), value: stats.unassigned,  icon: Users,         bg: 'bg-purple-50',  ic: 'text-purple-500',  bd: 'border-purple-200' },
           ].map(s => (
             <div key={s.label} className={`bg-white rounded-xl border ${s.bd} p-3 hover:shadow-sm transition-shadow`}>
               <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center mb-2`}>

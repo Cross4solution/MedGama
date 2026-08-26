@@ -121,7 +121,8 @@
     "openOrDownload": "Öffnen / herunterladen",
     "remove": "Entfernen",
     "medium": "Mittel",
-    "open": "Öffnen"
+    "open": "Öffnen",
+    "lastUpdated": "Zuletzt aktualisiert"
   },
   "nav": {
     "home": "Startseite",
@@ -1093,7 +1094,13 @@
       "prescriptionAnalysis": "Rezeptanalyse",
       "operationalEfficiency": "Betriebliche Effizienz",
       "revenueTrend": "Umsatzdiagramm",
-      "upcoming": "Demnächst verfügbare Berichte"
+      "upcoming": "Demnächst verfügbare Berichte",
+      "period": {
+        "week": "Woche",
+        "month": "Monat",
+        "quarter": "Quartal",
+        "year": "Jahr"
+      }
     },
     "documents": {
       "title": "Dokumente",
@@ -2644,7 +2651,8 @@
       "toastCommissionUpdated": "Provisionssatz aktualisiert",
       "toastPricingUpdated": "Paketpreise aktualisiert",
       "toastSettingUpdated": "Einstellung aktualisiert",
-      "warningLabel": "Warnung:"
+      "warningLabel": "Warnung:",
+      "maintenanceOn": "Wartung AN"
     },
     "panel": "Admin-Panel",
     "sidebar": {
@@ -4227,7 +4235,10 @@
     "saveClinicsFromSearchResults": "Speichern Sie Kliniken aus den Suchergebnissen oder von Klinikprofilen.",
     "saveDoctorsFromSearchResults": "Speichern Sie Ärzte aus den Suchergebnissen oder von Arztprofilen.",
     "signInRequired": "Anmeldung erforderlich",
-    "youNeedToSignIn": "Sie müssen sich anmelden, um Ihre Favoriten zu sehen."
+    "youNeedToSignIn": "Sie müssen sich anmelden, um Ihre Favoriten zu sehen.",
+    "savedCount": "{{count}} gespeichert",
+    "tabClinics": "Kliniken",
+    "tabDoctors": "Ärzte"
   },
   "servicesTab": {
     "ourServices": "Unsere Leistungen"

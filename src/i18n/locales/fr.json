@@ -121,7 +121,8 @@
     "openOrDownload": "Ouvrir / télécharger",
     "remove": "Retirer",
     "medium": "Moyen",
-    "open": "Ouvrir"
+    "open": "Ouvrir",
+    "lastUpdated": "Dernière mise à jour"
   },
   "nav": {
     "home": "Accueil",
@@ -913,7 +914,13 @@
       "prescriptionAnalysis": "Analyse des ordonnances",
       "operationalEfficiency": "Efficacité opérationnelle",
       "revenueTrend": "Graphique du chiffre d'affaires",
-      "upcoming": "Rapports bientôt disponibles"
+      "upcoming": "Rapports bientôt disponibles",
+      "period": {
+        "week": "Semaine",
+        "month": "Mois",
+        "quarter": "Trimestre",
+        "year": "Année"
+      }
     },
     "documents": {
       "title": "Documents",
@@ -1443,7 +1450,7 @@
       "priority_low": "Faible",
       "priority_medium": "Moyenne",
       "priority_high": "Élevée",
-      "priority_urgent": "Urgente",
+      "priority_urgent": "Urgent",
       "totalTickets": "Total",
       "urgent": "Urgent",
       "unassigned": "Non attribué",
@@ -2419,7 +2426,8 @@
       "toastCommissionUpdated": "Taux de commission mis à jour",
       "toastPricingUpdated": "Tarifs des formules mis à jour",
       "toastSettingUpdated": "Paramètre mis à jour",
-      "warningLabel": "Avertissement :"
+      "warningLabel": "Avertissement :",
+      "maintenanceOn": "Maintenance ACTIVE"
     },
     "announcements": {
       "activate": "Activer",
@@ -3711,7 +3719,10 @@
     "saveClinicsFromSearchResults": "Enregistrez des cliniques depuis les résultats de recherche ou les profils de clinique.",
     "saveDoctorsFromSearchResults": "Enregistrez des médecins depuis les résultats de recherche ou les profils de médecin.",
     "signInRequired": "Connexion requise",
-    "youNeedToSignIn": "Vous devez vous connecter pour voir vos favoris."
+    "youNeedToSignIn": "Vous devez vous connecter pour voir vos favoris.",
+    "savedCount": "{{count}} enregistré(s)",
+    "tabClinics": "Cliniques",
+    "tabDoctors": "Médecins"
   },
   "selectCombobox": {
     "noResults": "Aucun résultat",

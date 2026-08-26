@@ -121,7 +121,8 @@
     "openOrDownload": "Apri / scarica",
     "remove": "Rimuovi",
     "medium": "Medio",
-    "open": "Apri"
+    "open": "Apri",
+    "lastUpdated": "Ultimo aggiornamento"
   },
   "nav": {
     "home": "Home",
@@ -913,7 +914,13 @@
       "prescriptionAnalysis": "Analisi ricette",
       "operationalEfficiency": "Efficienza operativa",
       "revenueTrend": "Grafico del fatturato",
-      "upcoming": "Report disponibili a breve"
+      "upcoming": "Report disponibili a breve",
+      "period": {
+        "week": "Settimana",
+        "month": "Mese",
+        "quarter": "Trimestre",
+        "year": "Anno"
+      }
     },
     "documents": {
       "title": "Documenti",
@@ -2419,7 +2426,8 @@
       "toastCommissionUpdated": "Percentuale di commissione aggiornata",
       "toastPricingUpdated": "Prezzi dei pacchetti aggiornati",
       "toastSettingUpdated": "Impostazione aggiornata",
-      "warningLabel": "Avviso:"
+      "warningLabel": "Avviso:",
+      "maintenanceOn": "Manutenzione ATTIVA"
     },
     "announcements": {
       "activate": "Attiva",
@@ -3711,7 +3719,10 @@
     "saveClinicsFromSearchResults": "Salva le cliniche dai risultati di ricerca o dai profili delle cliniche.",
     "saveDoctorsFromSearchResults": "Salva i medici dai risultati di ricerca o dai profili dei medici.",
     "signInRequired": "Accesso richiesto",
-    "youNeedToSignIn": "Devi accedere per vedere i tuoi preferiti."
+    "youNeedToSignIn": "Devi accedere per vedere i tuoi preferiti.",
+    "savedCount": "{{count}} salvati",
+    "tabClinics": "Cliniche",
+    "tabDoctors": "Medici"
   },
   "selectCombobox": {
     "noResults": "Nessun risultato",

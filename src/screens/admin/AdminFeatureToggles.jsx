@@ -178,7 +178,9 @@ export default function AdminFeatureToggles() {
                         <p className="text-xs text-gray-500 mt-0.5">{setting.description}</p>
                       )}
                       {setting.updated_at && (
-                        <p className="text-[10px] text-gray-400 mt-1">Last updated: {new Date(setting.updated_at).toLocaleString()}</p>
+                        <p className="text-[10px] text-gray-400 mt-1">
+                          {t('common.lastUpdated', 'Last updated')}: {new Date(setting.updated_at).toLocaleString()}
+                        </p>
                       )}
                     </div>
 
@@ -186,7 +188,7 @@ export default function AdminFeatureToggles() {
                       {setting.type === 'boolean' ? (
                         <div className="flex items-center gap-2">
                           <span className={`text-xs font-medium ${setting.value ? 'text-emerald-600' : 'text-gray-400'}`}>
-                            {setting.value ? 'Enabled' : 'Disabled'}
+                            {setting.value ? t('admin.settings.enabled', 'Enabled') : t('admin.settings.disabled', 'Disabled')}
                           </span>
                           <ToggleSwitch
                             enabled={!!setting.value}
