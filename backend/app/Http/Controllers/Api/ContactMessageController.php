@@ -146,8 +146,13 @@ class ContactMessageController extends Controller
             $query->where('receiver_type', 'clinic')->whereIn('receiver_id', $clinicIds);
         } elseif ($role === 'doctor') {
             $query->where('receiver_type', 'doctor')->where('receiver_id', $user->id);
-        } else {
-            // superAdmin — see all
+        } elseif (!$user->isAdmin()) {
+            // Bu dal "superAdmin — hepsini görsün" diye yazılmıştı ama rota
+            // grubunda ROL SÜZGECİ YOK: hasta, hastane hesabı ve satışçı da
+            // buraya düşüyor ve süzgeçsiz sorgu sistemdeki BÜTÜN mesajları
+            // veriyordu — gönderenin adı, e-postası ve ekleriyle birlikte.
+            // Yönetici olmayan için kapsam boş.
+            return response()->json(['data' => [], 'meta' => ['total' => 0]]);
         }
 
         // Filters
@@ -270,6 +275,10 @@ class ContactMessageController extends Controller
             $query->where('receiver_type', 'clinic')->whereIn('receiver_id', $clinicIds);
         } elseif ($role === 'doctor') {
             $query->where('receiver_type', 'doctor')->where('receiver_id', $user->id);
+        } elseif (!$user->isAdmin()) {
+            // Aynı dallanma, aynı boşluk: süzgeçsiz sayım sistem genelindeki
+            // okunmamış mesaj sayısını sızdırıyordu.
+            return response()->json(['count' => 0]);
         }
 
         return response()->json(['count' => $query->count()]);
