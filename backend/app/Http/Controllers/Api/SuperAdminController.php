@@ -474,6 +474,20 @@ class SuperAdminController extends Controller
             return response()->json(['message' => 'Document file not found.'], 404);
         }
 
+        // Kimin baktığı kayda geçiyor.
+        //
+        // Bu uç bir hekimin diploma ya da lisans belgesini sunuyor. Klinik
+        // tarafındaki eşdeğeri (ClinicVerificationController::downloadDocument)
+        // görüntülemeyi zaten denetime yazıyordu; hekim tarafı yazmıyordu.
+        // Aynı hassasiyette belge, aynı izin bırakılması gerekir — kimlik
+        // belgesine bakmak iz bırakmadan yapılabilecek bir şey değil.
+        \App\Models\AuditLog::log(
+            action: 'verification_document_viewed',
+            resourceType: 'verification_request',
+            resourceId: $vr->id,
+            description: "Viewed {$vr->document_type} for doctor {$vr->doctor_id}",
+        );
+
         return \Illuminate\Support\Facades\Storage::disk('local')->download(
             $vr->file_path,
             $vr->file_name,
