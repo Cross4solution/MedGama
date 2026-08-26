@@ -130,4 +130,25 @@ class YuklemeDiskAyrimiTest extends TestCase
             'imzalı ek rotalarının sayısı değişmiş — biri imzasız kalmış olabilir',
         );
     }
+
+    public function test_saglik_verisi_icin_acik_adres_uretilmiyor(): void
+    {
+        // Doğru diske yazmak yetmiyor. İletişim kutusu dosyayı şifreli diske
+        // koyduktan sonra bile ESKİ kayıtlar için `/storage/...` adresini
+        // veriyordu — oturumsuz, imzasız, süresiz. Yazma tarafı temizken
+        // okuma tarafı açıktı ve iki ayrı ölçüt de bunu görmüyordu.
+        //
+        // Sınır: bu dosyalar sağlık verisi için herkese açık adres KURAMAZ.
+        // Gelen bir yolun zaten açık olup olmadığını sınayan koşullar
+        // (str_starts_with gibi) serbest; yasak olan birleştirip döndürmek.
+        foreach (self::OZEL_KALMALI as $dosya) {
+            $kaynak = $this->yorumsuz($dosya);
+
+            $this->assertDoesNotMatchRegularExpression(
+                "#return\s+'/storage/'\s*\.#",
+                $kaynak,
+                "$dosya sağlık verisi için herkese açık bir adres üretiyor",
+            );
+        }
+    }
 }
