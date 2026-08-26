@@ -26,6 +26,12 @@ services:
       # tanımsız anahtar ucu tümüyle kapatıyor (config/app.php'ye bak).
       - key: ALLOW_DESTRUCTIVE_INIT
         value: false
+      # Canlı altyazı (Deepgram, ABD). Görüşmenin sesi üçüncü taraf bir bulutta
+      # işlenir; KVKK Md. 9 / HIPAA gereği BAA ve açık rıza olmadan açılamaz.
+      # Varsayılanı zaten `false` ama üçüncü kez aynı hatayı yapmıyoruz:
+      # güvenlik kararı üretim dosyasında YAZILI olmalı.
+      - key: TELEHEALTH_RECORDING
+        value: false
       - key: APP_KEY
         sync: false           # Set in Render dashboard → Environment
       - key: APP_URL
