@@ -227,4 +227,88 @@ class SaklamaSuresiBudamaTest extends TestCase
             'hesabı duran hastanın randevusu silinmiş',
         );
     }
+
+    // ── Budamalar arası çakışma ─────────────────────────────────────────
+
+    public function test_tibbi_kaydi_duran_kullanici_budanmiyor(): void
+    {
+        /*
+         * EN CİDDİ ÇAKIŞMA. `users`tan tıbbi ve mali tablolara giden yabancı
+         * anahtarların hepsi `ON DELETE CASCADE`. Kullanıcı satırı kalıcı
+         * silindiği anda veritabanı randevuyu, hasta kaydını, belgeleri ve
+         * faturaları da siliyor.
+         *
+         * Süreler çakışıyordu: kullanıcı üç yıl, tıbbi kayıt on yıl. Üç
+         * yıllık budama önce çalıştığı için on yıllık saklama sırasını hiç
+         * göremiyordu — ölçüldü, üçü de gitmişti.
+         *
+         * Kullanıcı artık kaydı durduğu sürece bekliyor.
+         */
+        [$hasta, $doktor] = $this->taraflar();
+
+        $randevu = Appointment::factory()->create([
+            'patient_id' => $hasta->id,
+            'doctor_id'  => $doktor->id,
+        ]);
+
+        $hasta->delete();
+        User::withTrashed()->where('id', $hasta->id)
+            ->update(['deleted_at' => now()->subYears(4)]);
+
+        $this->budama();
+
+        $this->assertNotNull(
+            User::withTrashed()->find($hasta->id),
+            'kullanıcı budandı — randevusu CASCADE ile silinir',
+        );
+        $this->assertNotNull(
+            Appointment::withTrashed()->find($randevu->id),
+            'tıbbi kayıt kullanıcıyla birlikte gitmiş',
+        );
+    }
+
+    public function test_kaydi_kalmayan_kullanici_budaniyor(): void
+    {
+        // Koruma fazla geniş olmamalı: kayıt kalmadığında kullanıcıyı tutmanın
+        // bir anlamı yok, "süresiz saklama" oraya kayar.
+        [$hasta] = $this->taraflar();
+
+        $hasta->delete();
+        User::withTrashed()->where('id', $hasta->id)
+            ->update(['deleted_at' => now()->subYears(4)]);
+
+        $this->budama();
+
+        $this->assertNull(
+            User::withTrashed()->find($hasta->id),
+            'kaydı olmayan kullanıcı üç yıl sonra hâlâ duruyor',
+        );
+    }
+
+    public function test_faturasi_duran_kullanici_budanmiyor(): void
+    {
+        // Fatura vergi ve ticaret mevzuatına tabi; kullanıcıyla birlikte
+        // silinmesi tıbbi kayıttan farklı bir yükümlülüğü çiğner.
+        [$hasta, $doktor] = $this->taraflar();
+
+        \App\Models\Invoice::create([
+            'invoice_number' => 'FTR-BUDAMA-1',
+            'patient_id'     => $hasta->id,
+            'doctor_id'      => $doktor->id,
+            'subtotal'       => 100,
+            'grand_total'    => 100,
+            'currency'       => 'TRY',
+            'status'         => 'paid',
+            'issue_date'     => now()->toDateString(),
+        ]);
+
+        $hasta->delete();
+        User::withTrashed()->where('id', $hasta->id)
+            ->update(['deleted_at' => now()->subYears(4)]);
+
+        $this->budama();
+
+        $this->assertNotNull(User::withTrashed()->find($hasta->id));
+        $this->assertTrue(\App\Models\Invoice::where('patient_id', $hasta->id)->exists());
+    }
 }

@@ -131,10 +131,49 @@ class User extends Authenticatable
 
     // ── Prunable (GDPR Art. 5(1)(e) — 3 year retention after account deletion) ──
 
+    /**
+     * Budama kuyruğu — üç yıl VE saklanması gereken kayıt kalmamışsa.
+     *
+     * İkinci koşul olmadan bu budama, korumaya çalıştığımız her şeyi yok
+     * ediyordu. `users`tan tıbbi ve mali tablolara giden yabancı anahtarların
+     * hepsi `ON DELETE CASCADE`: kullanıcı satırı kalıcı silindiği anda
+     * veritabanı randevuyu, hasta kaydını, anamnezi, belgeleri ve FATURALARI
+     * da siliyor.
+     *
+     * Ölçüldü (MySQL): kullanıcı `forceDelete()` edildikten sonra randevu,
+     * fatura ve belge üçü de gitmişti.
+     *
+     * Süreler çakışıyordu: kullanıcı üç yıl, tıbbi kayıt on yıl, fatura ise
+     * vergi ve ticaret mevzuatına tabi. Üç yıllık budama önce çalıştığı için
+     * diğer ikisi sırasını hiç göremiyordu.
+     *
+     * Çözüm şemayı değiştirmiyor. CASCADE davranışı doğru — kayıt kalmadığında
+     * artık kullanıcıyı tutmanın anlamı yok. Yanlış olan, kayıt DURURKEN
+     * kullanıcıyı silmekti. Satır artık en uzun saklama süresi dolana kadar
+     * bekliyor; o kayıtlar kendi budamalarıyla gittikten sonra buraya düşüyor.
+     */
     public function prunable()
     {
-        return static::onlyTrashed()
+        $saklananlar = [
+            'appointments'       => 'patient_id',
+            'patient_records'    => 'patient_id',
+            'digital_anamneses'  => 'patient_id',
+            'patient_documents'  => 'patient_id',
+            'invoices'           => 'patient_id',
+        ];
+
+        $sorgu = static::onlyTrashed()
             ->where('deleted_at', '<=', now()->subYears(3));
+
+        foreach ($saklananlar as $tablo => $sutun) {
+            $sorgu->whereNotExists(function ($alt) use ($tablo, $sutun) {
+                $alt->select(\Illuminate\Support\Facades\DB::raw(1))
+                    ->from($tablo)
+                    ->whereColumn($tablo . '.' . $sutun, 'users.id');
+            });
+        }
+
+        return $sorgu;
     }
 
     // ── Scopes ──
