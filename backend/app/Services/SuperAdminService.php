@@ -736,7 +736,7 @@ class SuperAdminService
             throw new \InvalidArgumentException('This request is already pending.');
         }
 
-        DB::transaction(function () use ($vr) {
+        DB::transaction(function () use ($vr, $oldStatus) {
             $vr->update([
                 'status'           => 'pending',
                 'reviewed_by'      => null,
@@ -744,8 +744,15 @@ class SuperAdminService
                 'rejection_reason' => null,
             ]);
 
-            // If was approved, revert doctor verification
-            if ($vr->getOriginal('status') === 'approved') {
+            // Karşılaştırma `$oldStatus` ile, `getOriginal()` ile DEĞİL.
+            //
+            // `update()` kaydettikten sonra modelin "orijinal" değerlerini
+            // tazeliyor; bu satıra gelindiğinde `getOriginal('status')` çoktan
+            // 'pending' oluyordu ve koşul HİÇ TUTMUYORDU. Yani geri alma dalı
+            // ölü koddu: başvuru beklemeye dönüyor, hekim ise doğrulanmış
+            // kalıyordu. Yönetici yanlışlıkla onaylayıp geri aldığında,
+            // hastanın gördüğü rozet yerinde duruyordu.
+            if ($oldStatus === 'approved') {
                 $hasOtherApproved = VerificationRequest::where('doctor_id', $vr->doctor_id)
                     ->where('id', '!=', $vr->id)
                     ->where('status', 'approved')
