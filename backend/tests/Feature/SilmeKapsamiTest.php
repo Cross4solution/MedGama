@@ -93,7 +93,7 @@ class SilmeKapsamiTest extends TestCase
             'patient_id'  => $this->hasta->id,
             'uploaded_by' => $this->hasta->id,
             'title'       => 'MR sonucu',
-            'category'    => 'report',
+            'category'    => 'lab_result',
             'file_path'   => 'patient-documents/x.bin',
             'file_name'   => 'mr.pdf',
             'mime_type'   => 'application/pdf',
