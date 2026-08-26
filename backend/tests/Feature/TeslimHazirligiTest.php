@@ -27,8 +27,6 @@ class TeslimHazirligiTest extends TestCase
     private const KAPALI_KALMALI = [
         // Şifresiz demo girişi: bağlantıyı bilen herkes demo hesabına girer.
         'DEMO_LOGIN_ENABLED'      => 'false',
-        // Şema onarımı: göç + tohum çalıştırır.
-        'ALLOW_DESTRUCTIVE_INIT'  => 'false',
         // Canlı altyazı: görüşme sesini ABD'deki üçüncü tarafa akıtır.
         'TELEHEALTH_RECORDING'    => 'false',
         // Teşhis başlığı: sorgu sayısı, süre ve istisna sınıfı adı.
@@ -64,32 +62,13 @@ class TeslimHazirligiTest extends TestCase
         );
     }
 
-    public function test_gecici_teshis_uclari_anahtar_kapisinin_arkasinda(): void
-    {
-        // Kaldırılmadılar (kabuk erişimi olmadığı için hâlâ gerekiyorlar) ama
-        // hiçbiri anahtarsız açılmamalı. Kapı tek bir ara katmanda.
-        $rotalar = (string) file_get_contents(base_path('routes/api.php'));
-
-        foreach (['mail-status', 'mail-preview', 'broadcast-status'] as $uc) {
-            $konum = strpos($rotalar, $uc);
-
-            $this->assertNotFalse($konum, "$uc rotası bulunamadı");
-            $this->assertStringContainsString(
-                'teshis.anahtari',
-                substr($rotalar, $konum, 260),
-                "$uc anahtar kapısını taşımıyor",
-            );
-        }
-    }
-
     public function test_kaldirilmasi_gerekenler_hala_isaretli(): void
     {
         // İşaretin kendisi teslim listesinin kaynağı. Biri işareti silip kodu
         // bırakırsa, o parça sessizce kalıcı hâle gelir.
+        // Üç teşhis denetleyicisi bu listedeydi; kaldırıldılar
+        // (bkz. TeshisUclariTest). Geriye şifresiz demo girişi kaldı.
         $isaretliler = [
-            'app/Http/Controllers/Api/MailStatusController.php',
-            'app/Http/Controllers/Api/MailPreviewController.php',
-            'app/Http/Controllers/Api/BroadcastStatusController.php',
             'app/Http/Controllers/Api/DemoLoginController.php',
         ];
 
@@ -100,21 +79,5 @@ class TeslimHazirligiTest extends TestCase
                 "$dosya teslim işaretini kaybetmiş: ya kaldırıldı ya da sessizce kalıcı oldu",
             );
         }
-    }
-
-    public function test_mail_onizleme_gercekten_posta_gonderiyor(): void
-    {
-        // Bu uç yayında kalırsa ne olacağını kaydediyoruz: anahtarı eline
-        // geçiren biri istediği adrese posta gönderebilir. Kapı yeterli değil,
-        // teslimde KALDIRILMASI gerekiyor.
-        $kaynak = (string) file_get_contents(
-            base_path('app/Http/Controllers/Api/MailPreviewController.php')
-        );
-
-        $this->assertMatchesRegularExpression(
-            '/Mail::|->send\(|Notification::/',
-            $kaynak,
-            'mail-preview artık posta göndermiyor — öyleyse bu not güncellenmeli',
-        );
     }
 }

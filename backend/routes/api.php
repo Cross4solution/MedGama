@@ -56,131 +56,13 @@ Route::get('/health', function () {
 Route::post('/csp-report', [\App\Http\Controllers\Api\CspRaporController::class, 'store'])
     ->middleware('throttle:csp-report');
 
-// ╔══════════════════════════════════════════════════════════════════╗
-// ║  Şema onarımı: eksik migration'ları uygular (migrate + seed).     ║
-// ║  Usage: GET /api/system/init-db?key=<INIT_DB_KEY>                 ║
-// ║  Check: GET /api/system/init-db-status                            ║
-// ║                                                                   ║
-// ║  "fresh=1" (db:wipe) YETENEĞİ KALDIRILDI. Tek bir HTTP isteğiyle  ║
-// ║  tüm hasta verisini silebiliyordu ve anahtarın varsayılanı kodun   ║
-// ║  içinde yazılı, depo da uzakta. Veri silmek hiçbir arıza senaryosu ║
-// ║  için meşru bir kurtarma adımı değil; gerçekten gerekirse Render   ║
-// ║  konsolundan elle çalıştırılır.                                    ║
-// ╚══════════════════════════════════════════════════════════════════╝
-Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Request $request) {
-    // Production guard — disabled unless explicitly opted-in via env
-    if (app()->environment('production') && !config('app.allow_destructive_init')) {
-        abort(404);
-    }
-
-    // Anahtar tanımlı değilse uç kullanılamaz. Eskiden config'te depoda yazılı
-    // bir varsayılan vardı; boş anahtarla karşılaştırma yapıp içeri almak, o
-    // varsayılanı geri getirmekten farksız olurdu.
-    $anahtar = (string) config('app.init_db_key');
-
-    if ($anahtar === '') {
-        abort(404);
-    }
-
-    if (!hash_equals($anahtar, (string) $request->query('key'))) {
-        return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
-    }
-
-    // Allow unlimited execution — nginx already set to 300s
-    set_time_limit(0);
-    ignore_user_abort(true);
-
-    // ── Step 1: Test DB connection ──
-    try {
-        \Illuminate\Support\Facades\DB::statement('SELECT 1');
-        $dbHost = config('database.connections.' . config('database.default') . '.host');
-    } catch (\Throwable $e) {
-        \Illuminate\Support\Facades\Log::error('init-db db_connection failed', ['exception' => $e]);
-        return response()->json(['error' => 'Operation failed'], 500);
-    }
-
-    $result = ['db_host' => $dbHost, 'mode' => 'migrate+seed'];
-
-    // Veri silme adımı bilinçli olarak kaldırıldı — yukarıdaki nota bakınız.
-
-    // ── Step 2: Migrate ──
-    try {
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        $result['migrate_output'] = trim(\Illuminate\Support\Facades\Artisan::output());
-    } catch (\Throwable $e) {
-        \Illuminate\Support\Facades\Log::error('init-db migrate failed', ['exception' => $e]);
-        return response()->json(['error' => 'Operation failed'], 500);
-    }
-
-    // ── Step 3: Seed ──
-    try {
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-        $result['seed_output'] = trim(\Illuminate\Support\Facades\Artisan::output());
-    } catch (\Throwable $e) {
-        \Illuminate\Support\Facades\Log::error('init-db seed failed', ['exception' => $e]);
-        $result['seed_error'] = 'Operation failed';
-    }
-
-    // ── Step 4: Verify counts ──
-    try {
-        $result['counts'] = [
-            'users'            => \Illuminate\Support\Facades\DB::table('users')->count(),
-            'med_stream_posts' => \Illuminate\Support\Facades\DB::table('med_stream_posts')->count(),
-            'clinics'          => \Illuminate\Support\Facades\DB::table('clinics')->count(),
-            'hospitals'        => \Illuminate\Support\Facades\DB::table('hospitals')->count(),
-            'accreditations'   => \Illuminate\Support\Facades\DB::table('accreditations')->count(),
-        ];
-    } catch (\Throwable $e) {
-        \Illuminate\Support\Facades\Log::error('init-db counts failed', ['exception' => $e]);
-        $result['counts_error'] = 'Operation failed';
-    }
-
-    return response()->json(['status' => 'success'] + $result);
-});
-
-// ── Status check: tail the background migration log ──
-Route::get('/system/init-db-status', function (\Illuminate\Http\Request $request) {
-    if (app()->environment('production') && !config('app.allow_destructive_init')) {
-        abort(404);
-    }
-
-    // Kardeş uçla AYNI koruma. Bu satır eksikti ve boş anahtar varsayılanıyla
-    // birlikte bir delik açıyordu: `hash_equals('', null)` TRUE döndüğü için
-    // `INIT_DB_KEY` tanımsızken anahtarsız istek içeri giriyor, göç günlüğünü
-    // ve tablo sayılarını veriyordu. Üretimde ortam kapısı zaten 404 yapıyor,
-    // ama yerel ve ön izleme dağıtımları açıktaydı.
-    $anahtar = (string) config('app.init_db_key');
-
-    if ($anahtar === '') {
-        abort(404);
-    }
-
-    if (!hash_equals($anahtar, (string) $request->query('key'))) {
-        return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
-    }
-
-    $logFile = '/tmp/init-db.log';
-    $log     = file_exists($logFile) ? file_get_contents($logFile) : 'No log yet.';
-
-    // Check table counts if migration completed
-    $counts = [];
-    try {
-        $counts = [
-            'users'            => \Illuminate\Support\Facades\DB::table('users')->count(),
-            'med_stream_posts' => \Illuminate\Support\Facades\DB::table('med_stream_posts')->count(),
-            'clinics'          => \Illuminate\Support\Facades\DB::table('clinics')->count(),
-            'hospitals'        => \Illuminate\Support\Facades\DB::table('hospitals')->count(),
-            'appointments'     => \Illuminate\Support\Facades\DB::table('appointments')->count(),
-        ];
-    } catch (\Throwable $e) {
-        $counts = ['error' => $e->getMessage()];
-    }
-
-    return response()->json([
-        'log'    => $log,
-        'counts' => $counts,
-    ]);
-});
+/*
+| Şema onarım uçları (`/system/init-db`, `/system/init-db-status`) KALDIRILDI.
+|
+| Göç ve tohum çalıştırıyorlardı. Anahtar arkasındaydılar ama bir HTTP isteğiyle
+| veritabanına dokunabilen bir uç, hiçbir arıza senaryosunda gerekmeyecek kadar
+| ağır. Göç gerekiyorsa Render konsolundan `php artisan migrate` çalıştırılır.
+*/
 
 /*
 |--------------------------------------------------------------------------
@@ -194,20 +76,17 @@ Route::get('/demo-login/{rol}', \App\Http\Controllers\Api\DemoLoginController::c
     ->middleware('throttle:20,1');
 
 /*
-| E-posta yapılandırma durumu — teşhis içindir, HİÇBİR ŞEY GÖNDERMEZ.
-| Barındırma ortamında kabuk erişimi olmadığı için sunucunun okuduğu ayarı
-| başka türlü göremiyoruz. Teslimden önce kaldırılmalı.
+| Teşhis uçları KALDIRILDI.
+|
+| `/system/mail-status`, `/system/broadcast-status` ve `/system/mail-preview`
+| burada dururdu. Barındırma ortamında kabuk erişimi olmadığı için eklenmişler
+| ve kendi yorumları "teslimden önce kaldırılmalı" diyordu.
+|
+| Sonuncusu yalnız okuma yapmıyordu: her şablondan ÖRNEK E-POSTA GÖNDERİYORDU.
+| Anahtarı eline geçiren biri istediği adrese posta attırabilirdi.
+|
+| Ayara bakmak gerekirse Render panelindeki ortam değişkenleri okunur.
 */
-Route::get('/system/broadcast-status', \App\Http\Controllers\Api\BroadcastStatusController::class)
-    ->middleware('teshis.anahtari');
-
-Route::get('/system/mail-status', \App\Http\Controllers\Api\MailStatusController::class)
-    ->middleware(['teshis.anahtari', 'throttle:10,1']);
-
-// GECICI: tasarim incelemesi icin her sablondan ornek gonderir.
-// Teslimden once MailPreviewController ile birlikte kaldirilacak.
-Route::get('/system/mail-preview', \App\Http\Controllers\Api\MailPreviewController::class)
-    ->middleware(['teshis.anahtari', 'throttle:3,1']);
 
 /*
 |--------------------------------------------------------------------------

@@ -2,117 +2,51 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 /**
- * Veritabanını yeniden kuran uç, unutulursa KAPALI kalmalı.
+ * Veritabanına dokunan uç KALDIRILDI.
  *
- * `/api/system/init-db` göçleri ve tohumu çalıştırıyor. Üç savunması vardı ama
- * ikisi sessizce zayıftı:
+ * `/api/system/init-db` göçleri ve tohumu çalıştırıyordu. Üç savunması vardı
+ * ve ikisi zamanla zayıfladı: anahtarın varsayılanı bir dönem depoda yazılıydı,
+ * `render.yaml` üretim korumasını hiç beyan etmiyordu, ve `fresh=1` (db:wipe)
+ * bir zamanlar tek istekle bütün hasta verisini silebiliyordu.
  *
- *   • Anahtarın varsayılanı DEPODA YAZILIYDI ('Medagama2026SecretInit').
- *     Kodun kendi notu "MUST be rotated" diyordu. Yani anahtarın gizli olması,
- *     birinin onu değiştirmeyi hatırlamasına bağlıydı; depoyu okuyan herkes
- *     zaten biliyordu. Varsayılan artık BOŞ ve boş anahtar ucu kullanılamaz
- *     kılıyor.
+ * Hepsi tek tek düzeltildi. Sonra uç tümüyle kaldırıldı — çünkü bir HTTP
+ * isteğiyle veritabanına dokunabilen bir kapı, hiçbir arıza senaryosunda
+ * gerekmeyecek kadar ağır. Göç gerekirse Render konsolundan
+ * `php artisan migrate` çalıştırılır.
  *
- *   • `render.yaml` `ALLOW_DESTRUCTIVE_INIT` değişkenini hiç içermiyordu.
- *     Üretim koruması varsayılanın `false` kalmasına bağlıydı. Aynı hata
- *     `DEMO_LOGIN_ENABLED` için de yapılmıştı ve orada da düzeltilmişti:
- *     güvenlik kararı dosyada yazılı olmalı.
- *
- * `fresh=1` (db:wipe) yeteneği daha önce kaldırılmıştı — tek bir HTTP
- * isteğiyle bütün hasta verisi silinebiliyordu. Bu ölçüt onun geri gelmediğini
- * de sınıyor.
+ * Bu ölçüt geri gelmesini engelliyor.
  */
 class InitDbUcuTest extends TestCase
 {
-    use RefreshDatabase;
-
-    private function icerik(string $goreliYol): string
+    public function test_uc_rota_tablosunda_yok(): void
     {
-        $tam = base_path($goreliYol);
+        $mevcut = collect(Route::getRoutes())->map(fn ($r) => $r->uri())->all();
 
-        $this->assertFileExists($tam, "$goreliYol bulunamadı — bu ölçüt güncellenmeli");
-
-        return (string) file_get_contents($tam);
-    }
-
-    /**
-     * Yorumsuz kaynak.
-     *
-     * İlk hâli ham metinde arıyordu ve DOĞRU koda kırmızı yandı: `db:wipe`
-     * yalnızca "bu yetenek kaldırıldı" diyen yorumda geçiyor. Yorum, anlattığı
-     * şeyin kendisini taklit ediyor.
-     */
-    private function yorumsuz(string $goreliYol): string
-    {
-        $ham = $this->icerik($goreliYol);
-        $ham = (string) preg_replace('#/\*[\s\S]*?\*/#', '', $ham);
-
-        return implode("\n", array_filter(
-            explode("\n", $ham),
-            static fn ($satir) => !preg_match('#^\s*(//|\#)#', $satir),
-        ));
-    }
-
-    public function test_anahtar_varsayilani_bos(): void
-    {
-        // Asıl mesele: değişken tanımlanmadığında anahtar NE oluyor.
-        $this->assertStringContainsString(
-            "env('INIT_DB_KEY', '')",
-            $this->icerik('config/app.php'),
-            'init-db anahtarının varsayılanı boş değil: depoda yazılı bir parola geri gelmiş',
-        );
-    }
-
-    public function test_depodaki_eski_anahtar_hicbir_yerde_yazili_degil(): void
-    {
-        foreach (['config/app.php', 'routes/api.php'] as $dosya) {
-            $this->assertStringNotContainsString(
-                'Medagama2026SecretInit',
-                $this->yorumsuz($dosya),
-                "$dosya hâlâ sabit anahtarı taşıyor",
-            );
+        foreach (['api/system/init-db', 'api/system/init-db-status'] as $uc) {
+            $this->assertNotContains($uc, $mevcut, "$uc geri gelmiş");
         }
     }
 
-    public function test_anahtar_tanimsizken_uc_yok_gibi_davraniyor(): void
+    public function test_uc_istege_cevap_vermiyor(): void
     {
-        // 403 değil 404: ucun VARLIĞI bile bilgi verir.
-        config(['app.init_db_key' => '']);
-
         $this->getJson('/api/system/init-db')->assertStatus(404);
         $this->getJson('/api/system/init-db?key=herhangi')->assertStatus(404);
+        $this->getJson('/api/system/init-db-status')->assertStatus(404);
     }
 
-    public function test_yanlis_anahtar_reddediliyor(): void
+    public function test_veri_silme_yetenegi_hicbir_yerde_yok(): void
     {
-        config(['app.init_db_key' => 'dogru-anahtar']);
-
-        $this->getJson('/api/system/init-db?key=yanlis')->assertStatus(403);
-        $this->getJson('/api/system/init-db')->assertStatus(403);
-    }
-
-    public function test_uretim_yapilandirmasi_acikca_kapatiyor(): void
-    {
-        $this->assertMatchesRegularExpression(
-            '/key:\s*ALLOW_DESTRUCTIVE_INIT\s*\n\s*value:\s*false/',
-            $this->icerik('../render.yaml'),
-            'render.yaml yıkıcı kurulumu açıkça kapatmıyor',
-        );
-    }
-
-    public function test_veri_silme_yetenegi_geri_gelmemis(): void
-    {
-        $rotalar = $this->yorumsuz('routes/api.php');
+        $rotalar = (string) file_get_contents(base_path('routes/api.php'));
 
         foreach (['db:wipe', 'migrate:fresh'] as $yikici) {
             $this->assertStringNotContainsString(
                 $yikici,
                 $rotalar,
-                "init-db ucu yeniden veri silebiliyor: $yikici",
+                "rotalarda veri silen komut var: $yikici",
             );
         }
     }

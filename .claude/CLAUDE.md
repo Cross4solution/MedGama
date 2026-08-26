@@ -70,7 +70,6 @@ After every file edit in main repo, sync: `cp <file> .claude/worktrees/vigilant-
 | `src/components/SidebarPatient.jsx` | CrmSection: hospital top / pro bottom / locked modal |
 | `backend/app/Services/AuthService.php` | register + login logic, email verification |
 | `backend/app/Services/MedStreamService.php` | listPosts, engagement, bookmarks |
-| `backend/routes/api.php` | `/api/system/init-db?key=<INIT_DB_KEY>` — anahtar env'den; tanımsızsa uç 404 |
 | `backend/docker/entrypoint.sh` | runs `migrate:fresh --force --seed` on container start |
 | `backend/database/seeders/DatabaseSeeder.php` | 5 hospitals, 5 clinics, 5 doctors, 5 patients, 10 posts |
 
@@ -81,22 +80,14 @@ After every file edit in main repo, sync: `cp <file> .claude/worktrees/vigilant-
 - 10 MedStream posts: 3 video (YouTube), 4 image (Unsplash), 3 text
 - All passwords: `Password123!`
 
-## Emergency DB Reset (Render)
-```
-GET https://medagama-backend.onrender.com/api/system/init-db?key=<INIT_DB_KEY>
-```
-Returns JSON with migrate output, seed output, and table counts.
+## Şema onarımı
 
-Üç şart birden gerekiyor, hiçbiri varsayılana bırakılmadı:
+`/api/system/init-db` ve diğer teşhis uçları **kaldırıldı**. Göç gerekirse
+Render konsolundan `php artisan migrate` çalıştırılır; ortam değişkenleri
+Render panelinden okunur.
 
-1. `INIT_DB_KEY` env'de tanımlı olmalı. Varsayılanı **boş** ve boş anahtar ucu
-   404 yapıyor. (Eskiden varsayılan depoda yazılı sabit bir paroladaydı.)
-2. Üretimde ayrıca `ALLOW_DESTRUCTIVE_INIT=true` gerekiyor; `render.yaml`
-   açıkça `false` diyor.
-3. `fresh=1` (db:wipe) **kaldırıldı** — tek bir HTTP isteğiyle bütün hasta
-   verisi silinebiliyordu. Gerçekten gerekirse Render konsolundan elle.
-
-`backend/tests/Feature/InitDbUcuTest.php` üçünü de kilitliyor.
+Kaldırılma gerekçesi ve geri gelmelerini engelleyen ölçütler:
+`backend/tests/Feature/InitDbUcuTest.php` ve `TeshisUclariTest.php`.
 
 ## Git Workflow
 - Branch: `new-development` → pushes to `main` via `git push origin new-development:main`

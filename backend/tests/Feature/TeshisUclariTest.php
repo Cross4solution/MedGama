@@ -2,114 +2,69 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 /**
- * Teşhis uçları anahtarsız açılmamalı.
+ * Teşhis uçları KALDIRILDI — geri gelmemeli.
  *
- * Depoda beş teşhis ucu var ve hepsi aynı anahtara bakıyor:
+ * Beş uç vardı: `/system/init-db`, `/system/init-db-status`,
+ * `/system/mail-status`, `/system/mail-preview`, `/system/broadcast-status`.
+ * Barındırma ortamında kabuk erişimi olmadığı için eklenmişlerdi ve kendi
+ * yorumları "teslimden önce kaldırılmalı" diyordu.
  *
- *     /system/init-db          şema onarımı (göç + tohum)
- *     /system/init-db-status   göç günlüğü ve tablo sayıları
- *     /system/mail-status      posta yapılandırması, Resend anahtarının son 4'ü
- *     /system/mail-preview     her şablondan örnek e-posta GÖNDERİR
- *     /system/broadcast-status yayın sürücüsü yapılandırması
+ * İkisi ağırdı: `init-db` göç ve tohum çalıştırıyordu, `mail-preview` her
+ * şablondan ÖRNEK E-POSTA GÖNDERİYORDU — anahtarı eline geçiren biri istediği
+ * adrese posta attırabilirdi.
  *
- * Kontrolün beş ayrı kopyası vardı ve üçü aynı deliği taşıyordu:
+ * Bir dönem hepsi tek bir anahtar kontrolüne bağlanmıştı; o kontrolün beş
+ * kopyası vardı ve üçü boş anahtarla geçiyordu (cbcf3e0). Kaldırmak, o sınıfı
+ * tümüyle ortadan kaldırıyor.
  *
- *     hash_equals('', (string) null) === true      // anahtarsız istek
- *     '' !== ''                       === false     // `?key=` ile
- *
- * `INIT_DB_KEY` varsayılanı depoda yazılı bir sabitken bu görünmüyordu. O sabiti
- * kaldırıp varsayılanı boşaltmak (1992650) init-db'yi kapatırken diğer üçünü
- * SESSİZCE AÇTI — güvenliği artıran bir değişikliğin, tek yerde toplanmamış
- * olduğu için başka üç yeri açması.
- *
- * Kontrol artık tek bir ara katmanda (`teshis.anahtari`) ve kural şu: anahtar
- * tanımsızsa uç yok gibi davranır.
+ * Bu ölçüt geri gelmelerini engelliyor: bir teşhis ucu "geçici olarak" yeniden
+ * eklenirse kırmızı yanar.
  */
 class TeshisUclariTest extends TestCase
 {
-    use RefreshDatabase;
-
-    private const UCLAR = [
-        '/api/system/init-db',
-        '/api/system/init-db-status',
-        '/api/system/mail-status',
-        '/api/system/mail-preview',
-        '/api/system/broadcast-status',
+    private const KALDIRILAN = [
+        'system/init-db',
+        'system/init-db-status',
+        'system/mail-status',
+        'system/mail-preview',
+        'system/broadcast-status',
     ];
 
-    public function test_anahtar_tanimsizken_hicbiri_acilmiyor(): void
+    public function test_kaldirilan_uclar_rota_tablosunda_yok(): void
     {
-        config(['app.init_db_key' => '']);
+        $mevcut = collect(Route::getRoutes())->map(fn ($r) => $r->uri())->all();
 
-        foreach (self::UCLAR as $uc) {
-            // Üç biçim de denenmeli: anahtarsız, boş anahtarlı, rastgele.
-            foreach (['', '?key=', '?key=rastgele'] as $ek) {
-                $yanit = $this->getJson($uc . $ek);
+        $geriGelenler = array_values(array_filter(
+            self::KALDIRILAN,
+            fn ($uc) => in_array('api/' . $uc, $mevcut, true),
+        ));
 
-                // 429 da reddetme: `mail-preview` dakikada üç istekle sınırlı
-                // ve bu ölçütün kendisi sınırı tüketiyor. Ölçülen şey ucun
-                // İÇERİ ALMAMASI; hangi kapının önce kapandığı değil.
-                $this->assertContains(
-                    $yanit->status(),
-                    [403, 404, 429],
-                    "$uc$ek anahtar tanımsızken içeri alıyor",
-                );
-            }
+        $this->assertSame([], $geriGelenler, 'kaldırılan teşhis ucu geri gelmiş');
+    }
+
+    public function test_uclar_istege_cevap_vermiyor(): void
+    {
+        foreach (self::KALDIRILAN as $uc) {
+            $this->getJson("/api/{$uc}")->assertStatus(404);
         }
     }
 
-    public function test_yanlis_anahtar_reddediliyor(): void
+    public function test_denetleyicileri_de_silinmis(): void
     {
-        config(['app.init_db_key' => 'dogru-anahtar']);
-
-        foreach (self::UCLAR as $uc) {
-            foreach (['', '?key=', '?key=yanlis'] as $ek) {
-                $this->assertContains(
-                    $this->getJson($uc . $ek)->status(),
-                    [403, 404, 429],
-                    "$uc$ek yanlış anahtarla içeri alıyor",
-                );
-            }
-        }
-    }
-
-    public function test_kontrolun_kopyasi_kalmadi(): void
-    {
-        // Beş kopya olması sorunun kendisiydi: biri düzeltilirken diğerleri
-        // geride kaldı. Denetleyicilerde artık kopya olmamalı.
+        // Rota kaldırılıp sınıf bırakılırsa, biri "zaten duruyor" diye rotayı
+        // geri eklemeye eğilimli olur.
         foreach ([
-            'app/Http/Controllers/Api/MailStatusController.php',
-            'app/Http/Controllers/Api/MailPreviewController.php',
-            'app/Http/Controllers/Api/BroadcastStatusController.php',
+            'Api/MailStatusController.php',
+            'Api/MailPreviewController.php',
+            'Api/BroadcastStatusController.php',
         ] as $dosya) {
-            $kaynak = (string) file_get_contents(base_path($dosya));
-
-            $this->assertStringNotContainsString(
-                'init_db_key',
-                $kaynak,
-                "$dosya anahtar kontrolünün kendi kopyasını tutuyor",
-            );
-        }
-    }
-
-    public function test_uc_rotalari_ara_katmani_tasiyor(): void
-    {
-        // Kopyalar kaldırıldığına göre ara katmanın gerçekten bağlı olması şart;
-        // aksi halde uçlar tamamen korumasız kalırdı.
-        $rotalar = (string) file_get_contents(base_path('routes/api.php'));
-
-        foreach (['mail-status', 'mail-preview', 'broadcast-status'] as $uc) {
-            $konum = strpos($rotalar, $uc);
-
-            $this->assertNotFalse($konum, "$uc rotası bulunamadı");
-            $this->assertStringContainsString(
-                'teshis.anahtari',
-                substr($rotalar, $konum, 260),
-                "$uc rotası anahtar ara katmanını taşımıyor",
+            $this->assertFileDoesNotExist(
+                app_path('Http/Controllers/' . $dosya),
+                "$dosya hâlâ duruyor",
             );
         }
     }
