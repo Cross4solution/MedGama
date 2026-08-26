@@ -19,6 +19,9 @@ export default function SavedClinics() {
   const [clinics, setClinics] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
+  // İstek düşünce iki liste de boşaltılıyor ve ekran "Henüz favori klinik yok"
+  // diyordu. Kayıtlar duruyor, yalnız okunamıyor.
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(false);
   const [removing, setRemoving] = useState(null);
   const [confirmRemove, setConfirmRemove] = useState(null);
 
@@ -68,9 +71,11 @@ export default function SavedClinics() {
 
       setClinics(mappedClinics);
       setDoctors(mappedDoctors);
+      setYuklemeHatasi(false);
     } catch {
       setClinics([]);
       setDoctors([]);
+      setYuklemeHatasi(true);
     }
     setLoading(false);
   }, []);
@@ -163,6 +168,19 @@ export default function SavedClinics() {
             <div className="flex items-center justify-center py-20">
               <Loader2 className="w-8 h-8 text-teal-500 animate-spin" />
             </div>
+          ) : yuklemeHatasi ? (
+              <div className="text-center py-20">
+                <Building2 className="w-16 h-16 text-gray-200 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                  {t('common.loadFailedTitle', 'Could not load data')}
+                </h3>
+                <p className="text-sm text-gray-400 mb-6">
+                  {t('common.loadFailedHint', 'Check your connection and try again.')}
+                </p>
+                <button onClick={fetchFavorites} className="px-5 py-2.5 bg-teal-600 text-white rounded-xl font-semibold text-sm hover:bg-teal-700 transition-colors">
+                  {t('common.retry', 'Try again')}
+                </button>
+              </div>
           ) : activeTab === 'clinics' ? (
             clinics.length === 0 ? (
               <div className="text-center py-20">

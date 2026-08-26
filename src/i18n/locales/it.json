@@ -547,7 +547,8 @@
       "upcomingConfirmed": "In arrivo (confermati)",
       "updateError": "Aggiornamento non riuscito.",
       "updated": "Aggiornato.",
-      "uploadFailed": "Caricamento non riuscito."
+      "uploadFailed": "Caricamento non riuscito.",
+      "loadFailedHint": "I numeri qui sotto non sono i tuoi appuntamenti reali. Riprova."
     },
     "calendar": {
       "title": "Calendario intelligente",
@@ -592,7 +593,8 @@
       "status_confirmed": "Confermato",
       "status_pending": "In attesa",
       "today": "Oggi",
-      "totalVisible": "Totale visualizzati"
+      "totalVisible": "Totale visualizzati",
+      "loadFailedHint": "Il calendario qui sotto non è la tua agenda reale. Riprova."
     },
     "patient360": {
       "title": "Paziente 360",

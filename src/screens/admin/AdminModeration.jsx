@@ -228,6 +228,10 @@ export default function AdminModeration() {
   const { t } = useTranslation();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  // İstek düşünce liste boşaltılıyordu ve ekran "Her şey yolunda" diyordu.
+  // Şikayetler duruyor, yalnız okunamıyor — yöneticiye yapacak iş olmadığını
+  // söylemek, bekleyen şikayeti görünmez kılıyor.
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(false);
   const [filter, setFilter] = useState('pending');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -253,8 +257,10 @@ export default function AdminModeration() {
       setReports(Array.isArray(data) ? data : []);
       setLastPage(res?.data?.last_page || res?.last_page || res?.meta?.last_page || 1);
       setTotal(res?.data?.total || res?.total || res?.meta?.total || 0);
+      setYuklemeHatasi(false);
     } catch {
       setReports([]);
+      setYuklemeHatasi(true);
     }
     setLoading(false);
   }, [filter, search, page]);
@@ -423,6 +429,24 @@ export default function AdminModeration() {
       {loading ? (
         <div className="flex justify-center py-16">
           <div className="w-7 h-7 border-3 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
+        </div>
+      ) : yuklemeHatasi ? (
+        <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm">
+          <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+            <Shield className="w-12 h-12 mb-3 text-gray-300" />
+            <p className="text-sm font-semibold text-gray-700">
+              {t('common.loadFailedTitle', 'Could not load data')}
+            </p>
+            <p className="text-xs mt-1 text-gray-500">
+              {t('common.loadFailedHint', 'Check your connection and try again.')}
+            </p>
+            <button
+              onClick={fetchReports}
+              className="mt-4 px-4 py-2 rounded-xl border border-purple-200 text-purple-600 text-sm font-semibold hover:bg-purple-50 transition-colors"
+            >
+              {t('common.retry', 'Try again')}
+            </button>
+          </div>
         </div>
       ) : reports.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm">

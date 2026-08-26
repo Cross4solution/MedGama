@@ -547,7 +547,8 @@
       "upcomingConfirmed": "Yaxınlaşan (təsdiqlənmiş)",
       "updateError": "Yeniləmə uğursuz oldu.",
       "updated": "Yeniləndi.",
-      "uploadFailed": "Yükləmə uğursuz oldu."
+      "uploadFailed": "Yükləmə uğursuz oldu.",
+      "loadFailedHint": "Aşağıdakı rəqəmlər sizin real görüşləriniz deyil. Yenidən cəhd edin."
     },
     "calendar": {
       "title": "Ağıllı Təqvim",
@@ -592,7 +593,8 @@
       "status_confirmed": "Təsdiqləndi",
       "status_pending": "Gözləyir",
       "today": "Bu gün",
-      "totalVisible": "Cəmi görünən"
+      "totalVisible": "Cəmi görünən",
+      "loadFailedHint": "Aşağıdakı təqvim sizin real cədvəliniz deyil. Yenidən cəhd edin."
     },
     "patient360": {
       "title": "Xəstə 360",

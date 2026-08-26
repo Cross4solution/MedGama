@@ -802,6 +802,10 @@ const CRMAppointments = () => {
 
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  // Liste çekilemezse sayaçlar 0 kalıyordu ve ekran "0 Toplam, 0 Bekliyor"
+  // diyordu. Klinik bunu o gün randevusu olmadığı diye okuyabilir; randevular
+  // yerinde, yalnız okunamıyor.
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(false);
   const [updating, setUpdating] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showGatekeeper, setShowGatekeeper] = useState(false);
@@ -840,8 +844,9 @@ const CRMAppointments = () => {
       const res = await appointmentAPI.list(params);
       const list = res?.data || [];
       setAppointments(list.map(mapApi));
+      setYuklemeHatasi(false);
     } catch {
-      // keep existing
+      setYuklemeHatasi(true);
     } finally {
       setLoading(false);
     }
@@ -1024,6 +1029,29 @@ const CRMAppointments = () => {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {yuklemeHatasi && (
+        <div
+          role="alert"
+          className="flex flex-wrap items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3"
+        >
+          <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-amber-900">
+              {t('common.loadFailedTitle', 'Could not load data')}
+            </p>
+            <p className="text-xs text-amber-800">
+              {t('crm.appointments.loadFailedHint', 'The counts below are not your real appointments. Try again.')}
+            </p>
+          </div>
+          <button
+            onClick={() => fetchAppointments()}
+            className="px-3 py-1.5 rounded-lg border border-amber-300 text-amber-800 text-xs font-semibold hover:bg-amber-100 transition-colors"
+          >
+            {t('common.retry', 'Try again')}
+          </button>
         </div>
       )}
 

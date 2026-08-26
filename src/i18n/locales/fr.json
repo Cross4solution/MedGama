@@ -547,7 +547,8 @@
       "upcomingConfirmed": "À venir (confirmés)",
       "updateError": "Échec de la mise à jour.",
       "updated": "Mis à jour.",
-      "uploadFailed": "Échec de l'envoi."
+      "uploadFailed": "Échec de l'envoi.",
+      "loadFailedHint": "Les chiffres ci-dessous ne sont pas vos vrais rendez-vous. Réessayez."
     },
     "calendar": {
       "title": "Calendrier intelligent",
@@ -592,7 +593,8 @@
       "status_confirmed": "Confirmé",
       "status_pending": "En attente",
       "today": "Aujourd'hui",
-      "totalVisible": "Total affiché"
+      "totalVisible": "Total affiché",
+      "loadFailedHint": "Le calendrier ci-dessous n'est pas votre vrai planning. Réessayez."
     },
     "patient360": {
       "title": "Patient 360",

@@ -16,6 +16,10 @@ export default function SavedPosts() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
+  // İstek düşerse liste boş kalıyordu ve ekran "Henüz kaydedilmiş gönderi yok"
+  // diyordu. Kullanıcının kayıtları yerinde duruyor, yalnız okunamıyor —
+  // yokluk iddiası yanlış.
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState(null);
 
   // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
@@ -25,6 +29,7 @@ export default function SavedPosts() {
   const fetchBookmarks = useCallback(async (pageNum = 1) => {
     try {
       setLoading(true);
+      setYuklemeHatasi(false);
       const res = await medStreamAPI.bookmarks({ type: 'post', per_page: 20, page: pageNum });
       const bookmarks = res?.data || [];
       const mapped = bookmarks
@@ -82,6 +87,7 @@ export default function SavedPosts() {
       setHasMore((res?.current_page || 1) < (res?.last_page || 1));
     } catch (err) {
       console.warn('Failed to fetch bookmarks:', err);
+      setYuklemeHatasi(true);
     } finally {
       setLoading(false);
     }
@@ -145,6 +151,19 @@ export default function SavedPosts() {
         {loading && posts.length === 0 ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-8 h-8 text-teal-500 animate-spin" />
+          </div>
+        ) : yuklemeHatasi && posts.length === 0 ? (
+          <div className="text-center py-20">
+            <Bookmark className="w-16 h-16 text-gray-200 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">
+              {t('common.loadFailedTitle', 'Could not load data')}
+            </h3>
+            <p className="text-sm text-gray-400 mb-6">
+              {t('common.loadFailedHint', 'Check your connection and try again.')}
+            </p>
+            <button onClick={() => fetchBookmarks(1)} className="px-5 py-2.5 bg-teal-600 text-white rounded-xl font-semibold text-sm hover:bg-teal-700 transition-colors">
+              {t('common.retry', 'Try again')}
+            </button>
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-20">

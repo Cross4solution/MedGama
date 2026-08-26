@@ -547,7 +547,8 @@
       "upcomingConfirmed": "Próximas (confirmadas)",
       "updateError": "Error al actualizar.",
       "updated": "Actualizado.",
-      "uploadFailed": "Error al subir el archivo."
+      "uploadFailed": "Error al subir el archivo.",
+      "loadFailedHint": "Las cifras siguientes no son sus citas reales. Inténtelo de nuevo."
     },
     "calendar": {
       "title": "Calendario inteligente",
@@ -592,7 +593,8 @@
       "status_confirmed": "Confirmada",
       "status_pending": "Pendiente",
       "today": "Hoy",
-      "totalVisible": "Total visible"
+      "totalVisible": "Total visible",
+      "loadFailedHint": "El calendario siguiente no es su agenda real. Inténtelo de nuevo."
     },
     "patient360": {
       "title": "Paciente 360",

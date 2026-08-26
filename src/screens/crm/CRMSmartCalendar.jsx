@@ -54,6 +54,9 @@ const CRMSmartCalendar = () => {
 
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  // Takvim çekilemezse ekran "0 Bugünkü Randevu" diyordu. Klinik bunu boş bir
+  // gün diye okuyabilir.
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -78,8 +81,10 @@ const CRMSmartCalendar = () => {
       const data = res?.events || res?.data?.events || [];
       setEvents(data);
       setLastSync(new Date());
+      setYuklemeHatasi(false);
     } catch (err) {
       console.error('Failed to fetch calendar events:', err);
+      setYuklemeHatasi(true);
     } finally {
       setLoading(false);
     }
@@ -343,6 +348,29 @@ const CRMSmartCalendar = () => {
           </button>
         </div>
       </div>
+
+      {yuklemeHatasi && (
+        <div
+          role="alert"
+          className="flex flex-wrap items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3"
+        >
+          <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-amber-900">
+              {t('common.loadFailedTitle', 'Could not load data')}
+            </p>
+            <p className="text-xs text-amber-800">
+              {t('crm.calendar.loadFailedHint', 'The calendar below is not your real schedule. Try again.')}
+            </p>
+          </div>
+          <button
+            onClick={() => fetchEvents()}
+            className="px-3 py-1.5 rounded-lg border border-amber-300 text-amber-800 text-xs font-semibold hover:bg-amber-100 transition-colors"
+          >
+            {t('common.retry', 'Try again')}
+          </button>
+        </div>
+      )}
 
       {/* ─── Stats Row ─── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">

@@ -743,7 +743,8 @@
       "reject": "Reddet",
       "rejectWindowNote": "Randevular otomatik onaylı. Saatine 2 saat kalana kadar reddedebilirsiniz.",
       "timezoneHint": "Saatler klinik saat diliminde ({{tz}}).",
-      "upcomingConfirmed": "Yaklaşan (onaylı)"
+      "upcomingConfirmed": "Yaklaşan (onaylı)",
+      "loadFailedHint": "Aşağıdaki sayılar gerçek randevularınız değil. Tekrar deneyin."
     },
     "calendar": {
       "title": "Akıllı Takvim",
@@ -788,7 +789,8 @@
       "status_confirmed": "Onaylandı",
       "status_pending": "Beklemede",
       "today": "Bugün",
-      "totalVisible": "Toplam görünen"
+      "totalVisible": "Toplam görünen",
+      "loadFailedHint": "Aşağıdaki takvim gerçek programınız değil. Tekrar deneyin."
     },
     "patient360": {
       "title": "Hasta 360",

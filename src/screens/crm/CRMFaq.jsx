@@ -110,6 +110,8 @@ const CRMFaq = () => {
 
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
+  // İstek düşünce liste boş kalıyordu ve ekran "Henüz SSS yok" diyordu.
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(false);
   const [openId, setOpenId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [editingFaq, setEditingFaq] = useState(null);
@@ -121,7 +123,8 @@ const CRMFaq = () => {
       const res = await doctorProfileAPI.getFaqs();
       const d = res?.data?.data || res?.data || [];
       setFaqs(Array.isArray(d) ? d : []);
-    } catch (err) { console.error(err); } finally { setLoading(false); }
+      setYuklemeHatasi(false);
+    } catch (err) { console.error(err); setYuklemeHatasi(true); } finally { setLoading(false); }
   }, []);
 
   useEffect(() => { fetchFaqs(); }, [fetchFaqs]);
@@ -183,6 +186,24 @@ const CRMFaq = () => {
       {loading ? (
         <div className="flex items-center justify-center h-40">
           <Loader2 className="w-7 h-7 text-teal-500 animate-spin" />
+        </div>
+      ) : yuklemeHatasi ? (
+        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed border-gray-300">
+          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center mb-5">
+            <MessageCircleQuestion className="w-10 h-10 text-amber-500" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 mb-1.5">
+            {t('common.loadFailedTitle', 'Could not load data')}
+          </h3>
+          <p className="text-sm text-gray-500 mb-6 text-center max-w-sm">
+            {t('common.loadFailedHint', 'Check your connection and try again.')}
+          </p>
+          <button
+            onClick={fetchFaqs}
+            className="px-4 py-2 rounded-xl border border-gray-200 text-gray-700 text-sm font-semibold hover:bg-gray-50 transition-colors"
+          >
+            {t('common.retry', 'Try again')}
+          </button>
         </div>
       ) : faqs.length === 0 ? (
         /* ── Empty State ── */

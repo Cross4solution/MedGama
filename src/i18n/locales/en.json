@@ -762,7 +762,8 @@
       "rejectWindowNote": "Appointments are confirmed automatically. You can reject until 2 hours before.",
       "timezoneHint": "Times are in the clinic's timezone ({{tz}}).",
       "upcomingConfirmed": "Upcoming (confirmed)",
-      "medicalHistory": "Medical History / Anamnesis"
+      "medicalHistory": "Medical History / Anamnesis",
+      "loadFailedHint": "The counts below are not your real appointments. Try again."
     },
     "calendar": {
       "title": "Smart Calendar",
@@ -807,7 +808,8 @@
       "status_confirmed": "Confirmed",
       "status_pending": "Pending",
       "today": "Today",
-      "totalVisible": "Total Visible"
+      "totalVisible": "Total Visible",
+      "loadFailedHint": "The calendar below is not your real schedule. Try again."
     },
     "patient360": {
       "title": "Patient 360",

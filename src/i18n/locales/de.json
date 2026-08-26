@@ -727,7 +727,8 @@
       "upcomingConfirmed": "Bevorstehend (bestätigt)",
       "updateError": "Aktualisierung fehlgeschlagen.",
       "updated": "Aktualisiert.",
-      "uploadFailed": "Upload fehlgeschlagen."
+      "uploadFailed": "Upload fehlgeschlagen.",
+      "loadFailedHint": "Die Zahlen unten sind nicht Ihre echten Termine. Bitte erneut versuchen."
     },
     "calendar": {
       "title": "Smart-Kalender",
@@ -772,7 +773,8 @@
       "status_confirmed": "Bestätigt",
       "status_pending": "Ausstehend",
       "today": "Heute",
-      "totalVisible": "Sichtbar gesamt"
+      "totalVisible": "Sichtbar gesamt",
+      "loadFailedHint": "Der Kalender unten ist nicht Ihr echter Zeitplan. Bitte erneut versuchen."
     },
     "patient360": {
       "title": "Patient 360",

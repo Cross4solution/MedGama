@@ -727,7 +727,8 @@
       "upcomingConfirmed": "القادمة (المؤكَّدة)",
       "updateError": "تعذّر التحديث.",
       "updated": "تم التحديث.",
-      "uploadFailed": "تعذّر رفع الملف."
+      "uploadFailed": "تعذّر رفع الملف.",
+      "loadFailedHint": "الأرقام أدناه ليست مواعيدك الحقيقية. حاول مرة أخرى."
     },
     "calendar": {
       "title": "التقويم الذكي",
@@ -772,7 +773,8 @@
       "status_confirmed": "مؤكَّد",
       "status_pending": "معلّق",
       "today": "اليوم",
-      "totalVisible": "إجمالي المعروض"
+      "totalVisible": "إجمالي المعروض",
+      "loadFailedHint": "التقويم أدناه ليس جدولك الحقيقي. حاول مرة أخرى."
     },
     "patient360": {
       "title": "المريض 360",
