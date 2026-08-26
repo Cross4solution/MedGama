@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Validation\ValidationException;
 use App\Support\Sorgu;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
@@ -235,8 +236,21 @@ class FinanceService
      */
     public function convertCurrency(float $amount, string $from, string $to): array
     {
-        $fromRate = self::CURRENCY_RATES[$from] ?? 1.0;
-        $toRate   = self::CURRENCY_RATES[$to] ?? 1.0;
+        // Tanınmayan para birimi ARTIK sessizce 1.0'a düşmüyor.
+        //
+        // `?? 1.0` ile bilinmeyen bir kod, EUR'yla birebir kabul ediliyordu:
+        // uç 200 dönüyor, ekrana kendinden emin ama yanlış bir tutar yazıyordu.
+        // Parada sessiz varsayılan olmaz — bilinmiyorsa söylenmeli.
+        foreach ([$from, $to] as $kod) {
+            if (!isset(self::CURRENCY_RATES[$kod])) {
+                throw ValidationException::withMessages([
+                    'currency' => ["Unsupported currency: {$kod}."],
+                ]);
+            }
+        }
+
+        $fromRate = self::CURRENCY_RATES[$from];
+        $toRate   = self::CURRENCY_RATES[$to];
         $inEur    = $amount / $fromRate;
         $converted = round($inEur * $toRate, 2);
 
