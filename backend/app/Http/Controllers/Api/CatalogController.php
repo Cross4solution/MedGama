@@ -95,7 +95,13 @@ class CatalogController extends Controller
 
     public function destroySpecialty(string $id)
     {
-        Specialty::active()->findOrFail($id)->update(['is_active' => false]);
+        // `update(['is_active' => false])` bu modelde HİÇBİR ŞEY YAPMIYORDU:
+        // alan `$fillable` listesinde yok ve toplu atama koruması onu sessizce
+        // düşürüyordu. Uç başarı dönüyor, kayıt listede kalıyordu.
+        // (Aynı sınıf: 874e5b9 — etiket ve tıbbi kayıt silme.)
+        $specialty = Specialty::active()->findOrFail($id);
+        $specialty->is_active = false;
+        $specialty->save();
         $this->forgetCatalogCache('specialty');
         return response()->json(['message' => 'Specialty deleted.']);
     }
@@ -206,7 +212,13 @@ class CatalogController extends Controller
 
     public function destroyCity(string $id)
     {
-        City::active()->findOrFail($id)->update(['is_active' => false]);
+        // `update(['is_active' => false])` bu modelde HİÇBİR ŞEY YAPMIYORDU:
+        // alan `$fillable` listesinde yok ve toplu atama koruması onu sessizce
+        // düşürüyordu. Uç başarı dönüyor, kayıt listede kalıyordu.
+        // (Aynı sınıf: 874e5b9 — etiket ve tıbbi kayıt silme.)
+        $city = City::active()->findOrFail($id);
+        $city->is_active = false;
+        $city->save();
         $this->forgetCatalogCache('city');
         return response()->json(['message' => 'City deleted.']);
     }
@@ -321,7 +333,9 @@ class CatalogController extends Controller
 
     public function destroyTreatmentTag(string $id)
     {
-        TreatmentTag::active()->findOrFail($id)->update(['is_active' => false]);
+        $treatmenttag = TreatmentTag::active()->findOrFail($id);
+        $treatmenttag->is_active = false;
+        $treatmenttag->save();
         $this->forgetCatalogCache('treatment_tag');
         return response()->json(['message' => 'Treatment tag deactivated.']);
     }
