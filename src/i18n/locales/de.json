@@ -122,7 +122,8 @@
     "remove": "Entfernen",
     "medium": "Mittel",
     "open": "Öffnen",
-    "lastUpdated": "Zuletzt aktualisiert"
+    "lastUpdated": "Zuletzt aktualisiert",
+    "unverified": "Nicht verifiziert"
   },
   "nav": {
     "home": "Startseite",
@@ -2490,7 +2491,13 @@
       "timestamp": "Zeitstempel",
       "noLogsDesc": "Systemereignisse erscheinen hier, sobald sie auftreten",
       "page": "Seite {{current}} von {{total}}",
-      "loadFailedHint": "Die Protokolle konnten nicht gelesen werden – das heißt nicht, dass nichts aufgezeichnet wurde."
+      "loadFailedHint": "Die Protokolle konnten nicht gelesen werden – das heißt nicht, dass nichts aufgezeichnet wurde.",
+      "pageOf": "Seite {{sayfa}} / {{toplam}} — {{kayit}} Einträge",
+      "category_security": "Sicherheit",
+      "category_verification": "Verifizierung",
+      "category_medical": "Medizinisch",
+      "category_financial": "Finanzen",
+      "category_system": "System"
     },
     "dashboard": {
       "title": "Plattform-Dashboard",
@@ -4557,5 +4564,24 @@
   },
   "announcement": {
     "dismiss": "Ankündigung schließen"
+  },
+  "adminPano": {
+    "revenue": "Umsatz",
+    "allTime": "Gesamt",
+    "activePro": "Aktive Pro",
+    "subscriptions": "Abonnements",
+    "awaitingReview": "Wartet auf Prüfung",
+    "completedToday": "Heute abgeschlossen",
+    "thisMonth": "Diesen Monat"
+  },
+  "adminFinans": {
+    "totalRevenue": "Gesamtumsatz",
+    "allTime": "Gesamt",
+    "activePro": "Aktive Pro",
+    "currentSubscribers": "Aktuelle Abonnenten",
+    "pastDue": "Überfällig",
+    "paymentFailed": "Zahlung fehlgeschlagen",
+    "cancelled": "Storniert",
+    "thisMonth": "Diesen Monat"
   }
 }

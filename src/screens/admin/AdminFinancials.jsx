@@ -169,10 +169,10 @@ export default function AdminFinancials() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <StatCard icon={DollarSign} label="Total Revenue" value={stats.totalRevenue} color="emerald" sub="All time" />
-        <StatCard icon={Crown} label="Active Pro" value={stats.activePro} color="purple" sub="Current subscribers" />
-        <StatCard icon={AlertTriangle} label="Past Due" value={stats.pastDue} color="red" sub="Payment failed" />
-        <StatCard icon={XCircle} label="Cancelled" value={stats.cancelled} color="amber" sub="This month" />
+        <StatCard icon={DollarSign} label={t('adminFinans.totalRevenue', 'Total Revenue')} value={stats.totalRevenue} color="emerald" sub={t('adminFinans.allTime', 'All time')} />
+        <StatCard icon={Crown} label={t('adminFinans.activePro', 'Active Pro')} value={stats.activePro} color="purple" sub={t('adminFinans.currentSubscribers', 'Current subscribers')} />
+        <StatCard icon={AlertTriangle} label={t('adminFinans.pastDue', 'Past Due')} value={stats.pastDue} color="red" sub={t('adminFinans.paymentFailed', 'Payment failed')} />
+        <StatCard icon={XCircle} label={t('adminFinans.cancelled', 'Cancelled')} value={stats.cancelled} color="amber" sub={t('adminFinans.thisMonth', 'This month')} />
       </div>
 
       {/* Filters */}

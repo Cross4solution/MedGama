@@ -165,10 +165,10 @@ export default function AdminDashboard() {
 
       {/* Top KPI Cards — 4 Primary Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard icon={DollarSign} label="Revenue" value={data?.revenue?.total || '—'} color="emerald" sub="All time" highlight to="/admin/financials" />
-        <StatCard icon={Crown} label="Active Pro" value={data?.revenue?.active_pro || u.doctors || '—'} color="purple" sub="Subscriptions" highlight to="/admin/financials" />
-        <StatCard icon={ShieldAlert} label={t("admin.stat.pendingDocs", "Pending Docs")} value={u.unverified_doctors || 0} color="amber" sub="Awaiting review" to="/admin/verification" />
-        <StatCard icon={Calendar} label={t("admin.stat.todayAppts", "Today's Appts")} value={a.today || a.completed || 0} color="indigo" sub="Completed today" />
+        <StatCard icon={DollarSign} label={t('adminPano.revenue', 'Revenue')} value={data?.revenue?.total || '—'} color="emerald" sub={t('adminPano.allTime', 'All time')} highlight to="/admin/financials" />
+        <StatCard icon={Crown} label={t('adminPano.activePro', 'Active Pro')} value={data?.revenue?.active_pro || u.doctors || '—'} color="purple" sub={t('adminPano.subscriptions', 'Subscriptions')} highlight to="/admin/financials" />
+        <StatCard icon={ShieldAlert} label={t("admin.stat.pendingDocs", "Pending Docs")} value={u.unverified_doctors || 0} color="amber" sub={t('adminPano.awaitingReview', 'Awaiting review')} to="/admin/verification" />
+        <StatCard icon={Calendar} label={t("admin.stat.todayAppts", "Today's Appts")} value={a.today || a.completed || 0} color="indigo" sub={t('adminPano.completedToday', 'Completed today')} />
       </div>
 
       {/* Secondary Stats Row */}
@@ -177,8 +177,8 @@ export default function AdminDashboard() {
         <StatCard icon={Stethoscope} label={t('admin.dashboard.doctors', 'Doctors')} value={u.doctors} color="teal" sub={`${u.verified_doctors || 0} verified`} to="/admin/verification" />
         <StatCard icon={UserCheck} label={t('admin.dashboard.patients', 'Patients')} value={u.patients} color="emerald" />
         <StatCard icon={Building2} label={t('admin.dashboard.clinics', 'Clinics')} value={c.total} color="purple" sub={`+${c.new_this_month || 0} this month`} />
-        <StatCard icon={Calendar} label={t('admin.dashboard.appointments', 'Appointments')} value={a.total} color="indigo" sub="This month" />
-        <StatCard icon={TrendingUp} label={t('admin.dashboard.newUsers', 'New Users')} value={u.new_this_month} color="amber" sub="This month" />
+        <StatCard icon={Calendar} label={t('admin.dashboard.appointments', 'Appointments')} value={a.total} color="indigo" sub={t('adminPano.thisMonth', 'This month')} />
+        <StatCard icon={TrendingUp} label={t('admin.dashboard.newUsers', 'New Users')} value={u.new_this_month} color="amber" sub={t('adminPano.thisMonth', 'This month')} />
       </div>
 
       {/* Verification Alert */}

@@ -141,7 +141,8 @@
     "remove": "Remove",
     "medium": "Medium",
     "open": "Open",
-    "lastUpdated": "Last updated"
+    "lastUpdated": "Last updated",
+    "unverified": "Unverified"
   },
   "nav": {
     "home": "Home",
@@ -2497,7 +2498,13 @@
       "pageInfo": "Page {{page}} / {{lastPage}} — {{total}} entries",
       "gdprTitle": "GDPR Compliance — Article 30",
       "gdprDesc": "All processing activities are logged per GDPR Art. 30 requirements. Audit logs are retained for a minimum of 6 years and cannot be modified or deleted.",
-      "loadFailedHint": "Could not read the log — that does not mean nothing was recorded."
+      "loadFailedHint": "Could not read the log — that does not mean nothing was recorded.",
+      "pageOf": "Page {{sayfa}} / {{toplam}} — {{kayit}} records",
+      "category_security": "Security",
+      "category_verification": "Verification",
+      "category_medical": "Medical",
+      "category_financial": "Financial",
+      "category_system": "System"
     },
     "dashboard": {
       "title": "Platform Dashboard",
@@ -4499,5 +4506,24 @@
   },
   "announcement": {
     "dismiss": "Dismiss announcement"
+  },
+  "adminPano": {
+    "revenue": "Revenue",
+    "allTime": "All time",
+    "activePro": "Active Pro",
+    "subscriptions": "Subscriptions",
+    "awaitingReview": "Awaiting review",
+    "completedToday": "Completed today",
+    "thisMonth": "This month"
+  },
+  "adminFinans": {
+    "totalRevenue": "Total Revenue",
+    "allTime": "All time",
+    "activePro": "Active Pro",
+    "currentSubscribers": "Current subscribers",
+    "pastDue": "Past Due",
+    "paymentFailed": "Payment failed",
+    "cancelled": "Cancelled",
+    "thisMonth": "This month"
   }
 }

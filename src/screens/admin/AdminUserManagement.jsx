@@ -202,7 +202,7 @@ function UserDetailDrawer({ user: u, onClose }) {
                 </div>
                 <div className={`rounded-xl p-3 border ${u.is_verified ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'}`}>
                   <p className={`text-[10px] font-bold uppercase tracking-wide ${u.is_verified ? 'text-emerald-600' : 'text-amber-600'}`}>{t('adminUserManagement.verification', "Verification")}</p>
-                  <p className={`text-sm font-bold ${u.is_verified ? 'text-emerald-800' : 'text-amber-800'}`}>{u.is_verified ? 'Verified' : 'Unverified'}</p>
+                  <p className={`text-sm font-bold ${u.is_verified ? 'text-emerald-800' : 'text-amber-800'}`}>{u.is_verified ? t('common.verified', 'Verified') : t('common.unverified', 'Unverified')}</p>
                 </div>
                 <div className="rounded-xl p-3 border border-gray-200 bg-white">
                   <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400">{t('adminUserManagement.lastLogin', "Last Login")}</p>

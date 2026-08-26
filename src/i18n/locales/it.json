@@ -122,7 +122,8 @@
     "remove": "Rimuovi",
     "medium": "Medio",
     "open": "Apri",
-    "lastUpdated": "Ultimo aggiornamento"
+    "lastUpdated": "Ultimo aggiornamento",
+    "unverified": "Non verificato"
   },
   "nav": {
     "home": "Home",
@@ -2307,7 +2308,13 @@
       "justNow": "Proprio ora",
       "ago": "fa",
       "pageInfo": "Pagina {{page}} / {{lastPage}} — {{total}} voci",
-      "loadFailedHint": "Non è stato possibile leggere il registro: non significa che non sia stato registrato nulla."
+      "loadFailedHint": "Non è stato possibile leggere il registro: non significa che non sia stato registrato nulla.",
+      "pageOf": "Pagina {{sayfa}} / {{toplam}} — {{kayit}} record",
+      "category_security": "Sicurezza",
+      "category_verification": "Verifica",
+      "category_medical": "Medico",
+      "category_financial": "Finanziario",
+      "category_system": "Sistema"
     },
     "users": {
       "title": "Gestione Utenti",
@@ -4557,5 +4564,24 @@
   },
   "announcement": {
     "dismiss": "Chiudi annuncio"
+  },
+  "adminPano": {
+    "revenue": "Ricavi",
+    "allTime": "Sempre",
+    "activePro": "Pro attivi",
+    "subscriptions": "Abbonamenti",
+    "awaitingReview": "In attesa di revisione",
+    "completedToday": "Completati oggi",
+    "thisMonth": "Questo mese"
+  },
+  "adminFinans": {
+    "totalRevenue": "Ricavi totali",
+    "allTime": "Sempre",
+    "activePro": "Pro attivi",
+    "currentSubscribers": "Abbonati attuali",
+    "pastDue": "Scaduto",
+    "paymentFailed": "Pagamento non riuscito",
+    "cancelled": "Annullato",
+    "thisMonth": "Questo mese"
   }
 }

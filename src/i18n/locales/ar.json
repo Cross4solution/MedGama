@@ -122,7 +122,8 @@
     "remove": "إزالة",
     "medium": "متوسط",
     "open": "فتح",
-    "lastUpdated": "آخر تحديث"
+    "lastUpdated": "آخر تحديث",
+    "unverified": "غير موثّق"
   },
   "nav": {
     "home": "الرئيسية",
@@ -2490,7 +2491,13 @@
       "timestamp": "الوقت",
       "noLogsDesc": "ستظهر أحداث النظام هنا عند حدوثها",
       "page": "صفحة {{current}} من {{total}}",
-      "loadFailedHint": "تعذّرت قراءة السجل — وهذا لا يعني أنه لم يُسجَّل شيء."
+      "loadFailedHint": "تعذّرت قراءة السجل — وهذا لا يعني أنه لم يُسجَّل شيء.",
+      "pageOf": "صفحة {{sayfa}} / {{toplam}} — {{kayit}} سجلًا",
+      "category_security": "الأمان",
+      "category_verification": "التحقق",
+      "category_medical": "طبي",
+      "category_financial": "مالي",
+      "category_system": "النظام"
     },
     "dashboard": {
       "title": "لوحة تحكم المنصة",
@@ -4557,5 +4564,24 @@
   },
   "announcement": {
     "dismiss": "إغلاق الإعلان"
+  },
+  "adminPano": {
+    "revenue": "الإيرادات",
+    "allTime": "كل الأوقات",
+    "activePro": "Pro النشطة",
+    "subscriptions": "الاشتراكات",
+    "awaitingReview": "بانتظار المراجعة",
+    "completedToday": "اكتملت اليوم",
+    "thisMonth": "هذا الشهر"
+  },
+  "adminFinans": {
+    "totalRevenue": "إجمالي الإيرادات",
+    "allTime": "كل الأوقات",
+    "activePro": "Pro النشطة",
+    "currentSubscribers": "المشتركون الحاليون",
+    "pastDue": "متأخر",
+    "paymentFailed": "فشل الدفع",
+    "cancelled": "ملغى",
+    "thisMonth": "هذا الشهر"
   }
 }

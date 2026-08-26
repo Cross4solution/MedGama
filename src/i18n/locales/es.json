@@ -122,7 +122,8 @@
     "remove": "Quitar",
     "medium": "Medio",
     "open": "Abrir",
-    "lastUpdated": "Última actualización"
+    "lastUpdated": "Última actualización",
+    "unverified": "Sin verificar"
   },
   "nav": {
     "home": "Inicio",
@@ -2307,7 +2308,13 @@
       "justNow": "Ahora mismo",
       "ago": "hace",
       "pageInfo": "Página {{page}} / {{lastPage}} — {{total}} entradas",
-      "loadFailedHint": "No se pudo leer el registro: eso no significa que no se haya registrado nada."
+      "loadFailedHint": "No se pudo leer el registro: eso no significa que no se haya registrado nada.",
+      "pageOf": "Página {{sayfa}} / {{toplam}} — {{kayit}} registros",
+      "category_security": "Seguridad",
+      "category_verification": "Verificación",
+      "category_medical": "Médico",
+      "category_financial": "Financiero",
+      "category_system": "Sistema"
     },
     "users": {
       "title": "Gestión de usuarios",
@@ -4557,5 +4564,24 @@
   },
   "announcement": {
     "dismiss": "Descartar anuncio"
+  },
+  "adminPano": {
+    "revenue": "Ingresos",
+    "allTime": "Histórico",
+    "activePro": "Pro activos",
+    "subscriptions": "Suscripciones",
+    "awaitingReview": "Pendiente de revisión",
+    "completedToday": "Completadas hoy",
+    "thisMonth": "Este mes"
+  },
+  "adminFinans": {
+    "totalRevenue": "Ingresos totales",
+    "allTime": "Histórico",
+    "activePro": "Pro activos",
+    "currentSubscribers": "Suscriptores actuales",
+    "pastDue": "Vencido",
+    "paymentFailed": "Pago fallido",
+    "cancelled": "Cancelado",
+    "thisMonth": "Este mes"
   }
 }

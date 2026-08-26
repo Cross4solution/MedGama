@@ -122,7 +122,8 @@
     "remove": "Удалить",
     "medium": "Средний",
     "open": "Открыть",
-    "lastUpdated": "Последнее обновление"
+    "lastUpdated": "Последнее обновление",
+    "unverified": "Не подтверждён"
   },
   "nav": {
     "home": "Главная",
@@ -2490,7 +2491,13 @@
       "timestamp": "Время",
       "noLogsDesc": "Системные события будут отображаться здесь",
       "page": "Страница {{current}} из {{total}}",
-      "loadFailedHint": "Журнал не удалось прочитать — это не значит, что записи не велись."
+      "loadFailedHint": "Журнал не удалось прочитать — это не значит, что записи не велись.",
+      "pageOf": "Страница {{sayfa}} / {{toplam}} — записей: {{kayit}}",
+      "category_security": "Безопасность",
+      "category_verification": "Проверка",
+      "category_medical": "Медицинское",
+      "category_financial": "Финансы",
+      "category_system": "Система"
     },
     "dashboard": {
       "title": "Панель управления платформой",
@@ -4557,5 +4564,24 @@
   },
   "announcement": {
     "dismiss": "Закрыть объявление"
+  },
+  "adminPano": {
+    "revenue": "Доход",
+    "allTime": "За всё время",
+    "activePro": "Активные Pro",
+    "subscriptions": "Подписки",
+    "awaitingReview": "Ожидает проверки",
+    "completedToday": "Завершено сегодня",
+    "thisMonth": "В этом месяце"
+  },
+  "adminFinans": {
+    "totalRevenue": "Общий доход",
+    "allTime": "За всё время",
+    "activePro": "Активные Pro",
+    "currentSubscribers": "Текущие подписчики",
+    "pastDue": "Просрочено",
+    "paymentFailed": "Платёж не прошёл",
+    "cancelled": "Отменено",
+    "thisMonth": "В этом месяце"
   }
 }

@@ -122,7 +122,8 @@
     "remove": "Kaldır",
     "medium": "Orta",
     "open": "Aç",
-    "lastUpdated": "Son güncelleme"
+    "lastUpdated": "Son güncelleme",
+    "unverified": "Doğrulanmamış"
   },
   "nav": {
     "home": "Ana Sayfa",
@@ -2510,7 +2511,13 @@
       "pageInfo": "Sayfa {{page}} / {{lastPage}} — {{total}} kayıt",
       "gdprTitle": "GDPR Uyumluluk — Madde 30",
       "gdprDesc": "Tüm işleme faaliyetleri GDPR Madde 30 gereksinimlerine uygun olarak kaydedilmektedir. Denetim günlükleri en az 6 yıl saklanır ve değiştirilemez veya silinemez.",
-      "loadFailedHint": "Kayıtlar okunamadı — kayıt tutulmadığı anlamına gelmez."
+      "loadFailedHint": "Kayıtlar okunamadı — kayıt tutulmadığı anlamına gelmez.",
+      "pageOf": "Sayfa {{sayfa}} / {{toplam}} — {{kayit}} kayıt",
+      "category_security": "Güvenlik",
+      "category_verification": "Doğrulama",
+      "category_medical": "Tıbbi",
+      "category_financial": "Finansal",
+      "category_system": "Sistem"
     },
     "dashboard": {
       "title": "Platform Kontrol Paneli",
@@ -4497,5 +4504,24 @@
   },
   "announcement": {
     "dismiss": "Duyuruyu kapat"
+  },
+  "adminPano": {
+    "revenue": "Gelir",
+    "allTime": "Tüm zamanlar",
+    "activePro": "Aktif Pro",
+    "subscriptions": "Abonelikler",
+    "awaitingReview": "İncelenmeyi bekliyor",
+    "completedToday": "Bugün tamamlandı",
+    "thisMonth": "Bu ay"
+  },
+  "adminFinans": {
+    "totalRevenue": "Toplam Gelir",
+    "allTime": "Tüm zamanlar",
+    "activePro": "Aktif Pro",
+    "currentSubscribers": "Mevcut aboneler",
+    "pastDue": "Vadesi Geçmiş",
+    "paymentFailed": "Ödeme başarısız",
+    "cancelled": "İptal",
+    "thisMonth": "Bu ay"
   }
 }

@@ -122,7 +122,8 @@
     "remove": "Retirer",
     "medium": "Moyen",
     "open": "Ouvrir",
-    "lastUpdated": "Dernière mise à jour"
+    "lastUpdated": "Dernière mise à jour",
+    "unverified": "Non vérifié"
   },
   "nav": {
     "home": "Accueil",
@@ -2307,7 +2308,13 @@
       "justNow": "À l'instant",
       "ago": "il y a",
       "pageInfo": "Page {{page}} / {{lastPage}} — {{total}} entrées",
-      "loadFailedHint": "Le journal n'a pas pu être lu — cela ne signifie pas que rien n'a été enregistré."
+      "loadFailedHint": "Le journal n'a pas pu être lu — cela ne signifie pas que rien n'a été enregistré.",
+      "pageOf": "Page {{sayfa}} / {{toplam}} — {{kayit}} enregistrements",
+      "category_security": "Sécurité",
+      "category_verification": "Vérification",
+      "category_medical": "Médical",
+      "category_financial": "Financier",
+      "category_system": "Système"
     },
     "users": {
       "title": "Gestion des utilisateurs",
@@ -4557,5 +4564,24 @@
   },
   "announcement": {
     "dismiss": "Fermer l'annonce"
+  },
+  "adminPano": {
+    "revenue": "Revenus",
+    "allTime": "Depuis le début",
+    "activePro": "Pro actifs",
+    "subscriptions": "Abonnements",
+    "awaitingReview": "En attente d'examen",
+    "completedToday": "Terminés aujourd'hui",
+    "thisMonth": "Ce mois-ci"
+  },
+  "adminFinans": {
+    "totalRevenue": "Revenus totaux",
+    "allTime": "Depuis le début",
+    "activePro": "Pro actifs",
+    "currentSubscribers": "Abonnés actuels",
+    "pastDue": "En retard",
+    "paymentFailed": "Paiement échoué",
+    "cancelled": "Annulé",
+    "thisMonth": "Ce mois-ci"
   }
 }

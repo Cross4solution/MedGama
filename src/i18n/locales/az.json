@@ -122,7 +122,8 @@
     "remove": "Sil",
     "medium": "Orta",
     "open": "Aç",
-    "lastUpdated": "Son yenilənmə"
+    "lastUpdated": "Son yenilənmə",
+    "unverified": "Təsdiqlənməyib"
   },
   "nav": {
     "home": "Ana səhifə",
@@ -2347,7 +2348,13 @@
       "justNow": "İndicə",
       "ago": "əvvəl",
       "pageInfo": "Səhifə {{page}} / {{lastPage}} — {{total}} qeyd",
-      "loadFailedHint": "Qeydlər oxuna bilmədi — qeyd aparılmadığı anlamına gəlmir."
+      "loadFailedHint": "Qeydlər oxuna bilmədi — qeyd aparılmadığı anlamına gəlmir.",
+      "pageOf": "Səhifə {{sayfa}} / {{toplam}} — {{kayit}} qeyd",
+      "category_security": "Təhlükəsizlik",
+      "category_verification": "Doğrulama",
+      "category_medical": "Tibbi",
+      "category_financial": "Maliyyə",
+      "category_system": "Sistem"
     },
     "users": {
       "title": "İstifadəçi İdarəetməsi",
@@ -4597,5 +4604,24 @@
   },
   "announcement": {
     "dismiss": "Elanı bağla"
+  },
+  "adminPano": {
+    "revenue": "Gəlir",
+    "allTime": "Bütün dövr",
+    "activePro": "Aktiv Pro",
+    "subscriptions": "Abunəliklər",
+    "awaitingReview": "Baxılmasını gözləyir",
+    "completedToday": "Bu gün tamamlanıb",
+    "thisMonth": "Bu ay"
+  },
+  "adminFinans": {
+    "totalRevenue": "Ümumi gəlir",
+    "allTime": "Bütün dövr",
+    "activePro": "Aktiv Pro",
+    "currentSubscribers": "Cari abunəçilər",
+    "pastDue": "Vaxtı keçmiş",
+    "paymentFailed": "Ödəniş alınmadı",
+    "cancelled": "Ləğv edilib",
+    "thisMonth": "Bu ay"
   }
 }

@@ -301,7 +301,7 @@ export default function AdminAuditLogs() {
             }`}
           >
             <Filter className="w-3.5 h-3.5" />
-            Filters
+            {t('common.filters', 'Filters')}
             {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-purple-500" />}
           </button>
         </div>
@@ -337,7 +337,7 @@ export default function AdminAuditLogs() {
               !categoryFilter ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
             }`}
           >
-            All
+            {t('common.all', 'All')}
           </button>
           {CATEGORIES.map(cat => {
             const active = categoryFilter === cat.key;
@@ -352,7 +352,7 @@ export default function AdminAuditLogs() {
                 }`}
               >
                 <cat.icon className="w-3.5 h-3.5" />
-                {cat.label}
+                {t(`admin.auditLogs.category_${cat.key}`, cat.label)}
               </button>
             );
           })}
@@ -621,7 +621,7 @@ export default function AdminAuditLogs() {
           {lastPage > 1 && (
             <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between bg-gray-50/30">
               <span className="text-xs text-gray-500">
-                Page {page} / {lastPage} — {total.toLocaleString()} records
+                {t('admin.auditLogs.pageOf', { sayfa: page, toplam: lastPage, kayit: total.toLocaleString(), defaultValue: 'Page {{sayfa}} / {{toplam}} — {{kayit}} records' })}
               </span>
               <div className="flex items-center gap-1.5">
                 <button disabled={page <= 1} onClick={() => setPage(p => p - 1)}
