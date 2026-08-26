@@ -108,7 +108,20 @@
     "loadFailedHint": "Serverə çıxmaq mümkün olmadı. Bu, qeydinizin olmadığı demək deyil — bağlantınızı yoxlayıb yenidən cəhd edin.",
     "admin": "Admin",
     "clearFilters": "Filtrləri təmizlə",
-    "publish": "Dərc et"
+    "publish": "Dərc et",
+    "gotIt": "Anladım",
+    "saved": "Yadda saxlanıldı",
+    "getDirections": "Yol tarifi",
+    "bookAppointment": "Randevu al",
+    "mapPreview": "Xəritə önizləmə",
+    "openInMaps": "Xəritələrdə aç",
+    "visible": "Görünür",
+    "continue": "Davam et",
+    "online": "Onlayn",
+    "openOrDownload": "Aç / yüklə",
+    "remove": "Sil",
+    "medium": "Orta",
+    "open": "Aç"
   },
   "nav": {
     "home": "Ana səhifə",
@@ -141,7 +154,7 @@
     "signIn": "Daxil ol",
     "dontHaveAccount": "Hesabınız yoxdur?",
     "signUp": "Qeydiyyatdan keç",
-    "tryDemo": "Demo sına",
+    "tryDemo": "Demonu sına",
     "tryDemoDoctor": "Demo sına (Həkim)",
     "tryDemoClinic": "Demo sına (Klinika)",
     "continueWithGoogle": "Google ilə davam et",
@@ -177,7 +190,7 @@
     "featureManageReps": "Satış nümayəndələri və potensial müştəri idarəetməsi",
     "featureCoordinate": "Randevu koordinasiyası",
     "featureTelehealthSchedule": "Telesağlamlıq planlaması",
-    "sslSecure": "SSL Təhlükəsiz",
+    "sslSecure": "SSL təhlükəsiz",
     "hipaaCompliant": "HIPAA Uyğun",
     "enterEmailPassword": "Zəhmət olmasa e-poçt və şifrənizi daxil edin",
     "invalidCredentials": "Yanlış giriş məlumatları",
@@ -389,7 +402,8 @@
       "branches": "Filiallar",
       "gallery": "Qalereya",
       "leads": "Lead-lər",
-      "salespeople": "Satış işçiləri"
+      "salespeople": "Satış işçiləri",
+      "privacyData": "Məxfilik və məlumat"
     },
     "dashboard": {
       "title": "İdarə Paneli",
@@ -1662,9 +1676,14 @@
       "totalPatients": "Ümumi Xəstə",
       "monthlyRevenue": "Aylıq Gəlir",
       "todayAppointments": "Bugünkü Randevular",
-      "satisfactionRate": "Məmnuniyyət Nisbəti"
+      "satisfactionRate": "Məmnuniyyət Nisbəti",
+      "revenueAnalytics": "Gəlir analitikası",
+      "patientDensity": "Xəstə sıxlığı",
+      "recentRecords": "Son tibbi qeydlər"
     },
-    "tooLateToReject": "İmtina üçün gec"
+    "tooLateToReject": "İmtina üçün gec",
+    "viewFile": "Faylı gör",
+    "setStage": "Mərhələ təyin et"
   },
   "home": {
     "heroTitle": "Dünyada #1 Sağlamlıq Portalı",
@@ -2658,7 +2677,9 @@
     "openFullReview": "Tam nəzərdən keçirməni aç",
     "suspended": "Dayandırılıb",
     "block": "Blokla",
-    "unblock": "Bloku aç"
+    "unblock": "Bloku aç",
+    "signedInAs": "Bu hesabla daxil olmusunuz",
+    "signInToPanel": "İdarə panelinə giriş"
   },
   "errors": {
     "notFound_title": "Səhifə tapılmadı",
@@ -2939,7 +2960,8 @@
     "depositInfo": "Depozit: {{amount}} TRY (ödəniş mərhələsi tezliklə əlavə olunacaq)",
     "noteOptional": "Qeyd (istəyə bağlı)",
     "notePlaceholder": "Simptomlarınızı təsvir edin və ya qeyd əlavə edin...",
-    "reviewYourAppointment": "Görüşünüzü nəzərdən keçirin"
+    "reviewYourAppointment": "Görüşünüzü nəzərdən keçirin",
+    "symptomsNotes": "Simptomlar və qeydlər"
   },
   "notifications": {
     "title": "Bildirişlər",
@@ -4351,5 +4373,18 @@
   "toast": {
     "clickToView": "Baxmaq üçün klikləyin",
     "dismiss": "Bildirişi bağla"
+  },
+  "clinic": {
+    "onsite": "Yerində",
+    "telehealth": "Telesağlamlıq",
+    "createPackage": "Paket yarat"
+  },
+  "appointments": {
+    "noShow": "Gəlmədi"
+  },
+  "saved": {
+    "browseClinics": "Klinikalara bax",
+    "browseDoctors": "Həkimlərə bax",
+    "removeConfirm": "Silmək istədiyinizə əminsiniz"
   }
 }

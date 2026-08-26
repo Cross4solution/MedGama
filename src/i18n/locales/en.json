@@ -53,7 +53,7 @@
     "refresh": "Refresh",
     "retry": "Try Again",
     "settings": "Settings",
-    "logout": "Logout",
+    "logout": "Log out",
     "login": "Login",
     "register": "Register",
     "email": "Email",
@@ -127,7 +127,20 @@
     "loadFailedHint": "The server could not be reached. This does not mean you have no records — check your connection and try again.",
     "admin": "Admin",
     "clearFilters": "Clear filters",
-    "publish": "Publish"
+    "publish": "Publish",
+    "gotIt": "Got it",
+    "saved": "Saved",
+    "getDirections": "Get directions",
+    "bookAppointment": "Book appointment",
+    "mapPreview": "Map preview",
+    "openInMaps": "Open in Maps",
+    "visible": "Visible",
+    "continue": "Continue",
+    "online": "Online",
+    "openOrDownload": "Open / download",
+    "remove": "Remove",
+    "medium": "Medium",
+    "open": "Open"
   },
   "nav": {
     "home": "Home",
@@ -161,7 +174,7 @@
     "signIn": "Sign In",
     "dontHaveAccount": "Don't have an account?",
     "signUp": "Sign up",
-    "tryDemo": "Try Demo",
+    "tryDemo": "Try demo",
     "tryDemoDoctor": "Try Demo (Doctor)",
     "tryDemoClinic": "Try Demo (Clinic)",
     "continueWithGoogle": "Continue with Google",
@@ -197,7 +210,7 @@
     "featureManageReps": "Manage sales reps and leads",
     "featureCoordinate": "Coordinate appointments",
     "featureTelehealthSchedule": "Telehealth scheduling",
-    "sslSecure": "SSL Secure",
+    "sslSecure": "SSL secure",
     "hipaaCompliant": "HIPAA Compliant",
     "enterEmailPassword": "Please enter email and password",
     "invalidCredentials": "Invalid credentials",
@@ -424,7 +437,8 @@
       "gallery": "Gallery",
       "leads": "Leadler",
       "salespeople": "Salespeople",
-      "medstream": "MedStream"
+      "medstream": "MedStream",
+      "privacyData": "Privacy & data"
     },
     "premiumGate": {
       "title": "Premium Feature",
@@ -1641,9 +1655,14 @@
       "totalPatients": "Total Patients",
       "monthlyRevenue": "Monthly Revenue",
       "todayAppointments": "Today's Appointments",
-      "satisfactionRate": "Satisfaction Rate"
+      "satisfactionRate": "Satisfaction Rate",
+      "revenueAnalytics": "Revenue analytics",
+      "patientDensity": "Patient density",
+      "recentRecords": "Recent medical records"
     },
-    "tooLateToReject": "Too late to reject"
+    "tooLateToReject": "Too late to reject",
+    "viewFile": "View file",
+    "setStage": "Set stage"
   },
   "home": {
     "heroTitle": "#1 Health Portal in the World",
@@ -2183,7 +2202,8 @@
     "depositInfo": "Deposit: {{amount}} TRY (payment step coming soon)",
     "noteOptional": "Note (optional)",
     "notePlaceholder": "Describe your symptoms or add a note...",
-    "reviewYourAppointment": "Review your appointment"
+    "reviewYourAppointment": "Review your appointment",
+    "symptomsNotes": "Symptoms & notes"
   },
   "notifications": {
     "title": "Notifications",
@@ -2949,7 +2969,9 @@
     "openFullReview": "Open full review",
     "suspended": "Suspended",
     "block": "Block",
-    "unblock": "Unblock"
+    "unblock": "Unblock",
+    "signedInAs": "You are signed in as",
+    "signInToPanel": "Sign in to admin panel"
   },
   "errors": {
     "notFound_title": "Page Not Found",
@@ -4253,5 +4275,18 @@
   "toast": {
     "clickToView": "Click to view",
     "dismiss": "Dismiss notification"
+  },
+  "clinic": {
+    "onsite": "Onsite",
+    "telehealth": "Telehealth",
+    "createPackage": "Create package"
+  },
+  "appointments": {
+    "noShow": "No-show"
+  },
+  "saved": {
+    "browseClinics": "Browse clinics",
+    "browseDoctors": "Browse doctors",
+    "removeConfirm": "Are you sure you want to remove"
   }
 }

@@ -108,7 +108,20 @@
     "loadFailedHint": "Сервер недоступен. Это не значит, что записей нет — проверьте соединение и повторите.",
     "admin": "Администратор",
     "clearFilters": "Сбросить фильтры",
-    "publish": "Опубликовать"
+    "publish": "Опубликовать",
+    "gotIt": "Понятно",
+    "saved": "Сохранено",
+    "getDirections": "Маршрут",
+    "bookAppointment": "Записаться",
+    "mapPreview": "Предпросмотр карты",
+    "openInMaps": "Открыть в картах",
+    "visible": "Виден",
+    "continue": "Продолжить",
+    "online": "Онлайн",
+    "openOrDownload": "Открыть / скачать",
+    "remove": "Удалить",
+    "medium": "Средний",
+    "open": "Открыть"
   },
   "nav": {
     "home": "Главная",
@@ -177,7 +190,7 @@
     "featureManageReps": "Управление представителями и лидами",
     "featureCoordinate": "Координация записей",
     "featureTelehealthSchedule": "Планирование телемедицины",
-    "sslSecure": "SSL защита",
+    "sslSecure": "Защищено SSL",
     "hipaaCompliant": "Соответствие HIPAA",
     "enterEmailPassword": "Введите email и пароль",
     "invalidCredentials": "Неверные учётные данные",
@@ -389,7 +402,8 @@
       "gallery": "Галерея",
       "leads": "Лиды",
       "medstream": "MedStream",
-      "salespeople": "Менеджеры"
+      "salespeople": "Менеджеры",
+      "privacyData": "Приватность и данные"
     },
     "premiumGate": {
       "title": "Премиум-функция",
@@ -1622,9 +1636,14 @@
       "totalPatients": "Всего пациентов",
       "monthlyRevenue": "Доход за месяц",
       "todayAppointments": "Приёмы сегодня",
-      "satisfactionRate": "Уровень удовлетворённости"
+      "satisfactionRate": "Уровень удовлетворённости",
+      "revenueAnalytics": "Аналитика доходов",
+      "patientDensity": "Плотность пациентов",
+      "recentRecords": "Последние медзаписи"
     },
-    "tooLateToReject": "Слишком поздно отклонять"
+    "tooLateToReject": "Слишком поздно отклонять",
+    "viewFile": "Открыть файл",
+    "setStage": "Задать этап"
   },
   "home": {
     "heroTitle": "Портал здоровья №1 в мире",
@@ -2164,7 +2183,8 @@
     "depositInfo": "Депозит: {{amount}} TRY (этап оплаты скоро будет доступен)",
     "noteOptional": "Примечание (необязательно)",
     "notePlaceholder": "Опишите ваши симптомы или добавьте примечание...",
-    "reviewYourAppointment": "Проверьте вашу запись"
+    "reviewYourAppointment": "Проверьте вашу запись",
+    "symptomsNotes": "Симптомы и заметки"
   },
   "notifications": {
     "title": "Уведомления",
@@ -2984,7 +3004,9 @@
     "openFullReview": "Открыть полную проверку",
     "suspended": "Приостановлен",
     "block": "Заблокировать",
-    "unblock": "Разблокировать"
+    "unblock": "Разблокировать",
+    "signedInAs": "Вы вошли как",
+    "signInToPanel": "Войти в панель администратора"
   },
   "errors": {
     "notFound_title": "Страница не найдена",
@@ -4311,5 +4333,18 @@
   "toast": {
     "clickToView": "Нажмите, чтобы открыть",
     "dismiss": "Закрыть уведомление"
+  },
+  "clinic": {
+    "onsite": "Очно",
+    "telehealth": "Телемедицина",
+    "createPackage": "Создать пакет"
+  },
+  "appointments": {
+    "noShow": "Не явился"
+  },
+  "saved": {
+    "browseClinics": "Смотреть клиники",
+    "browseDoctors": "Смотреть врачей",
+    "removeConfirm": "Действительно удалить"
   }
 }

@@ -108,7 +108,20 @@
     "loadFailedHint": "تعذّر الوصول إلى الخادم. هذا لا يعني أنه لا توجد سجلات — تحقّق من اتصالك وأعد المحاولة.",
     "admin": "المسؤول",
     "clearFilters": "مسح عوامل التصفية",
-    "publish": "نشر"
+    "publish": "نشر",
+    "gotIt": "فهمت",
+    "saved": "تم الحفظ",
+    "getDirections": "الاتجاهات",
+    "bookAppointment": "حجز موعد",
+    "mapPreview": "معاينة الخريطة",
+    "openInMaps": "فتح في الخرائط",
+    "visible": "مرئي",
+    "continue": "متابعة",
+    "online": "عبر الإنترنت",
+    "openOrDownload": "فتح / تنزيل",
+    "remove": "إزالة",
+    "medium": "متوسط",
+    "open": "فتح"
   },
   "nav": {
     "home": "الرئيسية",
@@ -141,7 +154,7 @@
     "signIn": "تسجيل الدخول",
     "dontHaveAccount": "ليس لديك حساب؟",
     "signUp": "إنشاء حساب",
-    "tryDemo": "جرب العرض التوضيحي",
+    "tryDemo": "جرّب العرض",
     "tryDemoDoctor": "جرب العرض التوضيحي (طبيب)",
     "tryDemoClinic": "جرب العرض التوضيحي (عيادة)",
     "continueWithGoogle": "المتابعة مع جوجل",
@@ -177,7 +190,7 @@
     "featureManageReps": "إدارة مندوبي المبيعات والعملاء المحتملين",
     "featureCoordinate": "تنسيق المواعيد",
     "featureTelehealthSchedule": "جدولة الصحة عن بعد",
-    "sslSecure": "محمي بـ SSL",
+    "sslSecure": "مؤمّن بـ SSL",
     "hipaaCompliant": "متوافق مع HIPAA",
     "enterEmailPassword": "يرجى إدخال البريد الإلكتروني وكلمة المرور",
     "invalidCredentials": "بيانات اعتماد غير صالحة",
@@ -389,7 +402,8 @@
       "gallery": "المعرض",
       "leads": "العملاء المحتملون",
       "medstream": "MedStream",
-      "salespeople": "مندوبو المبيعات"
+      "salespeople": "مندوبو المبيعات",
+      "privacyData": "الخصوصية والبيانات"
     },
     "premiumGate": {
       "title": "ميزة مميزة",
@@ -1622,9 +1636,14 @@
       "totalPatients": "إجمالي المرضى",
       "monthlyRevenue": "الإيراد الشهري",
       "todayAppointments": "مواعيد اليوم",
-      "satisfactionRate": "معدل الرضا"
+      "satisfactionRate": "معدل الرضا",
+      "revenueAnalytics": "تحليلات الإيرادات",
+      "patientDensity": "كثافة المرضى",
+      "recentRecords": "السجلات الطبية الأخيرة"
     },
-    "tooLateToReject": "فات الأوان للرفض"
+    "tooLateToReject": "فات الأوان للرفض",
+    "viewFile": "عرض الملف",
+    "setStage": "تحديد المرحلة"
   },
   "home": {
     "heroTitle": "بوابة الصحة رقم 1 في العالم",
@@ -2164,7 +2183,8 @@
     "depositInfo": "العربون: {{amount}} ليرة تركية (خطوة الدفع قريبًا)",
     "noteOptional": "ملاحظة (اختياري)",
     "notePlaceholder": "صف أعراضك أو أضف ملاحظة...",
-    "reviewYourAppointment": "راجع موعدك"
+    "reviewYourAppointment": "راجع موعدك",
+    "symptomsNotes": "الأعراض والملاحظات"
   },
   "notifications": {
     "title": "الإشعارات",
@@ -2984,7 +3004,9 @@
     "openFullReview": "فتح المراجعة الكاملة",
     "suspended": "موقوف",
     "block": "حظر",
-    "unblock": "إلغاء الحظر"
+    "unblock": "إلغاء الحظر",
+    "signedInAs": "أنت مسجّل الدخول باسم",
+    "signInToPanel": "تسجيل الدخول إلى لوحة الإدارة"
   },
   "errors": {
     "notFound_title": "الصفحة غير موجودة",
@@ -4311,5 +4333,18 @@
   "toast": {
     "clickToView": "انقر للعرض",
     "dismiss": "إغلاق الإشعار"
+  },
+  "clinic": {
+    "onsite": "في الموقع",
+    "telehealth": "الرعاية عن بُعد",
+    "createPackage": "إنشاء باقة"
+  },
+  "appointments": {
+    "noShow": "لم يحضر"
+  },
+  "saved": {
+    "browseClinics": "تصفح العيادات",
+    "browseDoctors": "تصفح الأطباء",
+    "removeConfirm": "هل تريد بالتأكيد الإزالة"
   }
 }

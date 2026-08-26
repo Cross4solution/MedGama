@@ -424,7 +424,7 @@ const DoctorDashboard = () => {
                           className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 hover:bg-red-100"
                           title="Hasta gelmedi olarak işaretle"
                         >
-                          Gelmedi
+                          {t('appointments.noShow', 'Gelmedi')}
                         </button>
                       )}
                     </div>

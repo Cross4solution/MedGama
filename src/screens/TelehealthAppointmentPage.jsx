@@ -1135,7 +1135,7 @@ export default function TelehealthAppointmentPage() {
                 <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
                   <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <FileText className="w-4 h-4 text-teal-600" />
-                    Symptoms & Notes
+                    {t('booking.symptomsNotes', 'Symptoms & Notes')}
                   </h3>
                   <textarea
                     rows={4}

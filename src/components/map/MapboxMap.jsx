@@ -146,7 +146,7 @@ export default function MapboxMap({
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/95 backdrop-blur-sm border border-gray-200 text-sm font-semibold text-gray-700 shadow-lg hover:bg-white hover:text-teal-600 hover:border-teal-300 transition-all"
           >
             <Navigation className="w-4 h-4" />
-            Get Directions
+            {t('common.getDirections', 'Get Directions')}
           </a>
         </div>
       )}

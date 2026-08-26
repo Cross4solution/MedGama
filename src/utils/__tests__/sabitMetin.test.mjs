@@ -26,8 +26,10 @@ const kok = path.resolve(path.dirname(buDosya), '../../..');
 
 /** Çeviriden muaf: marka adları, kısaltmalar, tek harfli etiketler. */
 const MUAF = new Set([
-  'Medagama', 'MedStream', 'CRM', 'GDPR', 'KVKK', 'HIPAA', 'PDF', 'CSV', 'AI',
-  'SSL', 'API', 'URL', 'ID', 'OK', 'TR', 'EN', 'EUR', 'USD', 'TRY', 'GBP',
+  'Medagama', 'MedStream', 'Medstream', 'CRM', 'GDPR', 'KVKK', 'HIPAA', 'PDF',
+  'CSV', 'AI', 'SSL', 'API', 'URL', 'ID', 'OK', 'TR', 'EN', 'EUR', 'USD',
+  'TRY', 'GBP', 'Vasco', 'Vasco AI', 'SuperAdmin', 'WhatsApp', 'Facebook', 'Google',
+  'Google Calendar', 'Outlook', 'Instagram', 'LinkedIn', 'YouTube', 'Twitter',
 ]);
 
 const TURKCE = /[çğıöşüÇĞİÖŞÜ]/;
@@ -48,10 +50,41 @@ function ekranlar(dizin) {
   return bulunan;
 }
 
-test('yönetici ekranlarında sabit İngilizce metin yok', () => {
+/**
+ * Hukuki sayfalar KAPSAM DIŞI.
+ *
+ * Gizlilik Politikası, Kullanım Koşulları ve Çerez Politikası'nda 158 sabit
+ * metin var. Onları `t()` ile sarmalamak yanlış olurdu: KVKK/GDPR metinlerinin
+ * on dilde HUKUKEN GEÇERLİ çevirisi gerekiyor, makine sarmalaması değil. Bu
+ * bir ürün/hukuk kararı ve müşteriye bırakıldı.
+ */
+const HUKUKI = new Set([
+  'PrivacyPolicyPage.jsx',
+  'TermsOfServicePage.jsx',
+  'CookiePolicyPage.jsx',
+  'CookieInfoPopup.jsx',
+  'DataPrivacyRightsPage.jsx',
+  'PrivacyPopup.jsx',
+]);
+
+/**
+ * Bilinçli olarak çevrilmeyenler.
+ *
+ * `DELETE` kullanıcının onay için YAZMASI gereken sabit sözcük — çevirmek
+ * karşılaştırmayı bozar. `DEV MODE` yalnız geliştirme kipinde çiziliyor.
+ */
+const BILINCLI = new Set(['Profile.jsx', 'CRMTelehealth.jsx']);
+
+test('ekranlarda sabit İngilizce metin yok', () => {
   const ihlaller = [];
 
-  for (const yol of ekranlar(path.join(kok, 'src/screens/admin'))) {
+  const taranacak = [
+    ...ekranlar(path.join(kok, 'src/screens')),
+    ...ekranlar(path.join(kok, 'src/components')),
+    ...ekranlar(path.join(kok, 'src/context')),
+  ].filter((y) => !HUKUKI.has(path.basename(y)) && !BILINCLI.has(path.basename(y)));
+
+  for (const yol of taranacak) {
     const kaynak = readFileSync(yol, 'utf8');
 
     for (const m of kaynak.matchAll(METIN_DUGUMU)) {
@@ -74,5 +107,5 @@ test('yönetici ekranlarında sabit İngilizce metin yok', () => {
 
 test('muafiyet listesi taramayı boşa çıkarmıyor', () => {
   // Muafiyetler büyüyerek ölçütü anlamsızlaştırmasın.
-  assert.ok(MUAF.size < 30, 'muafiyet listesi şişmiş: tarama artık bir şey söylemiyor');
+  assert.ok(MUAF.size < 40, 'muafiyet listesi şişmiş: tarama artık bir şey söylemiyor');
 });

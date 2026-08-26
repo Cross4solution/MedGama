@@ -108,7 +108,20 @@
     "loadFailedHint": "Sunucuya ulaşılamadı. Bu, kaydınızın olmadığı anlamına gelmez — bağlantınızı kontrol edip tekrar deneyin.",
     "admin": "Yönetici",
     "clearFilters": "Filtreleri temizle",
-    "publish": "Yayınla"
+    "publish": "Yayınla",
+    "gotIt": "Anladım",
+    "saved": "Kaydedildi",
+    "getDirections": "Yol Tarifi Al",
+    "bookAppointment": "Randevu Al",
+    "mapPreview": "Harita Önizleme",
+    "openInMaps": "Haritalar'da Aç",
+    "visible": "Görünür",
+    "continue": "Devam Et",
+    "online": "Çevrimiçi",
+    "openOrDownload": "Aç / İndir",
+    "remove": "Kaldır",
+    "medium": "Orta",
+    "open": "Aç"
   },
   "nav": {
     "home": "Ana Sayfa",
@@ -405,7 +418,8 @@
       "gallery": "Galeri",
       "leads": "Lead'ler",
       "medstream": "MedStream",
-      "salespeople": "Satışçılar"
+      "salespeople": "Satışçılar",
+      "privacyData": "Gizlilik ve Veri"
     },
     "premiumGate": {
       "title": "Premium Özellik",
@@ -1622,9 +1636,14 @@
       "totalPatients": "Toplam Hasta",
       "monthlyRevenue": "Aylık Gelir",
       "todayAppointments": "Bugünkü Randevular",
-      "satisfactionRate": "Memnuniyet Oranı"
+      "satisfactionRate": "Memnuniyet Oranı",
+      "revenueAnalytics": "Gelir Analizi",
+      "patientDensity": "Hasta Yoğunluğu",
+      "recentRecords": "Son Tıbbi Kayıtlar"
     },
-    "tooLateToReject": "Reddetmek için çok geç"
+    "tooLateToReject": "Reddetmek için çok geç",
+    "viewFile": "Dosyayı Görüntüle",
+    "setStage": "Aşama Belirle"
   },
   "home": {
     "heroTitle": "Dünyanın #1 Sağlık Portalı",
@@ -2196,7 +2215,8 @@
     "depositInfo": "Kapora: {{amount}} TL (ödeme adımı yakında)",
     "noteOptional": "Not (isteğe bağlı)",
     "notePlaceholder": "Şikayetinizi veya notunuzu yazın...",
-    "reviewYourAppointment": "Randevunuzu gözden geçirin"
+    "reviewYourAppointment": "Randevunuzu gözden geçirin",
+    "symptomsNotes": "Belirtiler ve Notlar"
   },
   "notifications": {
     "title": "Bildirimler",
@@ -2962,7 +2982,9 @@
     "openFullReview": "Tam incelemeyi aç",
     "suspended": "Askıya alındı",
     "block": "Engelle",
-    "unblock": "Engeli kaldır"
+    "unblock": "Engeli kaldır",
+    "signedInAs": "Şu hesapla girdiniz",
+    "signInToPanel": "Yönetim Paneline Giriş"
   },
   "errors": {
     "notFound_title": "Sayfa Bulunamadı",
@@ -4251,5 +4273,18 @@
   "toast": {
     "clickToView": "Görüntülemek için tıklayın",
     "dismiss": "Bildirimi kapat"
+  },
+  "clinic": {
+    "onsite": "Yerinde",
+    "telehealth": "Telesağlık",
+    "createPackage": "Paket Oluştur"
+  },
+  "appointments": {
+    "noShow": "Gelmedi"
+  },
+  "saved": {
+    "browseClinics": "Klinikleri Keşfet",
+    "browseDoctors": "Doktorları Keşfet",
+    "removeConfirm": "Kaldırmak istediğinize emin misiniz"
   }
 }

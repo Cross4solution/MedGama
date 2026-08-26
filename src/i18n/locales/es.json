@@ -108,7 +108,20 @@
     "loadFailedHint": "No se pudo contactar con el servidor. Esto no significa que no tengas registros: comprueba tu conexión e inténtalo de nuevo.",
     "admin": "Admin",
     "clearFilters": "Borrar filtros",
-    "publish": "Publicar"
+    "publish": "Publicar",
+    "gotIt": "Entendido",
+    "saved": "Guardado",
+    "getDirections": "Cómo llegar",
+    "bookAppointment": "Reservar cita",
+    "mapPreview": "Vista previa del mapa",
+    "openInMaps": "Abrir en Mapas",
+    "visible": "Visible",
+    "continue": "Continuar",
+    "online": "En línea",
+    "openOrDownload": "Abrir / descargar",
+    "remove": "Quitar",
+    "medium": "Medio",
+    "open": "Abrir"
   },
   "nav": {
     "home": "Inicio",
@@ -389,7 +402,8 @@
       "gallery": "Galería",
       "leads": "Clientes potenciales",
       "medstream": "MedStream",
-      "salespeople": "Comerciales"
+      "salespeople": "Comerciales",
+      "privacyData": "Privacidad y datos"
     },
     "dashboard": {
       "title": "Panel",
@@ -1622,9 +1636,14 @@
       "totalPatients": "Pacientes totales",
       "monthlyRevenue": "Ingresos mensuales",
       "todayAppointments": "Citas de hoy",
-      "satisfactionRate": "Índice de satisfacción"
+      "satisfactionRate": "Índice de satisfacción",
+      "revenueAnalytics": "Análisis de ingresos",
+      "patientDensity": "Densidad de pacientes",
+      "recentRecords": "Registros médicos recientes"
     },
-    "tooLateToReject": "Demasiado tarde para rechazar"
+    "tooLateToReject": "Demasiado tarde para rechazar",
+    "viewFile": "Ver archivo",
+    "setStage": "Definir etapa"
   },
   "home": {
     "heroTitle": "Portal de Salud #1 en el Mundo",
@@ -2618,7 +2637,9 @@
     "openFullReview": "Abrir revisión completa",
     "suspended": "Suspendido",
     "block": "Bloquear",
-    "unblock": "Desbloquear"
+    "unblock": "Desbloquear",
+    "signedInAs": "Has iniciado sesión como",
+    "signInToPanel": "Iniciar sesión en el panel"
   },
   "errors": {
     "notFound_title": "Página no encontrada",
@@ -2899,7 +2920,8 @@
     "depositInfo": "Depósito: {{amount}} TRY (el paso de pago estará disponible próximamente)",
     "noteOptional": "Nota (opcional)",
     "notePlaceholder": "Describe tus síntomas o añade una nota...",
-    "reviewYourAppointment": "Revise su cita"
+    "reviewYourAppointment": "Revise su cita",
+    "symptomsNotes": "Síntomas y notas"
   },
   "notifications": {
     "title": "Notificaciones",
@@ -4311,5 +4333,18 @@
   "toast": {
     "clickToView": "Haz clic para ver",
     "dismiss": "Cerrar notificación"
+  },
+  "clinic": {
+    "onsite": "Presencial",
+    "telehealth": "Telesalud",
+    "createPackage": "Crear paquete"
+  },
+  "appointments": {
+    "noShow": "No asistió"
+  },
+  "saved": {
+    "browseClinics": "Explorar clínicas",
+    "browseDoctors": "Explorar médicos",
+    "removeConfirm": "¿Seguro que quieres quitar"
   }
 }

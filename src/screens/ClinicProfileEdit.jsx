@@ -91,8 +91,8 @@ function ServiceModal({ initial, onClose, onSave }) {
             <input value={priceRange} onChange={(e)=>setPriceRange(e.target.value)} className="h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder={t('clinicProfileEdit.minMax', "₺min - ₺max")} />
             <input value={duration} onChange={(e)=>setDuration(e.target.value)} className="h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder={t('clinicProfileEdit.durationEG45Min', "Duration (e.g., 45 min)")} />
             <div className="h-10 px-3 border border-gray-200 rounded-xl text-sm flex items-center gap-3">
-              <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600"><input type="checkbox" className="rounded" checked={availability.includes('Onsite')} onChange={()=>toggleAvail('Onsite')} /> Onsite</label>
-              <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600"><input type="checkbox" className="rounded" checked={availability.includes('Telehealth')} onChange={()=>toggleAvail('Telehealth')} /> Telehealth</label>
+              <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600"><input type="checkbox" className="rounded" checked={availability.includes('Onsite')} onChange={()=>toggleAvail('Onsite')} /> {t('clinic.onsite', 'Onsite')}</label>
+              <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600"><input type="checkbox" className="rounded" checked={availability.includes('Telehealth')} onChange={()=>toggleAvail('Telehealth')} /> {t('clinic.telehealth', 'Telehealth')}</label>
             </div>
           </div>
           <textarea value={description} onChange={(e)=>setDescription(e.target.value)} rows={3} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder={t('clinicProfileEdit.shortDescription', "Short description")} />
@@ -104,7 +104,7 @@ function ServiceModal({ initial, onClose, onSave }) {
           </div>
         </div>
         <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between">
-          <label className="flex items-center gap-2 text-xs font-medium text-gray-600"><input type="checkbox" className="rounded" checked={visibility} onChange={(e)=>setVisibility(e.target.checked)} /> Visible</label>
+          <label className="flex items-center gap-2 text-xs font-medium text-gray-600"><input type="checkbox" className="rounded" checked={visibility} onChange={(e)=>setVisibility(e.target.checked)} /> {t('common.visible', 'Visible')}</label>
           <div className="flex items-center gap-2">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">{t('clinicProfileEdit.cancel', "Cancel")}</button>
             <button type="button" onClick={()=> onSave({ name, department, icon, description, procedures, priceRange, duration, availability, tags, languages, insurance, visibility }) } className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 rounded-xl shadow-md shadow-teal-200/50 transition-all duration-200">{t('clinicProfileEdit.save', "Save")}</button>
@@ -434,7 +434,7 @@ export default function ClinicProfileEdit() {
                     </div>
                     <div>
                       <input ref={logoInputRef} onChange={(e)=>onSelectFile(e,'logo')} type="file" accept="image/*" className="hidden" />
-                      <button type="button" onClick={()=>logoInputRef.current?.click()} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200/80 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 shadow-sm transition-all duration-200"><Upload className="w-3.5 h-3.5"/> Upload</button>
+                      <button type="button" onClick={()=>logoInputRef.current?.click()} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200/80 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 shadow-sm transition-all duration-200"><Upload className="w-3.5 h-3.5"/> {t('common.upload', 'Upload')}</button>
                     </div>
                   </div>
                 </div>
@@ -450,7 +450,7 @@ export default function ClinicProfileEdit() {
                     </div>
                     <div className="shrink-0">
                       <input ref={heroInputRef} onChange={(e)=>onSelectFile(e,'hero')} type="file" accept="image/*" className="hidden" />
-                      <button type="button" onClick={()=>heroInputRef.current?.click()} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200/80 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 shadow-sm transition-all duration-200"><Upload className="w-3.5 h-3.5"/> Upload</button>
+                      <button type="button" onClick={()=>heroInputRef.current?.click()} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200/80 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 shadow-sm transition-all duration-200"><Upload className="w-3.5 h-3.5"/> {t('common.upload', 'Upload')}</button>
                     </div>
                   </div>
                 </div>
@@ -732,7 +732,7 @@ export default function ClinicProfileEdit() {
                     <h2 className="text-base font-semibold text-gray-900">{t('clinicProfileEdit.healthTourismPackages', "Health Tourism Packages")}</h2>
                     <p className="text-xs text-gray-500 mt-0.5">{t('clinicProfileEdit.packagesHint', 'All-inclusive bundles (treatment + stay + transfer) for international patients.')}</p>
                   </div>
-                  <button type="button" onClick={addPackage} className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 text-sm font-semibold shadow-sm transition-colors flex-shrink-0"><Plus className="w-4 h-4"/> Create Package</button>
+                  <button type="button" onClick={addPackage} className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 text-sm font-semibold shadow-sm transition-colors flex-shrink-0"><Plus className="w-4 h-4"/> {t('clinic.createPackage', 'Create Package')}</button>
                 </div>
                 <div className="space-y-4">
                   {packages.map((p) => (

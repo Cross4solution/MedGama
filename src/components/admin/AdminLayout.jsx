@@ -99,7 +99,7 @@ function AdminLoginGate() {
           {wrongRole && (
             <div className="mb-4 px-3 py-2.5 bg-red-500/10 border border-red-500/20 rounded-xl">
               <p className="text-xs text-red-300 font-medium">
-                You are signed in as <span className="font-bold text-red-200">{user?.fullname || user?.name}</span> ({user?.role_id || user?.role}).
+                {t('admin.signedInAs', 'You are signed in as')} <span className="font-bold text-red-200">{user?.fullname || user?.name}</span> ({user?.role_id || user?.role}).
                 This account does not have administrator access.
               </p>
             </div>
@@ -157,7 +157,7 @@ function AdminLoginGate() {
               ) : (
                 <>
                   <Shield className="w-4 h-4" />
-                  Sign In to Admin Panel
+                  {t('admin.signInToPanel', 'Sign In to Admin Panel')}
                 </>
               )}
             </button>

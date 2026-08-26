@@ -100,7 +100,7 @@ marker.on('dragend',function(){var ll=marker.getLngLat();report(ll.lat,ll.lng)})
 
       <div className="flex items-center justify-end gap-3">
         {error && <span className="text-xs text-red-600">{error}</span>}
-        {saved && <span className="text-xs text-emerald-600 inline-flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> Saved</span>}
+        {saved && <span className="text-xs text-emerald-600 inline-flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> {t('common.saved', 'Saved')}</span>}
         <button type="button" onClick={save} disabled={saving}
           className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 transition-all disabled:opacity-60">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {saving ? 'Saving…' : 'Save location'}

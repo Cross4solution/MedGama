@@ -90,7 +90,7 @@ const TermsPopup = ({ setShowTermsPopup }) => {
           onClick={() => setShowTermsPopup(false)}
           className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors"
         >
-          Got it
+          {t('common.gotIt', 'Got it')}
         </button>
       </div>
     </div>

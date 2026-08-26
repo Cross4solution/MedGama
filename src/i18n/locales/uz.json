@@ -60,7 +60,20 @@
     "admin": "Admin",
     "clearAll": "Hammasini tozalash",
     "clearFilters": "Filtrlarni tozalash",
-    "publish": "Chop etish"
+    "publish": "Chop etish",
+    "gotIt": "Tushundim",
+    "saved": "Saqlandi",
+    "getDirections": "Yoʻnalish",
+    "bookAppointment": "Qabulga yozilish",
+    "mapPreview": "Xarita koʻrinishi",
+    "openInMaps": "Xaritalarda ochish",
+    "visible": "Koʻrinadi",
+    "continue": "Davom etish",
+    "online": "Onlayn",
+    "openOrDownload": "Ochish / yuklab olish",
+    "remove": "Olib tashlash",
+    "medium": "Oʻrta",
+    "open": "Ochish"
   },
   "nav": {
     "home": "Bosh sahifa",
@@ -92,7 +105,7 @@
     "signIn": "Kirish",
     "dontHaveAccount": "Hisobingiz yo'qmi?",
     "signUp": "Ro'yxatdan o'ting",
-    "tryDemo": "Demo sinash",
+    "tryDemo": "Demoni sinash",
     "tryDemoDoctor": "Demo sinash (Shifokor)",
     "tryDemoClinic": "Demo sinash (Klinika)",
     "continueWithGoogle": "Google bilan davom etish",
@@ -128,7 +141,7 @@
     "featureManageReps": "Sotuv vakillari va potentsial mijozlarni boshqarish",
     "featureCoordinate": "Uchrashuv muvofiqlashtiruvi",
     "featureTelehealthSchedule": "Telesog'liq rejalashtirish",
-    "sslSecure": "SSL Xavfsiz",
+    "sslSecure": "SSL himoyalangan",
     "hipaaCompliant": "HIPAA Muvofiq",
     "enterEmailPassword": "Iltimos, elektron pochta va parolingizni kiriting",
     "invalidCredentials": "Noto'g'ri kirish ma'lumotlari",
@@ -213,7 +226,8 @@
       "examination": "Ko'rik",
       "billing": "Hisob-kitob",
       "medstream": "MedStream",
-      "mainSite": "Asosiy Saytga O'tish"
+      "mainSite": "Asosiy Saytga O'tish",
+      "privacyData": "Maxfiylik va maʼlumot"
     },
     "dashboard": {
       "title": "Boshqaruv Paneli",
@@ -694,7 +708,14 @@
     "branches": {
       "forbiddenTitle": "Filiallarni boshqarish shifoxona hisoblari uchun.",
       "forbiddenHint": "Mavjud filiallaringiz saqlanib qolgan — bu ekran sizning hisobingizga ochiq emas."
-    }
+    },
+    "proTeaser": {
+      "revenueAnalytics": "Daromad tahlili",
+      "patientDensity": "Bemor zichligi",
+      "recentRecords": "Soʻnggi tibbiy yozuvlar"
+    },
+    "viewFile": "Faylni koʻrish",
+    "setStage": "Bosqich belgilash"
   },
   "home": {
     "heroTitle": "Dunyoda #1 Sog'liq Portali",
@@ -1061,7 +1082,9 @@
     "openFullReview": "To'liq ko'rikni ochish",
     "suspended": "Toʻxtatilgan",
     "block": "Bloklash",
-    "unblock": "Blokdan chiqarish"
+    "unblock": "Blokdan chiqarish",
+    "signedInAs": "Ushbu hisob bilan kirdingiz",
+    "signInToPanel": "Boshqaruv paneliga kirish"
   },
   "errors": {
     "notFound_title": "Sahifa topilmadi",
@@ -1127,5 +1150,21 @@
   },
   "message": {
     "deliveredWithRejected": "Xabar yuborildi, ammo bu fayllar qo'llab-quvvatlanmaydigan turda bo'lgani uchun yuborilmadi: {{names}}"
+  },
+  "clinic": {
+    "onsite": "Joyida",
+    "telehealth": "Telesogʻliq",
+    "createPackage": "Paket yaratish"
+  },
+  "appointments": {
+    "noShow": "Kelmadi"
+  },
+  "saved": {
+    "browseClinics": "Klinikalarni koʻrish",
+    "browseDoctors": "Shifokorlarni koʻrish",
+    "removeConfirm": "Olib tashlamoqchimisiz"
+  },
+  "booking": {
+    "symptomsNotes": "Belgilar va izohlar"
   }
 }

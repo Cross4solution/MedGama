@@ -170,7 +170,7 @@ export default function SavedClinics() {
                 <h3 className="text-lg font-semibold text-gray-700 mb-2">{t('savedClinics.noFavoriteClinicsYet', "No favorite clinics yet")}</h3>
                 <p className="text-sm text-gray-400 mb-6">{t('savedClinics.saveClinicsFromSearchResults', "Save clinics from search results or clinic profiles.")}</p>
                 <button onClick={() => navigate('/home-v2')} className="px-5 py-2.5 bg-teal-600 text-white rounded-xl font-semibold text-sm hover:bg-teal-700 transition-colors">
-                  Browse Clinics
+                  {t('saved.browseClinics', 'Browse Clinics')}
                 </button>
               </div>
             ) : (
@@ -237,7 +237,7 @@ export default function SavedClinics() {
                 <h3 className="text-lg font-semibold text-gray-700 mb-2">{t('savedClinics.noFavoriteDoctorsYet', "No favorite doctors yet")}</h3>
                 <p className="text-sm text-gray-400 mb-6">{t('savedClinics.saveDoctorsFromSearchResults', "Save doctors from search results or doctor profiles.")}</p>
                 <button onClick={() => navigate('/home-v2')} className="px-5 py-2.5 bg-teal-600 text-white rounded-xl font-semibold text-sm hover:bg-teal-700 transition-colors">
-                  Browse Doctors
+                  {t('saved.browseDoctors', 'Browse Doctors')}
                 </button>
               </div>
             ) : (
@@ -302,7 +302,7 @@ export default function SavedClinics() {
             </div>
             <h3 className="text-lg font-bold text-gray-900 mb-1">{t('savedClinics.removeFromFavorites', "Remove from Favorites?")}</h3>
             <p className="text-sm text-gray-500 mb-5">
-              Are you sure you want to remove <strong>{confirmRemove.item.name}</strong> from your favorites?
+              {t('saved.removeConfirm', 'Are you sure you want to remove')} <strong>{confirmRemove.item.name}</strong> from your favorites?
             </p>
             <div className="flex gap-3">
               <button
@@ -315,7 +315,7 @@ export default function SavedClinics() {
                 onClick={() => handleRemove(confirmRemove.item, confirmRemove.type)}
                 className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-rose-500 text-white hover:bg-rose-600 transition-colors"
               >
-                Remove
+                {t('common.remove', 'Remove')}
               </button>
             </div>
           </div>

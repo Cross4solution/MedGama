@@ -158,7 +158,7 @@ export default function GoogleMapsPreview({ url, height = 220, className = '', c
         </div>
         <a href={url} target="_blank" rel="noopener noreferrer"
           className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 flex-shrink-0">
-          Open <ExternalLink className="w-3 h-3" />
+          {t('common.open', 'Open')} <ExternalLink className="w-3 h-3" />
         </a>
       </div>
     );
@@ -180,11 +180,11 @@ export default function GoogleMapsPreview({ url, height = 220, className = '', c
       <div className="flex items-center justify-between px-3 py-1.5 bg-white border-t border-gray-100">
         <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
           <MapPin className="w-3 h-3" />
-          Map Preview
+          {t('common.mapPreview', 'Map Preview')}
         </div>
         <a href={url} target="_blank" rel="noopener noreferrer"
           className="text-[11px] font-medium text-teal-600 hover:text-teal-700 flex items-center gap-1 transition-colors">
-          Open in Maps <ExternalLink className="w-3 h-3" />
+          {t('common.openInMaps', 'Open in Maps')} <ExternalLink className="w-3 h-3" />
         </a>
       </div>
     </div>

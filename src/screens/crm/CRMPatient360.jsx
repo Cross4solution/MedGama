@@ -166,7 +166,7 @@ const TimelineCard = ({ entry, isLast, t }) => {
               )}
               {entry.file_url && (
                 <a href={entry.file_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-600 hover:text-teal-700">
-                  <Download className="w-3.5 h-3.5" /> View File
+                  <Download className="w-3.5 h-3.5" /> {t('crm.viewFile', 'View File')}
                 </a>
               )}
             </div>
@@ -414,7 +414,7 @@ const CRMPatient360 = () => {
                   </span>
                 ) : (
                   <button onClick={() => handleSetStage('Initial Consultation')} className="text-[10px] text-gray-400 hover:text-teal-600 flex items-center gap-0.5">
-                    <Plus className="w-2.5 h-2.5" /> Set stage
+                    <Plus className="w-2.5 h-2.5" /> {t('crm.setStage', 'Set stage')}
                   </button>
                 )}
               </div>

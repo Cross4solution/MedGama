@@ -108,7 +108,20 @@
     "loadFailedHint": "Server non raggiungibile. Non significa che non ci siano voci — controlla la connessione e riprova.",
     "admin": "Admin",
     "clearFilters": "Cancella filtri",
-    "publish": "Pubblica"
+    "publish": "Pubblica",
+    "gotIt": "Ho capito",
+    "saved": "Salvato",
+    "getDirections": "Indicazioni",
+    "bookAppointment": "Prenota appuntamento",
+    "mapPreview": "Anteprima mappa",
+    "openInMaps": "Apri in Mappe",
+    "visible": "Visibile",
+    "continue": "Continua",
+    "online": "Online",
+    "openOrDownload": "Apri / scarica",
+    "remove": "Rimuovi",
+    "medium": "Medio",
+    "open": "Apri"
   },
   "nav": {
     "home": "Home",
@@ -141,7 +154,7 @@
     "signIn": "Accedi",
     "dontHaveAccount": "Non hai un account?",
     "signUp": "Registrati",
-    "tryDemo": "Prova la demo",
+    "tryDemo": "Prova demo",
     "tryDemoDoctor": "Prova la demo (Medico)",
     "tryDemoClinic": "Prova la demo (Clinica)",
     "continueWithGoogle": "Continua con Google",
@@ -389,7 +402,8 @@
       "gallery": "Galleria",
       "leads": "Contatti",
       "medstream": "MedStream",
-      "salespeople": "Commerciali"
+      "salespeople": "Commerciali",
+      "privacyData": "Privacy e dati"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -1622,9 +1636,14 @@
       "totalPatients": "Pazienti totali",
       "monthlyRevenue": "Ricavi mensili",
       "todayAppointments": "Appuntamenti di oggi",
-      "satisfactionRate": "Tasso di soddisfazione"
+      "satisfactionRate": "Tasso di soddisfazione",
+      "revenueAnalytics": "Analisi ricavi",
+      "patientDensity": "Densità pazienti",
+      "recentRecords": "Cartelle cliniche recenti"
     },
-    "tooLateToReject": "Troppo tardi per rifiutare"
+    "tooLateToReject": "Troppo tardi per rifiutare",
+    "viewFile": "Visualizza file",
+    "setStage": "Imposta fase"
   },
   "home": {
     "heroTitle": "Portale Salute #1 al Mondo",
@@ -2618,7 +2637,9 @@
     "openFullReview": "Apri revisione completa",
     "suspended": "Sospeso",
     "block": "Blocca",
-    "unblock": "Sblocca"
+    "unblock": "Sblocca",
+    "signedInAs": "Hai effettuato l'accesso come",
+    "signInToPanel": "Accedi al pannello admin"
   },
   "errors": {
     "notFound_title": "Pagina non trovata",
@@ -2899,7 +2920,8 @@
     "depositInfo": "Acconto: {{amount}} TRY (la fase di pagamento sarà disponibile a breve)",
     "noteOptional": "Nota (facoltativo)",
     "notePlaceholder": "Descrivi i tuoi sintomi o aggiungi una nota...",
-    "reviewYourAppointment": "Controlla il tuo appuntamento"
+    "reviewYourAppointment": "Controlla il tuo appuntamento",
+    "symptomsNotes": "Sintomi e note"
   },
   "notifications": {
     "title": "Notifiche",
@@ -4311,5 +4333,18 @@
   "toast": {
     "clickToView": "Fai clic per visualizzare",
     "dismiss": "Chiudi notifica"
+  },
+  "clinic": {
+    "onsite": "In sede",
+    "telehealth": "Telemedicina",
+    "createPackage": "Crea pacchetto"
+  },
+  "appointments": {
+    "noShow": "Non presentato"
+  },
+  "saved": {
+    "browseClinics": "Sfoglia cliniche",
+    "browseDoctors": "Sfoglia medici",
+    "removeConfirm": "Vuoi davvero rimuovere"
   }
 }

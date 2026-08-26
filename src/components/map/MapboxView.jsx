@@ -55,7 +55,7 @@ export default function MapboxView({
           className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm border border-slate-200 text-xs font-medium text-slate-700 shadow-lg hover:bg-white hover:text-blue-600 transition-all"
         >
           <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-          Get Directions
+          {t('common.getDirections', 'Get Directions')}
         </a>
       </div>
 

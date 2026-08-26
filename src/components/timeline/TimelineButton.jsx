@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Tek tip timeline butonu
-// Kullanım: <TimelineButton className="w-full sm:w-auto">Book Appointment</TimelineButton>
+// Kullanım: <TimelineButton className="w-full sm:w-auto">{t('common.bookAppointment', 'Book Appointment')}</TimelineButton>
 export default function TimelineButton({ children, className = '', disabled = false, type = 'button', onClick = () => {} }) {
   const base = 'btn btn-primary btn-md';
   const cls = `${base} ${className}`.trim();

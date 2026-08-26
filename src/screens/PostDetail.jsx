@@ -709,7 +709,7 @@ export default function PostDetail() {
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white text-sm font-medium transition-all"
                   >
                     <Download className="w-4 h-4" />
-                    Open / Download
+                    {t('common.openOrDownload', 'Open / Download')}
                   </a>
                 </div>
               );

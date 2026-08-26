@@ -246,7 +246,7 @@ const AuthPages = () => {
                     onClick={() => { demoLogin('patient'); navigate('/home-v2'); }}
                     className="w-full mt-4 bg-gray-50 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-100 border border-gray-200 transition-colors"
                   >
-                    Try Demo
+                    {t('auth.tryDemo', 'Try Demo')}
                   </button>
                 </>
               ) : currentPage === 'register' ? (
@@ -275,7 +275,7 @@ const AuthPages = () => {
             </div>
             <div className="w-full px-2 mt-4 mb-4">
               <div className="flex items-center gap-6 justify-center text-white/70 text-xs">
-                <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> SSL Secure</span>
+                <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> {t('auth.sslSecure', 'SSL Secure')}</span>
                 <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5" /> {t('auth.gdprCompliant', 'GDPR Compliant')}</span>
               </div>
             </div>
@@ -356,7 +356,7 @@ const AuthPages = () => {
                         onClick={() => { demoLogin('patient'); navigate('/home-v2'); }}
                         className="w-full bg-gray-50 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-100 border border-gray-200 transition-colors"
                       >
-                        Try Demo
+                        {t('auth.tryDemo', 'Try Demo')}
                       </button>
                     </div>
                   </>

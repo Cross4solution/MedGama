@@ -172,7 +172,7 @@ const MockDashboardBg = () => {
       <div className="bg-white rounded-2xl border border-gray-200 p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-            <BarChart3 className="w-4 h-4 text-teal-500" /> Revenue Analytics
+            <BarChart3 className="w-4 h-4 text-teal-500" /> {t('crm.proTeaser.revenueAnalytics', 'Revenue Analytics')}
           </h3>
           <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-2 py-1 rounded-full">+23%</span>
         </div>
@@ -191,7 +191,7 @@ const MockDashboardBg = () => {
       <div className="bg-white rounded-2xl border border-gray-200 p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-            <PieChart className="w-4 h-4 text-violet-500" /> Patient Density
+            <PieChart className="w-4 h-4 text-violet-500" /> {t('crm.proTeaser.patientDensity', 'Patient Density')}
           </h3>
         </div>
         <div className="grid grid-cols-7 gap-1 h-32">
@@ -210,7 +210,7 @@ const MockDashboardBg = () => {
         </div>
         <div className="flex items-center gap-3 mt-3 text-[9px] text-gray-400">
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-teal-200" /> Low</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-teal-400" /> Medium</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-teal-400" /> {t('common.medium', 'Medium')}</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-teal-600" /> High</span>
         </div>
       </div>
@@ -219,7 +219,7 @@ const MockDashboardBg = () => {
     {/* Recent Patients Table Mock */}
     <div className="bg-white rounded-2xl border border-gray-200 p-5">
       <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-        <FileText className="w-4 h-4 text-amber-500" /> Recent Medical Records
+        <FileText className="w-4 h-4 text-amber-500" /> {t('crm.proTeaser.recentRecords', 'Recent Medical Records')}
       </h3>
       <div className="space-y-3">
         {[

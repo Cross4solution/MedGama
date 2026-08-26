@@ -108,7 +108,20 @@
     "loadFailedHint": "Der Server ist nicht erreichbar. Das heißt nicht, dass keine Einträge vorhanden sind — prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
     "admin": "Admin",
     "clearFilters": "Filter zurücksetzen",
-    "publish": "Veröffentlichen"
+    "publish": "Veröffentlichen",
+    "gotIt": "Verstanden",
+    "saved": "Gespeichert",
+    "getDirections": "Route anzeigen",
+    "bookAppointment": "Termin buchen",
+    "mapPreview": "Kartenvorschau",
+    "openInMaps": "In Karten öffnen",
+    "visible": "Sichtbar",
+    "continue": "Weiter",
+    "online": "Online",
+    "openOrDownload": "Öffnen / herunterladen",
+    "remove": "Entfernen",
+    "medium": "Mittel",
+    "open": "Öffnen"
   },
   "nav": {
     "home": "Startseite",
@@ -389,7 +402,8 @@
       "gallery": "Galerie",
       "leads": "Leads",
       "medstream": "MedStream",
-      "salespeople": "Vertrieb"
+      "salespeople": "Vertrieb",
+      "privacyData": "Datenschutz & Daten"
     },
     "premiumGate": {
       "title": "Premium-Funktion",
@@ -1622,9 +1636,14 @@
       "totalPatients": "Patienten gesamt",
       "monthlyRevenue": "Monatsumsatz",
       "todayAppointments": "Termine heute",
-      "satisfactionRate": "Zufriedenheitsrate"
+      "satisfactionRate": "Zufriedenheitsrate",
+      "revenueAnalytics": "Umsatzanalyse",
+      "patientDensity": "Patientendichte",
+      "recentRecords": "Aktuelle Krankenakten"
     },
-    "tooLateToReject": "Zu spät zum Ablehnen"
+    "tooLateToReject": "Zu spät zum Ablehnen",
+    "viewFile": "Datei ansehen",
+    "setStage": "Phase festlegen"
   },
   "home": {
     "heroTitle": "#1 Gesundheitsportal der Welt",
@@ -2164,7 +2183,8 @@
     "depositInfo": "Anzahlung: {{amount}} TRY (Zahlungsschritt folgt in Kürze)",
     "noteOptional": "Anmerkung (optional)",
     "notePlaceholder": "Beschreiben Sie Ihre Symptome oder fügen Sie eine Anmerkung hinzu …",
-    "reviewYourAppointment": "Überprüfen Sie Ihren Termin"
+    "reviewYourAppointment": "Überprüfen Sie Ihren Termin",
+    "symptomsNotes": "Symptome & Notizen"
   },
   "notifications": {
     "title": "Benachrichtigungen",
@@ -2984,7 +3004,9 @@
     "openFullReview": "Vollständige Prüfung öffnen",
     "suspended": "Gesperrt",
     "block": "Sperren",
-    "unblock": "Entsperren"
+    "unblock": "Entsperren",
+    "signedInAs": "Sie sind angemeldet als",
+    "signInToPanel": "Beim Admin-Panel anmelden"
   },
   "errors": {
     "notFound_title": "Seite nicht gefunden",
@@ -4311,5 +4333,18 @@
   "toast": {
     "clickToView": "Zum Anzeigen klicken",
     "dismiss": "Benachrichtigung schließen"
+  },
+  "clinic": {
+    "onsite": "Vor Ort",
+    "telehealth": "Telemedizin",
+    "createPackage": "Paket erstellen"
+  },
+  "appointments": {
+    "noShow": "Nicht erschienen"
+  },
+  "saved": {
+    "browseClinics": "Kliniken durchsuchen",
+    "browseDoctors": "Ärzte durchsuchen",
+    "removeConfirm": "Möchten Sie wirklich entfernen"
   }
 }

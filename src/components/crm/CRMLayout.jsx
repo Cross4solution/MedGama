@@ -726,7 +726,7 @@ const CRMLayout = ({ children }) => {
                       </Link>
                       <Link to="/crm" onClick={() => setProfileOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                         <Shield className="w-4 h-4 text-gray-400" />
-                        Privacy & Data
+                        {t('crm.sidebar.privacyData', 'Privacy & Data')}
                       </Link>
                       <div className="border-t border-gray-100 mt-1 pt-1">
                         <button onClick={handleLogout} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left">

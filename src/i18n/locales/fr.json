@@ -31,7 +31,7 @@
     "print": "Imprimer",
     "refresh": "Actualiser",
     "settings": "Paramètres",
-    "logout": "Déconnexion",
+    "logout": "Se déconnecter",
     "login": "Connexion",
     "register": "S'inscrire",
     "email": "E-mail",
@@ -108,7 +108,20 @@
     "loadFailedHint": "Le serveur est injoignable. Cela ne signifie pas que vous n'avez aucun élément — vérifiez votre connexion et réessayez.",
     "admin": "Admin",
     "clearFilters": "Effacer les filtres",
-    "publish": "Publier"
+    "publish": "Publier",
+    "gotIt": "Compris",
+    "saved": "Enregistré",
+    "getDirections": "Itinéraire",
+    "bookAppointment": "Prendre rendez-vous",
+    "mapPreview": "Aperçu de la carte",
+    "openInMaps": "Ouvrir dans Maps",
+    "visible": "Visible",
+    "continue": "Continuer",
+    "online": "En ligne",
+    "openOrDownload": "Ouvrir / télécharger",
+    "remove": "Retirer",
+    "medium": "Moyen",
+    "open": "Ouvrir"
   },
   "nav": {
     "home": "Accueil",
@@ -177,7 +190,7 @@
     "featureManageReps": "Gérer les représentants et les prospects",
     "featureCoordinate": "Coordonner les rendez-vous",
     "featureTelehealthSchedule": "Planification de télésanté",
-    "sslSecure": "SSL sécurisé",
+    "sslSecure": "Sécurisé SSL",
     "hipaaCompliant": "Conforme HIPAA",
     "enterEmailPassword": "Veuillez entrer votre e-mail et mot de passe",
     "invalidCredentials": "Identifiants invalides",
@@ -389,7 +402,8 @@
       "gallery": "Galerie",
       "leads": "Prospects",
       "medstream": "MedStream",
-      "salespeople": "Commerciaux"
+      "salespeople": "Commerciaux",
+      "privacyData": "Confidentialité et données"
     },
     "dashboard": {
       "title": "Tableau de bord",
@@ -1622,9 +1636,14 @@
       "totalPatients": "Total des patients",
       "monthlyRevenue": "Revenu mensuel",
       "todayAppointments": "Rendez-vous du jour",
-      "satisfactionRate": "Taux de satisfaction"
+      "satisfactionRate": "Taux de satisfaction",
+      "revenueAnalytics": "Analyse des revenus",
+      "patientDensity": "Densité de patients",
+      "recentRecords": "Dossiers médicaux récents"
     },
-    "tooLateToReject": "Trop tard pour refuser"
+    "tooLateToReject": "Trop tard pour refuser",
+    "viewFile": "Voir le fichier",
+    "setStage": "Définir l’étape"
   },
   "home": {
     "heroTitle": "Portail Santé #1 au Monde",
@@ -2618,7 +2637,9 @@
     "openFullReview": "Ouvrir l'examen complet",
     "suspended": "Suspendu",
     "block": "Bloquer",
-    "unblock": "Débloquer"
+    "unblock": "Débloquer",
+    "signedInAs": "Vous êtes connecté en tant que",
+    "signInToPanel": "Se connecter au panneau d'administration"
   },
   "errors": {
     "notFound_title": "Page non trouvée",
@@ -2899,7 +2920,8 @@
     "depositInfo": "Acompte : {{amount}} TRY (étape de paiement bientôt disponible)",
     "noteOptional": "Note (facultatif)",
     "notePlaceholder": "Décrivez vos symptômes ou ajoutez une note...",
-    "reviewYourAppointment": "Vérifiez votre rendez-vous"
+    "reviewYourAppointment": "Vérifiez votre rendez-vous",
+    "symptomsNotes": "Symptômes et notes"
   },
   "notifications": {
     "title": "Notifications",
@@ -4311,5 +4333,18 @@
   "toast": {
     "clickToView": "Cliquez pour afficher",
     "dismiss": "Fermer la notification"
+  },
+  "clinic": {
+    "onsite": "Sur place",
+    "telehealth": "Télésanté",
+    "createPackage": "Créer un forfait"
+  },
+  "appointments": {
+    "noShow": "Absent"
+  },
+  "saved": {
+    "browseClinics": "Parcourir les cliniques",
+    "browseDoctors": "Parcourir les médecins",
+    "removeConfirm": "Voulez-vous vraiment retirer"
   }
 }

@@ -418,7 +418,7 @@ const PatientDashboard = () => {
                               </span>
                               {appt.appointment_type === 'online' && (
                                 <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded-md border border-purple-100">
-                                  <Monitor className="w-2.5 h-2.5" /> Online
+                                  <Monitor className="w-2.5 h-2.5" /> {t('common.online', 'Online')}
                                 </span>
                               )}
                             </div>

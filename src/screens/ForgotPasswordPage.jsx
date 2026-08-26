@@ -228,7 +228,7 @@ export default function ForgotPasswordPage() {
               disabled={code.join('').length !== 6}
               className="w-full flex items-center justify-center gap-2 bg-teal-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
             >
-              Continue <ArrowRight className="w-4 h-4" />
+              {t('common.continue', 'Continue')} <ArrowRight className="w-4 h-4" />
             </button>
 
             <div className="text-center mt-5">
