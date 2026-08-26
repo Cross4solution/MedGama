@@ -66,7 +66,17 @@ test.describe('Tarayıcı uyumu', () => {
       document.activeElement instanceof HTMLElement && document.activeElement.blur();
     });
 
-    await page.keyboard.press('Tab');
+    // Tab BASILDI ama işlenmemiş olabilir.
+    //
+    // Sayfa hidrasyondayken sentetik tuş bazen belgeye hiç ulaşmıyor ve odak
+    // `body`de kalıyor. Ölçüldü: onda bir. Aranan şey "tarayıcı tuşu anında
+    // işledi mi" değil, "ilk durak atlama bağlantısı mı" — o yüzden odak
+    // gövdeden ayrılana kadar yeniden deneniyor.
+    await expect.poll(async () => {
+      await page.keyboard.press('Tab');
+      return page.evaluate(() => document.activeElement?.tagName);
+    }, { timeout: 10_000, message: 'Tab odağı hiç taşımadı' }).not.toBe('BODY');
+
     const ilkOdak = await page.evaluate(() => document.activeElement?.getAttribute('href'));
 
     if (browserName === 'webkit') {

@@ -18,10 +18,22 @@ export default function ScrollToTopButton() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Görünmezken klavye sırasından da ÇIKIYOR.
+  //
+  // Düğme `opacity-0` ve `pointer-events-none` ile gizleniyordu. İkisi de
+  // odaklanabilirliği kaldırmaz: `opacity` yalnız çizimi, `pointer-events`
+  // yalnız fareyi etkiler. Klavyeyle gezen kullanıcı, sayfanın hiçbir yerinde
+  // görünmeyen bir düğmeye odaklanıyordu — odak halkası boşlukta duruyor,
+  // Enter'a basınca ne olacağı belirsiz.
+  //
+  // Ekran okuyucudan da gizleniyor: `aria-hidden`. Görünmeyen bir "başa dön"
+  // düğmesini okumak, sayfada olmayan bir denetimi duyurmak demek.
   return (
     <button
       type="button"
       aria-label={t('common.scrollToTop')}
+      aria-hidden={!visible}
+      tabIndex={visible ? 0 : -1}
       onClick={scrollToTop}
       className={`fixed bottom-6 right-6 z-50 w-10 h-10 rounded-full bg-teal-600 text-white shadow-lg hover:bg-teal-700 hover:shadow-xl flex items-center justify-center transition-all duration-300 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
     >
