@@ -135,10 +135,42 @@ class BillingController extends Controller
         // tekrarlanması, sürücü kuralı değiştiğinde birinin unutulması demek.
         $likeOp = \App\Support\Sorgu::benzer();
 
+        // Boş sorgu hasta LİSTELEMEZ.
+        //
+        // Desen `%%` olduğunda her kayıt eşleşiyordu: arama kutusu boşken uç
+        // sistemdeki ilk on beş hastayı döndürüyordu. Arama, aranacak bir şey
+        // olduğunda çalışır.
+        if (mb_strlen($q) < 2) {
+            return response()->json([]);
+        }
+
+        $kullanici = $request->user();
+
         $patients = \App\Models\User::where('role_id', 'patient')
             ->where(function ($query) use ($q, $likeOp) {
                 $query->where('fullname', $likeOp, "%{$q}%")
                       ->orWhere('email', $likeOp, "%{$q}%");
+            })
+            // Kapsam koşulu YOKTU: rota `role:doctor` arkasında olduğu için
+            // sistemdeki herhangi bir hekim, hiç görmediği hastaları adının
+            // parçasıyla arayıp e-posta adreslerini alabiliyordu. Bir sağlık
+            // platformunda kişinin burada hesabı olması tedavi arıyor olduğunu
+            // ima eder; eşleşmenin kendisi hassas.
+            ->whereHas('patientAppointments', function ($q2) use ($kullanici) {
+                if ($kullanici->isDoctor()) {
+                    $q2->where('doctor_id', $kullanici->id);
+
+                    return;
+                }
+
+                // Boş `clinic_id` ile kapsamak, kapsamı GENİŞLETİR: Laravel
+                // `where('clinic_id', null)` ifadesini `IS NULL` yapıyor ve
+                // kliniğe bağlı olmayan bütün randevuları eşliyor. Bağ yoksa
+                // sonuç boş olmalı. (Bu tuzağı BosKapsamDegeriTest yakaladı —
+                // ilk yazdığım hâli tam olarak bu hataya düşüyordu.)
+                $kullanici->clinic_id
+                    ? $q2->where('clinic_id', $kullanici->clinic_id)
+                    : $q2->whereRaw('1 = 0');
             })
             ->select('id', 'fullname', 'email', 'avatar')
             ->limit(15)
