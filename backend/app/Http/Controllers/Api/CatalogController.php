@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\AuditLog;
 use App\Http\Controllers\Controller;
 use App\Models\Allergy;
 use App\Models\LanguageCatalog;
@@ -102,6 +103,24 @@ class CatalogController extends Controller
         $specialty = Specialty::active()->findOrFail($id);
         $specialty->is_active = false;
         $specialty->save();
+
+        // Silme kayda geçiyor.
+        //
+        // Katalog yazmaları denetim günlüğüne düşmüyordu; diğer bütün yönetici
+        // işlemleri düşüyordu. Bir uzmanlık silindiğinde o uzmanlıktaki
+        // hekimlerin profilleri etkileniyor ve altı ay sonra "bu neden
+        // kayboldu" sorulduğunda cevap verecek bir iz kalmıyordu.
+        //
+        // Kimseye bildirim gitmiyor: yalnız Sistem Günlükleri ekranında durur.
+        AuditLog::log(
+            action: 'catalog.specialty_deleted',
+            resourceType: 'Specialty',
+            resourceId: $specialty->id,
+            oldValues: ['is_active' => true],
+            newValues: ['is_active' => false],
+            description: "Deleted specialty: " . ($specialty->name ?? $specialty->id),
+        );
+
         $this->forgetCatalogCache('specialty');
         return response()->json(['message' => 'Specialty deleted.']);
     }
@@ -219,6 +238,24 @@ class CatalogController extends Controller
         $city = City::active()->findOrFail($id);
         $city->is_active = false;
         $city->save();
+
+        // Silme kayda geçiyor.
+        //
+        // Katalog yazmaları denetim günlüğüne düşmüyordu; diğer bütün yönetici
+        // işlemleri düşüyordu. Bir uzmanlık silindiğinde o uzmanlıktaki
+        // hekimlerin profilleri etkileniyor ve altı ay sonra "bu neden
+        // kayboldu" sorulduğunda cevap verecek bir iz kalmıyordu.
+        //
+        // Kimseye bildirim gitmiyor: yalnız Sistem Günlükleri ekranında durur.
+        AuditLog::log(
+            action: 'catalog.city_deleted',
+            resourceType: 'City',
+            resourceId: $city->id,
+            oldValues: ['is_active' => true],
+            newValues: ['is_active' => false],
+            description: "Deleted city: " . ($city->name ?? $city->id),
+        );
+
         $this->forgetCatalogCache('city');
         return response()->json(['message' => 'City deleted.']);
     }

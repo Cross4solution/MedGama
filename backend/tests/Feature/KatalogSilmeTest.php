@@ -49,6 +49,27 @@ class KatalogSilmeTest extends TestCase
         );
     }
 
+    public function test_silme_denetim_gunlugune_yaziliyor(): void
+    {
+        // Katalog yazmaları denetim günlüğüne düşmüyordu; diğer bütün yönetici
+        // işlemleri düşüyordu. Bir uzmanlık silindiğinde o uzmanlıktaki
+        // hekimlerin profilleri etkileniyor ve sonradan "bunu kim sildi"
+        // sorusunun cevabı kalmıyordu.
+        //
+        // Kimseye bildirim gitmiyor — kayıt yalnız Sistem Günlükleri ekranında
+        // durur, sonradan bakmak için.
+        $uzmanlik = Specialty::create(['code' => 'gunluk-uzm', 'name' => 'Günlük Ölçümü']);
+
+        $this->yonetici()
+            ->deleteJson("/api/admin/catalog/specialties/{$uzmanlik->id}")
+            ->assertOk();
+
+        $this->assertDatabaseHas('audit_logs', [
+            'action'      => 'catalog.specialty_deleted',
+            'resource_id' => $uzmanlik->id,
+        ]);
+    }
+
     public function test_sehir_silme_kaydi_pasiflestiriyor(): void
     {
         // `country_id` zorunlu ama `$fillable` içinde değil (sayısal ülke
