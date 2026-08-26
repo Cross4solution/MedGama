@@ -835,7 +835,11 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
             'summary'           => 'required|string|max:1000',
             'severity'          => 'sometimes|in:low,medium,high,critical',
             'affected_user_ids' => 'sometimes|array',
-            'affected_user_ids.*' => 'integer',
+            // Kullanıcı kimlikleri UUID; `integer` doğrulaması GERÇEK kimlikleri
+            // reddediyordu. Yani veri ihlali bildirimi, tam da bildirmesi
+            // gereken şeyi — kimlerin etkilendiğini — kabul edemiyordu
+            // (KVKK Md. 12, GDPR Md. 33/34).
+            'affected_user_ids.*' => 'uuid|exists:users,id',
             'detected_at'       => 'sometimes|date',
             'vector'            => 'sometimes|string|max:500',
         ]);
