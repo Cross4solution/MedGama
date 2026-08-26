@@ -2344,6 +2344,7 @@
     "transcriptHistory": "Transkript",
     "recording": "KAY",
     "noTranscripts": "Oturum başladığında transkriptler burada görünecektir.",
+    "transcriptUnavailable": "Bu görüşmede transkript henüz kullanılamıyor.",
     "consentTitle": "Görüşmeye Katıl",
     "consentBody": "Görüşme uçtan uca şifrelidir ve kaydedilmez. Devam ederek kamera ve mikrofonunuzun bu görüşme için kullanılmasına izin vermiş olursunuz.",
     "consentAccept": "Kabul et ve devam et",

@@ -3051,6 +3051,7 @@
     "transcriptHistory": "Transcripción",
     "recording": "GRAB",
     "noTranscripts": "Las transcripciones aparecerán aquí cuando comience la sesión.",
+    "transcriptUnavailable": "La transcripción aún no está disponible para esta llamada.",
     "camera": "Cámara",
     "captionAccept": "Aceptar",
     "captionAskBody": "La otra persona desea usar subtítulos. Si acepta, el habla se transcribe en nuestro servidor. El texto no se almacena y se elimina al finalizar la llamada.",

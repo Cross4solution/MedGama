@@ -11,6 +11,10 @@ export default function useTelehealth(appointmentId) {
   const [error, setError] = useState(null);
   const [transcripts, setTranscripts] = useState([]);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  // null = henüz denenmedi. Ancak gerçek bir yanıt geldikten sonra true olur;
+  // uç kapalıysa false. "REC" rozeti buna bakar — çalışmayan bir transkript
+  // için hastaya kayıt alındığını söylememiz gerekiyor.
+  const [transcriptionAvailable, setTranscriptionAvailable] = useState(null);
   const [meetingStatus, setMeetingStatus] = useState('pending');
   const [elapsed, setElapsed] = useState(0);
 
@@ -76,6 +80,7 @@ export default function useTelehealth(appointmentId) {
         const res = await telehealthAPI.simulateTranscript(appointmentId, 1);
         const data = res?.data || res;
         if (data?.results?.length) {
+          setTranscriptionAvailable(true);
           setTranscripts(prev => {
             const next = [...prev, ...data.results];
             // Keep last 50 transcripts
@@ -83,7 +88,14 @@ export default function useTelehealth(appointmentId) {
           });
         }
       } catch {
-        // Silent — simulation may fail during dev
+        // Uç üretimde kapalı (404). Yoklamayı durdur ve panelde kayıt
+        // alındığı izlenimi verme.
+        setTranscriptionAvailable(false);
+        setIsTranscribing(false);
+        if (simulationRef.current) {
+          clearInterval(simulationRef.current);
+          simulationRef.current = null;
+        }
       }
     };
 
@@ -125,6 +137,7 @@ export default function useTelehealth(appointmentId) {
     meetingStatus,
     transcripts,
     isTranscribing,
+    transcriptionAvailable,
     elapsed,
     formattedElapsed: formatElapsed(elapsed),
     fetchSession,

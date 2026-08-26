@@ -2312,6 +2312,7 @@
     "transcriptHistory": "Transkript",
     "recording": "AUFN",
     "noTranscripts": "Transkripte werden hier angezeigt, sobald die Sitzung beginnt.",
+    "transcriptUnavailable": "Die Transkription ist für dieses Gespräch noch nicht verfügbar.",
     "camera": "Kamera",
     "captionAccept": "Annehmen",
     "captionAskBody": "Die andere Person möchte Untertitel verwenden. Wenn Sie zustimmen, wird das Gesprochene auf unserem Server verschriftlicht. Der Text wird nicht gespeichert und nach Gesprächsende gelöscht.",

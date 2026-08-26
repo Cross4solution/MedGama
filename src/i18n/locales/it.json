@@ -3051,6 +3051,7 @@
     "transcriptHistory": "Trascrizione",
     "recording": "REG",
     "noTranscripts": "Le trascrizioni appariranno qui all'avvio della sessione.",
+    "transcriptUnavailable": "La trascrizione non è ancora disponibile per questa chiamata.",
     "camera": "Videocamera",
     "captionAccept": "Accetta",
     "captionAskBody": "L'altra persona desidera usare i sottotitoli. Se accetti, il parlato viene trascritto sul nostro server. Il testo non viene conservato e viene eliminato al termine della chiamata.",

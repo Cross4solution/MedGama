@@ -23,7 +23,7 @@ function CRMTelehealth() {
 
   const {
     session, loading, error, meetingStatus,
-    transcripts, isTranscribing, formattedElapsed,
+    transcripts, isTranscribing, transcriptionAvailable, formattedElapsed,
     startSession, endSession, startTranscription, stopTranscription,
   } = useTelehealth(appointmentId);
 
@@ -286,9 +286,11 @@ function CRMTelehealth() {
 
               {/* Captions toggle */}
               <button
+                disabled={transcriptionAvailable === false}
                 onClick={() => isTranscribing ? stopTranscription() : startTranscription()}
                 className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${
-                  isTranscribing ? 'bg-teal-500/20 text-teal-400 hover:bg-teal-500/30' : 'bg-gray-700 hover:bg-gray-600 text-white'
+                  transcriptionAvailable === false ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                    : isTranscribing ? 'bg-teal-500/20 text-teal-400 hover:bg-teal-500/30' : 'bg-gray-700 hover:bg-gray-600 text-white'
                 }`}
                 title={t('telehealth.captions', 'Live Captions')}
               >
@@ -455,7 +457,7 @@ function CRMTelehealth() {
               <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
                 {t('telehealth.transcriptHistory', 'Transcript')}
               </h3>
-              {isTranscribing && (
+              {isTranscribing && transcriptionAvailable === true && (
                 <div className="flex items-center gap-1">
                   <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                   <span className="text-[10px] text-red-400 font-medium">{t('telehealth.recording', 'REC')}</span>
@@ -466,7 +468,11 @@ function CRMTelehealth() {
               {transcripts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center">
                   <Captions className="w-8 h-8 text-gray-700 mb-2" />
-                  <p className="text-xs text-gray-600">{t('telehealth.noTranscripts', 'Transcripts will appear here when the session starts.')}</p>
+                  <p className="text-xs text-gray-600">
+                    {transcriptionAvailable === false
+                      ? t('telehealth.transcriptUnavailable', 'Transcription is not available for this call yet.')
+                      : t('telehealth.noTranscripts', 'Transcripts will appear here when the session starts.')}
+                  </p>
                 </div>
               ) : (
                 transcripts.map((tr, i) => (

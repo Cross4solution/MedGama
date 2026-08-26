@@ -2331,6 +2331,7 @@
     "transcriptHistory": "Transcript",
     "recording": "REC",
     "noTranscripts": "Transcripts will appear here when the session starts.",
+    "transcriptUnavailable": "Transcription is not available for this call yet.",
     "consentTitle": "Join Call",
     "consentBody": "The call is end-to-end encrypted and is not recorded. By continuing you allow your camera and microphone to be used for this call.",
     "consentAccept": "Accept and continue",

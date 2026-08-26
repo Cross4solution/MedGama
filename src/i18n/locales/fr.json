@@ -3051,6 +3051,7 @@
     "transcriptHistory": "Transcription",
     "recording": "ENR.",
     "noTranscripts": "Les transcriptions apparaîtront ici au démarrage de la séance.",
+    "transcriptUnavailable": "La transcription n'est pas encore disponible pour cet appel.",
     "camera": "Caméra",
     "captionAccept": "Accepter",
     "captionAskBody": "Votre interlocuteur souhaite utiliser les sous-titres. Si vous acceptez, la parole est transcrite sur notre serveur. Le texte n'est pas conservé et est supprimé à la fin de l'appel.",

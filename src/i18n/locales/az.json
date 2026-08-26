@@ -3091,6 +3091,7 @@
     "transcriptHistory": "Transkript",
     "recording": "QEYD",
     "noTranscripts": "Seans başladıqda transkriptlər burada görünəcək.",
+    "transcriptUnavailable": "Bu zəng üçün transkripsiya hələ mövcud deyil.",
     "camera": "Kamera",
     "captionAccept": "Qəbul et",
     "captionAskBody": "Qarşı tərəf altyazı istifadə etmək istəyir. Qəbul etsəniz, danışıq serverimizdə mətnə çevrilir. Mətn saxlanılmır və görüş bitəndə silinir.",
