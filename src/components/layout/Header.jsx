@@ -10,7 +10,6 @@ import { useToast } from '../../context/ToastContext';
 import { useNotifications } from '../../context/NotificationsContext';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 import { playNotificationSound } from '../../utils/notificationSound';
-import { useGorunurYoklama } from '../../hooks/useGorunurYoklama';
 import LanguageSwitcher from '../ui/LanguageSwitcher';
 import useModalDavranisi from '../../hooks/useModalDavranisi';
 
@@ -62,7 +61,14 @@ const Header = () => {
   // ── Notification state ──
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef(null);
-  const { unreadCount: globalUnreadCount, increment: globalIncrement, decrement: globalDecrement, reset: globalReset, setCount: globalSetCount } = useNotifications();
+  const {
+    unreadCount: globalUnreadCount,
+    increment: globalIncrement,
+    decrement: globalDecrement,
+    reset: globalReset,
+    setCount: globalSetCount,
+    refresh: globalRefresh,
+  } = useNotifications();
   const [unreadCount, setUnreadCount] = useState(globalUnreadCount);
   const [notifications, setNotifications] = useState([]);
   const [notifLoading, setNotifLoading] = useState(false);
@@ -70,15 +76,13 @@ const Header = () => {
   // Keep local count in sync with global context
   useEffect(() => { setUnreadCount(globalUnreadCount); }, [globalUnreadCount]);
 
-  const fetchUnreadCount = useCallback(async () => {
-    if (!user) return;
-    try {
-      const res = await notificationAPI.unreadCount();
-      const c = res?.unread_count ?? res?.data?.unread_count ?? res?.count ?? 0;
-      setUnreadCount(c);
-      globalSetCount(c);
-    } catch { /* silent */ }
-  }, [user, globalSetCount]);
+  // Okunmamış sayısını BAĞLAM çekiyor; başlık onu okuyor.
+  //
+  // Eskiden ikisi de ayrı ayrı çekiyor ve ayrı ayrı yokluyordu — bağlam 30-120
+  // saniyede bir, başlık 60 saniyede bir. Aynı sayı için sayfa başına iki
+  // istek ve sürekli iki zamanlayıcı. Ölçüldü: her ekran açılışında
+  // `/api/notifications/unread-count` iki kez.
+  const fetchUnreadCount = globalRefresh;
 
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
@@ -155,9 +159,9 @@ const Header = () => {
     };
   }, [user?.id]);
 
-  // Yedek yoklama — bildirimler soketten geliyor; sekme görünmüyorsa sorulmaz.
-  // (Aynı kalıp CRM düzeninde ve bildirim bağlamında da kullanılıyor.)
-  useGorunurYoklama(fetchUnreadCount, 60000, Boolean(user));
+  // Yoklama BURADA YOK: bağlam zaten yokluyor (soket varken 2 dk, yokken 30 sn)
+  // ve sekme görünmüyorsa hiç sormuyor. İkinci bir zamanlayıcı aynı sayıyı
+  // ikinci kez sorardı.
 
   // Fetch full list when dropdown opens
   useEffect(() => {
