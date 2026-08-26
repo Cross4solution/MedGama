@@ -42,6 +42,7 @@ class VitrinSeeder extends Seeder
         $doktorlar = $this->doktorlariEkle($klinikler);
         $this->gonderileriEkle($klinikler, $doktorlar);
         $this->degerlendirilecekRandevulariEkle($doktorlar);
+        $this->demoDoktorunaRandevuEkle();
 
         $this->command->info(sprintf(
             'Vitrin: %d klinik, %d doktor, %d gönderi, %d değerlendirme daveti (eklendi/tazelendi).',
@@ -76,23 +77,52 @@ class VitrinSeeder extends Seeder
      */
     private function degerlendirilecekRandevulariEkle(array $doktorlar): void
     {
-        $hasta = User::where('email', 'patient@demo.com')->first();
+        // Demo hastasının adresi `patient@medagama.com`; burada
+        // `patient@demo.com` aranıyordu ve o hesap bu tohumda YOK. Kullanıcı
+        // bulunamayınca yordam sessizce dönüyor ve aşağıdaki hiçbir randevu
+        // açılmıyordu.
+        //
+        // Ölçüldü: demo veritabanında HİÇBİR hastanın randevusu yok. Yani
+        // müşteriye hasta hesabı gösterildiğinde randevu listesi bomboş
+        // çıkıyor, "Deneyiminizi Puanlayın" bölümü hiç görünmüyor, ve buna
+        // dayanan üç e2e ölçütü kalıcı olarak atlanıyor.
+        //
+        // Eski adres de deneniyor: başka bir ortamda tohum onunla kurulmuş
+        // olabilir.
+        $hasta = User::whereIn('email', ['patient@medagama.com', 'patient@demo.com'])
+            ->orderByRaw("CASE WHEN email = 'patient@medagama.com' THEN 0 ELSE 1 END")
+            ->first();
+
         if (!$hasta || empty($doktorlar)) {
             return;
         }
 
-        // Hastanın zaten puanladığı doktorlar listede görünmeyeceği için
-        // onlara randevu açmak boşa olurdu.
+        // İki ayrı ihtiyaç vardı ve tek koşulda birleştirilmişti.
+        //
+        // "Deneyiminizi Puanlayın" bölümü yalnız PUANLANMAMIŞ doktorla olan
+        // randevuyu gösteriyor, o yüzden puanlanmışlar eleniyordu. Ama eleme
+        // randevunun KENDİSİNİ de engelliyordu: `ReviewSeeder` demo hastasına
+        // on yedi doktorun on yedisi için de yorum yazdığı için geriye kimse
+        // kalmıyor ve hiç randevu açılmıyordu.
+        //
+        // Ölçüldü: demo veritabanında hiçbir hastanın tek bir randevusu yoktu.
+        // Müşteriye hasta hesabı gösterildiğinde randevu listesi bomboştu.
+        //
+        // Artık randevular her hâlükârda açılıyor; puanlanmamış doktorlar
+        // ÖNCE geliyor ki puanlama bölümü de beslensin. Geçmiş bir randevunun
+        // zaten puanlanmış bir doktorla olması gerçekçi — hasta o doktora
+        // birden çok kez gitmiş olabilir.
         $puanlanan = DoctorReview::where('patient_id', $hasta->id)
             ->pluck('doctor_id')
             ->all();
 
-        $gun = 3;
-        foreach (array_slice($doktorlar, 0, 4) as $doktor) {
-            if (in_array($doktor->id, $puanlanan, true)) {
-                continue;
-            }
+        $sirali = collect($doktorlar)
+            ->sortBy(fn ($d) => in_array($d->id, $puanlanan, true) ? 1 : 0)
+            ->values()
+            ->all();
 
+        $gun = 3;
+        foreach (array_slice($sirali, 0, 4) as $doktor) {
             $an = now()->subDays($gun++)->setTime(10, 0);
 
             Appointment::updateOrCreate(
@@ -504,5 +534,64 @@ class VitrinSeeder extends Seeder
             . "startxref\n{$xrefKonum}\n%%EOF\n";
 
         return $pdf;
+    }
+
+    /**
+     * Demo doktoruna, ekranların DURUMLARINI gösteren randevular verir.
+     *
+     * Ölçüldü: `doctor@medagama.com` hesabının tek bir randevusu yoktu. Yani
+     * müşteriye doktor hesabı gösterildiğinde takvim ve randevu listesi bomboş
+     * açılıyordu — ürünün asıl ekranı hiçbir şey göstermiyordu.
+     *
+     * Aynı boşluk iki e2e ölçütünü de kalıcı olarak atlatıyordu ("geçmiş
+     * randevu yaklaşanlarda görünmemeli" ve "ret hakkı iki saatlik pencereyle
+     * aynı olmalı"): ikisi de sınayacak randevu bulamıyordu.
+     *
+     * Üç durum birden kuruluyor, çünkü kurallar tam bu sınırlarda yaşıyor:
+     *
+     *   geçmiş        → yaklaşanlar listesinde GÖRÜNMEMELİ
+     *   3 saat sonra  → reddedilebilir (pencere iki saat)
+     *   1 saat sonra  → reddedilemez
+     *
+     * Tekrar çalıştırılabilir: anahtar (doktor, hasta, başlangıç) üçlüsü.
+     */
+    private function demoDoktorunaRandevuEkle(): void
+    {
+        $doktor = User::where('email', 'doctor@medagama.com')->first();
+        $hasta  = User::where('email', 'patient@medagama.com')->first();
+
+        if (!$doktor || !$hasta) {
+            return;
+        }
+
+        // Saatler çakışma anahtarını (doktor|tarih|saat) benzersiz tutacak
+        // biçimde seçiliyor.
+        $durumlar = [
+            ['an' => now()->subDays(2)->setTime(9, 15),  'durum' => 'completed'],
+            ['an' => now()->addHours(3)->setMinutes(30), 'durum' => 'confirmed'],
+            ['an' => now()->addHours(1)->setMinutes(45), 'durum' => 'confirmed'],
+        ];
+
+        foreach ($durumlar as $d) {
+            $an = $d['an']->copy()->seconds(0);
+
+            Appointment::updateOrCreate(
+                [
+                    'doctor_id'  => $doktor->id,
+                    'patient_id' => $hasta->id,
+                    'starts_at'  => $an,
+                ],
+                [
+                    'clinic_id'        => $doktor->clinic_id,
+                    'appointment_type' => 'inPerson',
+                    'appointment_date' => $an->toDateString(),
+                    'appointment_time' => $an->format('H:i'),
+                    'timezone'         => 'Europe/Istanbul',
+                    'status'           => $d['durum'],
+                    'is_active'        => true,
+                    'created_by'       => $hasta->id,
+                ],
+            );
+        }
     }
 }
