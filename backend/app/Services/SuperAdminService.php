@@ -139,6 +139,16 @@ class SuperAdminService
         $doctor = User::where('role_id', 'doctor')->findOrFail($doctorId);
         $oldValue = (bool) $doctor->is_verified;
         $doctor->is_verified = $verified;
+
+        // `verification_status` de yazılıyor.
+        //
+        // Eskiden yalnız `is_verified` değişiyordu ve iki alan ayrışıyordu:
+        // hasta hekimi doğrulanmış görürken, hekim KENDİ panosunda hâlâ
+        // "belgelerinizi yükleyin" uyarısını görüyordu — çünkü `DoctorDashboard`
+        // durumu `verification_status` üzerinden okuyor ve orada 'pending'
+        // kalmıştı. Yönetici doğrudan onayladığında (başvuru akışı olmadan)
+        // bu her seferinde oluyordu.
+        $doctor->verification_status = $verified ? 'approved' : 'unverified';
         $doctor->save();
 
         // Audit log
