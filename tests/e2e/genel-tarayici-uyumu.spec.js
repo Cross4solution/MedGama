@@ -55,6 +55,17 @@ test.describe('Tarayıcı uyumu', () => {
     // denetimleri arasında geziniyor (macOS'ta "Tab ile her ögeyi vurgula"
     // kapalı gelir). Bu bir platform davranışı, uygulama kusuru değil — o
     // yüzden sekme sırası yalnız bağlantıları odaklayan motorlarda ölçülüyor.
+
+    // Ölçümün ön koşulu AÇIKÇA kuruluyor: odak belgenin başında olmalı.
+    // Çerez bandını kapatmak bir düğmeye tıklıyor ve düğme kaldırılınca odak
+    // gövdeye düşüyor — ama bant hâlâ çıkış animasyonundayken ilk Tab başka
+    // bir yere gidebiliyordu. Test tam koşuda kararsızdı, tek başına
+    // geçiyordu; sebebi uygulama değil, varsayılan bir ön koşuldu.
+    await expect(page.locator('a[href="#icerik"]')).toBeVisible();
+    await page.evaluate(() => {
+      document.activeElement instanceof HTMLElement && document.activeElement.blur();
+    });
+
     await page.keyboard.press('Tab');
     const ilkOdak = await page.evaluate(() => document.activeElement?.getAttribute('href'));
 
