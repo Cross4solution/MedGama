@@ -2454,7 +2454,8 @@
       "ipAddress": "IP-Adresse",
       "timestamp": "Zeitstempel",
       "noLogsDesc": "Systemereignisse erscheinen hier, sobald sie auftreten",
-      "page": "Seite {{current}} von {{total}}"
+      "page": "Seite {{current}} von {{total}}",
+      "loadFailedHint": "Die Protokolle konnten nicht gelesen werden – das heißt nicht, dass nichts aufgezeichnet wurde."
     },
     "dashboard": {
       "title": "Plattform-Dashboard",

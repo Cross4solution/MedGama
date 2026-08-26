@@ -2288,7 +2288,8 @@
       "noDetails": "Nessun dettaglio disponibile",
       "justNow": "Proprio ora",
       "ago": "fa",
-      "pageInfo": "Pagina {{page}} / {{lastPage}} — {{total}} voci"
+      "pageInfo": "Pagina {{page}} / {{lastPage}} — {{total}} voci",
+      "loadFailedHint": "Non è stato possibile leggere il registro: non significa che non sia stato registrato nulla."
     },
     "users": {
       "title": "Gestione Utenti",

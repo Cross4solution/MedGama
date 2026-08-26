@@ -5,7 +5,7 @@ import {
   User, Shield, Settings2, FileText, Trash2, Key, UserPlus, Eye,
   Plus, Edit3, XCircle, Activity, Clock, TrendingUp, Database,
   Stethoscope, Building2, Receipt, LifeBuoy, Star, UserCheck, X,
-  Download, RefreshCw, Lock, CreditCard, ChevronDown,
+  Download, RefreshCw, Lock, CreditCard, ChevronDown, WifiOff,
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
@@ -93,6 +93,11 @@ const RESOURCE_TYPES = [
 export default function AdminAuditLogs() {
   const { t } = useTranslation();
   const [logs, setLogs] = useState([]);
+  // Bir DENETİM ekranında "kayıt bulunamadı", sistemin geçmişi hakkında bir
+  // iddiadır. Uç düştüğünde catch listeyi boşaltıp bırakıyordu ve ekran, hemen
+  // altındaki "GDPR Madde 30 — tüm işleme faaliyetleri kaydedilmektedir"
+  // güvencesiyle yan yana "kayıt yok" diyordu.
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(false);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
   const [page, setPage] = useState(1);
@@ -143,10 +148,12 @@ export default function AdminAuditLogs() {
       }
 
       const res = await adminAPI.auditLogs(params);
+      setYuklemeHatasi(false);
       setLogs(res?.data || []);
       setLastPage(res?.last_page || res?.meta?.last_page || 1);
       setTotal(res?.total || res?.meta?.total || 0);
     } catch {
+      setYuklemeHatasi(true);
       setLogs([]);
     }
     setLoading(false);
@@ -449,6 +456,24 @@ export default function AdminAuditLogs() {
       {loading ? (
         <div className="flex justify-center py-12">
           <div className="w-7 h-7 border-3 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
+        </div>
+      ) : yuklemeHatasi ? (
+        <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm">
+          <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+            <WifiOff className="w-12 h-12 mb-3 text-gray-300" />
+            <p className="text-sm font-semibold text-gray-700">
+              {t('common.loadFailedTitle', 'Could not load data')}
+            </p>
+            <p className="text-xs mt-1 text-gray-500">
+              {t('admin.auditLogs.loadFailedHint', 'Kayıtlar okunamadı — kayıt tutulmadığı anlamına gelmez.')}
+            </p>
+            <button
+              onClick={fetchLogs}
+              className="mt-4 px-4 py-2 rounded-xl border border-purple-200 text-purple-600 text-sm font-semibold hover:bg-purple-50 transition-colors"
+            >
+              {t('common.retry', 'Try again')}
+            </button>
+          </div>
         </div>
       ) : logs.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm">

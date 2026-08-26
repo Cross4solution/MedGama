@@ -408,6 +408,9 @@ export default function AdminCatalog() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('specialties');
   const [items, setItems] = useState([]);
+  // "Bulunamadı — oluşturmak için + Yeni Ekle'ye tıklayın" bir kesintide
+  // yöneticiyi VAR OLAN kayıtların kopyasını yaratmaya çağırıyordu.
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(false);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -438,8 +441,10 @@ export default function AdminCatalog() {
       else res = await adminAPI.treatmentTags();
 
       const data = res?.data || res;
+      setYuklemeHatasi(false);
       setItems(data?.specialties || data?.cities || data?.treatment_tags || data?.data || []);
     } catch {
+      setYuklemeHatasi(true);
       setItems([]);
     }
     setLoading(false);
@@ -565,6 +570,23 @@ export default function AdminCatalog() {
       {loading ? (
         <div className="flex justify-center py-16">
           <div className="w-7 h-7 border-3 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
+        </div>
+      ) : yuklemeHatasi ? (
+        <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm">
+          <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+            <p className="text-sm font-semibold text-gray-700">
+              {t('common.loadFailedTitle', 'Could not load data')}
+            </p>
+            <p className="text-xs mt-1 text-gray-500">
+              {t('common.loadFailedHint', 'Check your connection and try again.')}
+            </p>
+            <button
+              onClick={fetchItems}
+              className="mt-4 px-4 py-2 rounded-xl border border-purple-200 text-purple-600 text-sm font-semibold hover:bg-purple-50 transition-colors"
+            >
+              {t('common.retry', 'Try again')}
+            </button>
+          </div>
         </div>
       ) : filtered.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm">

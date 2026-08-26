@@ -2288,7 +2288,8 @@
       "noDetails": "Aucun détail disponible",
       "justNow": "À l'instant",
       "ago": "il y a",
-      "pageInfo": "Page {{page}} / {{lastPage}} — {{total}} entrées"
+      "pageInfo": "Page {{page}} / {{lastPage}} — {{total}} entrées",
+      "loadFailedHint": "Le journal n'a pas pu être lu — cela ne signifie pas que rien n'a été enregistré."
     },
     "users": {
       "title": "Gestion des utilisateurs",

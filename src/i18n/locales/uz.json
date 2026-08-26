@@ -1060,7 +1060,8 @@
       "noLogsDesc": "Tizim hodisalari sodir bo'lganda bu yerda ko'rinadi",
       "gdprTitle": "GDPR Muvofiqlik — 30-modda",
       "gdprDesc": "Barcha qayta ishlash faoliyatlari GDPR 30-modda talablariga muvofiq qayd etiladi. Audit yozuvlari kamida 6 yil saqlanadi.",
-      "page": "Sahifa {{current}} / {{total}}"
+      "page": "Sahifa {{current}} / {{total}}",
+      "loadFailedHint": "Jurnal o'qib bo'lmadi — bu hech narsa yozilmagan degani emas."
     }
   },
   "errors": {

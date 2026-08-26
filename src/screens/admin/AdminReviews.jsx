@@ -269,6 +269,9 @@ function JudgeModal({ review, loading, onClose, onApprove, onReject, onHide }) {
 export default function AdminReviews() {
   const { t } = useTranslation();
   const [reviews, setReviews] = useState([]);
+  // Denetim ekranı: "değerlendirme bulunamadı", bekleyen bir şey OLMADIĞI
+  // anlamına gelir. Uç düştüğünde catch listeyi boşaltıp bırakıyordu.
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(false);
   const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0, hidden: 0 });
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('pending');
@@ -291,9 +294,11 @@ export default function AdminReviews() {
       if (search.trim()) params.search = search.trim();
       const res = await adminAPI.reviews(params);
       const data = res?.data || res;
+      setYuklemeHatasi(false);
       setReviews(data?.data || []);
       setLastPage(data?.last_page || 1);
     } catch {
+      setYuklemeHatasi(true);
       setReviews([]);
     }
     setLoading(false);
@@ -463,6 +468,24 @@ export default function AdminReviews() {
       {loading ? (
         <div className="flex justify-center py-16">
           <div className="w-7 h-7 border-3 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
+        </div>
+      ) : yuklemeHatasi ? (
+        <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm">
+          <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+            <MessageSquare className="w-12 h-12 mb-3 text-gray-300" />
+            <p className="text-sm font-semibold text-gray-700">
+              {t('common.loadFailedTitle', 'Could not load data')}
+            </p>
+            <p className="text-xs mt-1 text-gray-500">
+              {t('common.loadFailedHint', 'Check your connection and try again.')}
+            </p>
+            <button
+              onClick={fetchReviews}
+              className="mt-4 px-4 py-2 rounded-xl border border-purple-200 text-purple-600 text-sm font-semibold hover:bg-purple-50 transition-colors"
+            >
+              {t('common.retry', 'Try again')}
+            </button>
+          </div>
         </div>
       ) : reviews.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm">

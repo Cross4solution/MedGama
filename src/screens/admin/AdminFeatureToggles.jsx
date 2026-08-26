@@ -66,13 +66,19 @@ export default function AdminFeatureToggles() {
   const [groups, setGroups] = useState({});
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(null);
+  // "Ayar bulunamadı", yöneticiye özelliklerin TANIMSIZ olduğunu söyler.
+  // Uç düştüğünde catch nesneyi boşaltıp bırakıyordu; ekran okunamayan bir
+  // yapılandırmayı yok sayılmış gibi gösteriyordu.
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(false);
 
   const fetchToggles = useCallback(async () => {
     setLoading(true);
     try {
       const res = await adminAPI.featureToggles();
+      setYuklemeHatasi(false);
       setGroups(res?.data?.data || res?.data || {});
     } catch {
+      setYuklemeHatasi(true);
       setGroups({});
     }
     setLoading(false);
@@ -121,7 +127,22 @@ export default function AdminFeatureToggles() {
         <p className="text-sm text-gray-500 mt-0.5">{t('adminFeatureToggles.controlPlatformWideFeaturesAnd', "Control platform-wide features and system settings")}</p>
       </div>
 
-      {groupKeys.length === 0 ? (
+      {yuklemeHatasi ? (
+        <div className="text-center py-12">
+          <p className="text-sm font-semibold text-gray-700">
+            {t('common.loadFailedTitle', 'Could not load data')}
+          </p>
+          <p className="text-xs mt-1 text-gray-500">
+            {t('common.loadFailedHint', 'Check your connection and try again.')}
+          </p>
+          <button
+            onClick={fetchToggles}
+            className="mt-4 px-4 py-2 rounded-xl border border-purple-200 text-purple-600 text-sm font-semibold hover:bg-purple-50 transition-colors"
+          >
+            {t('common.retry', 'Try again')}
+          </button>
+        </div>
+      ) : groupKeys.length === 0 ? (
         <div className="text-center py-12 text-gray-400 text-sm">{t('adminFeatureToggles.noSettingsFound', "No settings found.")}</div>
       ) : (
         groupKeys.map(groupKey => {

@@ -2474,7 +2474,8 @@
       "ago": "önce",
       "pageInfo": "Sayfa {{page}} / {{lastPage}} — {{total}} kayıt",
       "gdprTitle": "GDPR Uyumluluk — Madde 30",
-      "gdprDesc": "Tüm işleme faaliyetleri GDPR Madde 30 gereksinimlerine uygun olarak kaydedilmektedir. Denetim günlükleri en az 6 yıl saklanır ve değiştirilemez veya silinemez."
+      "gdprDesc": "Tüm işleme faaliyetleri GDPR Madde 30 gereksinimlerine uygun olarak kaydedilmektedir. Denetim günlükleri en az 6 yıl saklanır ve değiştirilemez veya silinemez.",
+      "loadFailedHint": "Kayıtlar okunamadı — kayıt tutulmadığı anlamına gelmez."
     },
     "dashboard": {
       "title": "Platform Kontrol Paneli",

@@ -2454,7 +2454,8 @@
       "ipAddress": "عنوان IP",
       "timestamp": "الوقت",
       "noLogsDesc": "ستظهر أحداث النظام هنا عند حدوثها",
-      "page": "صفحة {{current}} من {{total}}"
+      "page": "صفحة {{current}} من {{total}}",
+      "loadFailedHint": "تعذّرت قراءة السجل — وهذا لا يعني أنه لم يُسجَّل شيء."
     },
     "dashboard": {
       "title": "لوحة تحكم المنصة",

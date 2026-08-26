@@ -2328,7 +2328,8 @@
       "noDetails": "Təfərrüat mövcud deyil",
       "justNow": "İndicə",
       "ago": "əvvəl",
-      "pageInfo": "Səhifə {{page}} / {{lastPage}} — {{total}} qeyd"
+      "pageInfo": "Səhifə {{page}} / {{lastPage}} — {{total}} qeyd",
+      "loadFailedHint": "Qeydlər oxuna bilmədi — qeyd aparılmadığı anlamına gəlmir."
     },
     "users": {
       "title": "İstifadəçi İdarəetməsi",

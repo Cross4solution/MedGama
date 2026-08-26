@@ -2288,7 +2288,8 @@
       "noDetails": "No hay detalles disponibles",
       "justNow": "Ahora mismo",
       "ago": "hace",
-      "pageInfo": "Página {{page}} / {{lastPage}} — {{total}} entradas"
+      "pageInfo": "Página {{page}} / {{lastPage}} — {{total}} entradas",
+      "loadFailedHint": "No se pudo leer el registro: eso no significa que no se haya registrado nada."
     },
     "users": {
       "title": "Gestión de usuarios",

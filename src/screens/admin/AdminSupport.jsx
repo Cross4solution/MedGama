@@ -257,6 +257,10 @@ function TicketDrawer({ ticketId, onClose }) {
 export default function AdminSupport() {
   const { t } = useTranslation();
   const [tickets, setTickets] = useState([]);
+  // "Talep bulunamadı — filtrelerinizi değiştirin veya yeni taleplerin
+  // gelmesini bekleyin" bir kesinti sırasında yöneticiye BEKLEMESİNİ
+  // söylüyordu; oysa bekleyen talepler duruyor, yalnız okunamıyor.
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(false);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -277,9 +281,13 @@ export default function AdminSupport() {
       if (search.trim()) params.search = search;
       const res = await supportAPI.tickets(params);
       const pg = res?.current_page !== undefined ? res : (res?.data || res);
+      setYuklemeHatasi(false);
       setTickets(Array.isArray(pg?.data) ? pg.data : []);
       setTotal(pg?.total || 0);
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      setYuklemeHatasi(true);
+      console.error(err);
+    }
     finally { setLoading(false); }
   }, [page, statusFilter, priorityFilter, search]);
 
@@ -428,6 +436,22 @@ export default function AdminSupport() {
         {loading ? (
           <div className="flex items-center justify-center h-48">
             <Loader2 className="w-7 h-7 text-purple-500 animate-spin" />
+          </div>
+        ) : yuklemeHatasi ? (
+          <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+            <LifeBuoy className="w-12 h-12 mb-3 text-gray-300" />
+            <p className="text-sm font-semibold text-gray-700">
+              {t('common.loadFailedTitle', 'Could not load data')}
+            </p>
+            <p className="text-xs mt-1 text-gray-500">
+              {t('common.loadFailedHint', 'Check your connection and try again.')}
+            </p>
+            <button
+              onClick={fetchTickets}
+              className="mt-4 px-4 py-2 rounded-xl border border-purple-200 text-purple-600 text-sm font-semibold hover:bg-purple-50 transition-colors"
+            >
+              {t('common.retry', 'Try again')}
+            </button>
           </div>
         ) : tickets.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-gray-400">
