@@ -105,6 +105,42 @@ test('ekranlarda sabit İngilizce metin yok', () => {
   );
 });
 
+/**
+ * Öznitelikler de kullanıcıya görünüyor.
+ *
+ * İlk tarama yalnız `>Metin<` düğümlerine bakıyordu. `placeholder`,
+ * `aria-label`, `title` ve `alt` de ekrana ya da ekran okuyucuya gidiyor;
+ * `aria-label` özellikle, çünkü görme engelli kullanıcının duyduğu tek metin o.
+ *
+ * Bu yüzey ölçüldüğünde neredeyse temizdi — on bir örnekten dokuzu marka adı.
+ * Ölçüt onu böyle tutuyor.
+ */
+test('öznitelik metinleri de çeviriden geçiyor', () => {
+  const OZNITELIK = /\b(placeholder|aria-label|title|alt)="([A-Za-z][A-Za-z0-9 ,.\-&/'?!]{3,60})"/g;
+  const ihlaller = [];
+
+  const taranacak = [
+    ...ekranlar(path.join(kok, 'src/screens')),
+    ...ekranlar(path.join(kok, 'src/components')),
+  ].filter((y) => !HUKUKI.has(path.basename(y)));
+
+  for (const yol of taranacak) {
+    const kaynak = readFileSync(yol, 'utf8');
+
+    for (const m of kaynak.matchAll(OZNITELIK)) {
+      const metin = m[2].trim();
+
+      if (MUAF.has(metin) || TURKCE.test(metin)) continue;
+
+      const satir = kaynak.slice(0, m.index).split('\n').length;
+
+      ihlaller.push(`${path.basename(yol)}:${satir} ${m[1]}="${metin}"`);
+    }
+  }
+
+  assert.deepEqual(ihlaller, [], 'öznitelik metni çeviriden geçmiyor');
+});
+
 test('muafiyet listesi taramayı boşa çıkarmıyor', () => {
   // Muafiyetler büyüyerek ölçütü anlamsızlaştırmasın.
   assert.ok(MUAF.size < 40, 'muafiyet listesi şişmiş: tarama artık bir şey söylemiyor');

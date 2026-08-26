@@ -1312,7 +1312,9 @@
       "urgentAlertsResults": "Təcili xəbərdarlıqlar və kritik nəticələr",
       "verificationTab": "Doğrulama",
       "websiteLabel": "Veb sayt",
-      "year": "İl"
+      "year": "İl",
+      "latPlaceholder": "məs. 41.0082",
+      "lngPlaceholder": "məs. 28.9784"
     },
     "premiumGate": {
       "title": "Premium Funksiya",

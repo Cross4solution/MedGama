@@ -1484,7 +1484,9 @@
       "addConditionPlaceholder": "Type a condition and press Enter",
       "hoursNote": "Operating hours are synced with your booking widget. Patients can only book appointments during open hours.",
       "coordsHelper": "Enter coordinates to display your location on the map. You can find them on openstreetmap.org.",
-      "infoRequestedDesc": "The admin team has requested additional information. Please upload the required documents below."
+      "infoRequestedDesc": "The admin team has requested additional information. Please upload the required documents below.",
+      "latPlaceholder": "e.g. 41.0082",
+      "lngPlaceholder": "e.g. 28.9784"
     },
     "leads": {
       "title": "Leads",

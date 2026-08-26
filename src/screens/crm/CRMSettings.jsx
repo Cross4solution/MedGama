@@ -1139,13 +1139,13 @@ const CRMSettings = ({ standalone = false }) => {
                         <div>
                           <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.latitude', 'Latitude')}</label>
                           <input type="text" value={socialInfo.map_coordinates?.lat || ''} onChange={(e) => updateMapCoord('lat', e.target.value)}
-                            placeholder="e.g. 41.0082"
+                            placeholder={t('crm.settings.latPlaceholder', 'e.g. 41.0082')}
                             className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                         </div>
                         <div>
                           <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.longitude', 'Longitude')}</label>
                           <input type="text" value={socialInfo.map_coordinates?.lng || ''} onChange={(e) => updateMapCoord('lng', e.target.value)}
-                            placeholder="e.g. 28.9784"
+                            placeholder={t('crm.settings.lngPlaceholder', 'e.g. 28.9784')}
                             className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                         </div>
                       </div>

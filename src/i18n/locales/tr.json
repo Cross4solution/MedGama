@@ -1465,7 +1465,9 @@
       "coordsHelper": "Konumunuzun haritada görünmesi için koordinatları girin. openstreetmap.org üzerinden bulabilirsiniz.",
       "infoRequestedDesc": "Yönetici ekibi ek bilgi talep etti. Lütfen istenen belgeleri aşağıdan yükleyin.",
       "clinicBio": "Tanıtım",
-      "signOutAllHint": "Tüm cihazlardan çıkış, bu oturum dahil her yerde çıkış yapar."
+      "signOutAllHint": "Tüm cihazlardan çıkış, bu oturum dahil her yerde çıkış yapar.",
+      "latPlaceholder": "ör. 41.0082",
+      "lngPlaceholder": "ör. 28.9784"
     },
     "leads": {
       "title": "Potansiyel Müşteriler",

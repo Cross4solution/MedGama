@@ -703,7 +703,9 @@
       "currentPlan": "Joriy Reja",
       "paymentMethod": "To'lov Usuli",
       "billingHistory": "Hisob-kitob Tarixi",
-      "change": "O'zgartirish"
+      "change": "O'zgartirish",
+      "latPlaceholder": "mas. 41.0082",
+      "lngPlaceholder": "mas. 28.9784"
     },
     "branches": {
       "forbiddenTitle": "Filiallarni boshqarish shifoxona hisoblari uchun.",

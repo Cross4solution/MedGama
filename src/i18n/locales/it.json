@@ -1269,7 +1269,9 @@
       "urgentAlertsResults": "Avvisi urgenti e risultati critici",
       "verificationTab": "Verifica",
       "websiteLabel": "Sito web",
-      "year": "Anno"
+      "year": "Anno",
+      "latPlaceholder": "es. 41.0082",
+      "lngPlaceholder": "es. 28.9784"
     },
     "premiumGate": {
       "title": "Funzione Premium",

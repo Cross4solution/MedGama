@@ -1449,7 +1449,9 @@
       "urgentAlertsResults": "التنبيهات العاجلة والنتائج الحرجة",
       "verificationTab": "التوثيق",
       "websiteLabel": "الموقع الإلكتروني",
-      "year": "السنة"
+      "year": "السنة",
+      "latPlaceholder": "مثال 41.0082",
+      "lngPlaceholder": "مثال 28.9784"
     },
     "faq": {
       "add": "إضافة سؤال",

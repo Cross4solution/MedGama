@@ -1449,7 +1449,9 @@
       "urgentAlertsResults": "Dringende Hinweise und kritische Befunde",
       "verificationTab": "Verifizierung",
       "websiteLabel": "Website",
-      "year": "Jahr"
+      "year": "Jahr",
+      "latPlaceholder": "z. B. 41.0082",
+      "lngPlaceholder": "z. B. 28.9784"
     },
     "faq": {
       "add": "FAQ hinzufügen",

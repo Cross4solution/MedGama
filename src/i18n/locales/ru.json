@@ -1449,7 +1449,9 @@
       "urgentAlertsResults": "Срочные уведомления и критические результаты",
       "verificationTab": "Проверка",
       "websiteLabel": "Сайт",
-      "year": "Год"
+      "year": "Год",
+      "latPlaceholder": "напр. 41.0082",
+      "lngPlaceholder": "напр. 28.9784"
     },
     "faq": {
       "add": "Добавить вопрос",
