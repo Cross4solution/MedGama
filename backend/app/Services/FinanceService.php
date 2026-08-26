@@ -14,12 +14,8 @@ class FinanceService
 {
     private const PLATFORM_COMMISSION_RATE = 0.15; // 15% platform commission
 
-    private const CURRENCY_RATES = [
-        'EUR' => 1.0,
-        'USD' => 1.08,
-        'TRY' => 34.50,
-        'GBP' => 0.86,
-    ];
+    // CURRENCY_RATES KALDIRILDI: sabit, uydurma kurlardı (TRY 34.50) ve yalnız
+    // çevrim uçları kullanıyordu. O uçlar da kaldırıldı.
 
     // ══════════════════════════════════════════════
     //  TOP SERVICES (revenue by category)
@@ -231,52 +227,7 @@ class FinanceService
     //  MULTI-CURRENCY CONVERSION (Simulation)
     // ══════════════════════════════════════════════
 
-    /**
-     * Convert amount between currencies using simulated rates.
-     */
-    public function convertCurrency(float $amount, string $from, string $to): array
-    {
-        // Tanınmayan para birimi ARTIK sessizce 1.0'a düşmüyor.
-        //
-        // `?? 1.0` ile bilinmeyen bir kod, EUR'yla birebir kabul ediliyordu:
-        // uç 200 dönüyor, ekrana kendinden emin ama yanlış bir tutar yazıyordu.
-        // Parada sessiz varsayılan olmaz — bilinmiyorsa söylenmeli.
-        foreach ([$from, $to] as $kod) {
-            if (!isset(self::CURRENCY_RATES[$kod])) {
-                throw ValidationException::withMessages([
-                    'currency' => ["Unsupported currency: {$kod}."],
-                ]);
-            }
-        }
 
-        $fromRate = self::CURRENCY_RATES[$from];
-        $toRate   = self::CURRENCY_RATES[$to];
-        $inEur    = $amount / $fromRate;
-        $converted = round($inEur * $toRate, 2);
-
-        return [
-            'original_amount'   => $amount,
-            'original_currency' => $from,
-            'converted_amount'  => $converted,
-            'target_currency'   => $to,
-            'rate'              => round($toRate / $fromRate, 6),
-            'rate_date'         => now()->toDateString(),
-            'note'              => 'Simulated exchange rate',
-        ];
-    }
-
-    /**
-     * Get all available exchange rates.
-     */
-    public function getExchangeRates(): array
-    {
-        return [
-            'base'  => 'EUR',
-            'date'  => now()->toDateString(),
-            'rates' => self::CURRENCY_RATES,
-            'note'  => 'Simulated exchange rates for development',
-        ];
-    }
 
     // ══════════════════════════════════════════════
     //  EXPORT (CSV for XLSX-compatible download)

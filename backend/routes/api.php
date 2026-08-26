@@ -546,8 +546,9 @@ Route::prefix('finance')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,h
     Route::get('/top-services', [FinanceController::class, 'topServices']);
     Route::get('/payout', [FinanceController::class, 'payout']);
     Route::get('/platform-overview', [FinanceController::class, 'platformOverview']);
-    Route::get('/exchange-rates', [FinanceController::class, 'exchangeRates']);
-    Route::post('/convert', [FinanceController::class, 'convert']);
+    // Döviz çevirme uçları KALDIRILDI. Sabit, uydurma kurlarla çalışıyordu
+    // (TRY 34.50) ve hiçbir ekran çağırmıyordu. Sağlık turizmi fiyatlandırması
+    // gündeme gelince gerçek bir kur kaynağıyla birlikte yazılır.
     Route::get('/export', [FinanceController::class, 'export']);
 });
 

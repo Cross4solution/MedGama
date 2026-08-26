@@ -407,8 +407,6 @@ export const financeAPI = {
   topServices: (params) => api.get('/finance/top-services', { params }),
   payout: (params) => api.get('/finance/payout', { params }),
   platformOverview: (params) => api.get('/finance/platform-overview', { params }),
-  exchangeRates: () => api.get('/finance/exchange-rates'),
-  convert: (payload) => api.post('/finance/convert', payload),
   export: (params) => api.get('/finance/export', { params, responseType: 'blob' }),
 };
 

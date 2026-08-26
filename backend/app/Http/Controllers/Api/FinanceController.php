@@ -58,33 +58,7 @@ class FinanceController extends Controller
         return response()->json($data);
     }
 
-    /**
-     * GET /api/finance/exchange-rates
-     */
-    public function exchangeRates(): JsonResponse
-    {
-        return response()->json($this->finance->getExchangeRates());
-    }
 
-    /**
-     * POST /api/finance/convert
-     */
-    public function convert(Request $request): JsonResponse
-    {
-        $data = $request->validate([
-            'amount' => 'required|numeric|min:0',
-            'from'   => 'required|string|max:3',
-            'to'     => 'required|string|max:3',
-        ]);
-
-        $result = $this->finance->convertCurrency(
-            (float) $data['amount'],
-            strtoupper($data['from']),
-            strtoupper($data['to']),
-        );
-
-        return response()->json($result);
-    }
 
     /**
      * GET /api/finance/export — Download CSV/XLSX
