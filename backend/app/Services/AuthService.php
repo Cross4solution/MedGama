@@ -7,6 +7,13 @@ use App\Models\MedStreamPost;
 use App\Models\MedStreamComment;
 use App\Models\MedStreamLike;
 use App\Models\MedStreamBookmark;
+use App\Models\Appointment;
+use App\Models\Invoice;
+use App\Models\Message;
+use App\Models\ContactMessage;
+use App\Models\DoctorReview;
+use App\Models\PatientDocument;
+use App\Models\ConsentRecord;
 use App\Mail\VerificationCodeMail;
 use App\Notifications\WelcomeNotification;
 use Illuminate\Http\UploadedFile;
@@ -557,6 +564,76 @@ class AuthService
             'likes'           => MedStreamLike::where('user_id', $user->id)->where('is_active', true)->select('post_id', 'created_at')->get(),
             'bookmarks'       => $user->bookmarks()->where('is_active', true)->select('bookmarked_type', 'target_id', 'created_at')->get(),
             'medical_history' => json_decode($user->medical_history ?? '[]', true),
+
+            // ── Aşağıdakiler eskiden dışa aktarmada YOKTU ───────────────────
+            //
+            // Dosya "gdpr_export" diyordu ama yalnız profil, gönderi, beğeni ve
+            // yer imi taşıyordu. Kullanıcının platformdaki asıl izi — kiminle
+            // ne zaman randevusu olduğu, ne ödediği, ne yazdığı, neye rıza
+            // verdiği — hiç çıkmıyordu. GDPR md. 15 ve 20 bunların hepsini
+            // istiyor; KVKK md. 11 de aynı kapsamda.
+            //
+            // Bu uç bozulduğunda kimse fark etmez: kullanıcı bir kez kullanır,
+            // eksik olduğunu anlamaz. Denetimde ortaya çıkar.
+
+            // Hem hasta hem hekim tarafı: aynı kişi ikisinde de olabilir.
+            'appointments' => Appointment::query()
+                ->where('patient_id', $user->id)
+                ->orWhere('doctor_id', $user->id)
+                ->select('id', 'patient_id', 'doctor_id', 'clinic_id', 'appointment_type',
+                    'starts_at', 'timezone', 'status', 'doctor_note', 'created_at')
+                ->orderByDesc('created_at')
+                ->get(),
+
+            'invoices' => Invoice::query()
+                ->where('patient_id', $user->id)
+                ->orWhere('doctor_id', $user->id)
+                ->select('id', 'invoice_number', 'grand_total', 'currency', 'status',
+                    'payment_method', 'issue_date', 'due_date', 'paid_at', 'created_at')
+                ->orderByDesc('created_at')
+                ->get(),
+
+            // YALNIZ kendi yazdıkları.
+            //
+            // Sohbetin tamamını vermek karşı tarafın mesajlarını da açardı —
+            // yani bir kişinin veri talebi, başka birinin verisini teslim
+            // etmek olurdu. Erişim hakkı kişinin KENDİ verisini kapsıyor.
+            'messages_sent' => Message::query()
+                ->where('sender_id', $user->id)
+                ->where('is_active', true)
+                ->select('id', 'conversation_id', 'body', 'type', 'created_at')
+                ->orderByDesc('created_at')
+                ->get(),
+
+            'contact_messages_sent' => ContactMessage::query()
+                ->where('sender_id', $user->id)
+                ->select('id', 'receiver_type', 'subject', 'body', 'created_at')
+                ->orderByDesc('created_at')
+                ->get(),
+
+            'reviews_written' => DoctorReview::query()
+                ->where('patient_id', $user->id)
+                ->select('id', 'doctor_id', 'rating', 'comment', 'treatment_type', 'created_at')
+                ->orderByDesc('created_at')
+                ->get(),
+
+            // Belgelerin KENDİSİ değil, kaydı: dosyalar şifreli diskte ve
+            // imzalı bağlantıyla iniyor. Liste hangi belgenin durduğunu
+            // söylüyor, indirme mevcut uçtan yapılıyor.
+            'documents' => PatientDocument::query()
+                ->where('patient_id', $user->id)
+                ->where('is_active', true)
+                ->select('id', 'title', 'description', 'category', 'file_name',
+                    'mime_type', 'file_size', 'document_date', 'created_at')
+                ->orderByDesc('created_at')
+                ->get(),
+
+            // Neye, ne zaman, hangi metin sürümüne rıza verildiği.
+            'consents' => ConsentRecord::query()
+                ->where('user_id', $user->id)
+                ->select('type', 'version', 'granted_at', 'revoked_at', 'source', 'locale')
+                ->orderByDesc('granted_at')
+                ->get(),
         ];
     }
 
