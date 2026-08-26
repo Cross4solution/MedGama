@@ -26,6 +26,15 @@ class DogrulamaSutunHizasiTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Atlama mesajı komutu SÖYLEMELİ.
+     *
+     * Bu ölçütler varsayılan koşuda atlanıyor ve tam olarak bu yüzden bir
+     * üretim hatası aylarca görülmedi. Atlandığını okuyan kişi, nasıl
+     * koşturacağını da okumalı — yoksa atlama sessizlikle aynı şey.
+     */
+    private const KOMUT = "MySQL'e karşı koşun: DB_CONNECTION=mysql DB_DATABASE=medagama_test DB_SSL_DISABLED=1 php artisan test (bkz. docs/YEREL-TEST.md)";
+
     /** [tablo, sütun, doğrulamanın izin verdiği uzunluk] */
     private const HIZA = [
         ['announcements',   'link_url',    500],
@@ -38,7 +47,7 @@ class DogrulamaSutunHizasiTest extends TestCase
     {
         if (DB::connection()->getDriverName() !== 'mysql') {
             $this->markTestSkipped(
-                'Sütun genişliği yalnız gerçek sürücüde ölçülebilir; SQLite varchar sınırını uygulamıyor.'
+                'Sütun genişliği yalnız gerçek sürücüde ölçülebilir; SQLite varchar sınırını uygulamıyor. ' . self::KOMUT
             );
         }
 
@@ -81,7 +90,7 @@ class DogrulamaSutunHizasiTest extends TestCase
     {
         // Şema okumak yetmez: değerin YAZILABİLDİĞİNİ görmek gerekiyor.
         if (DB::connection()->getDriverName() !== 'mysql') {
-            $this->markTestSkipped('Yalnız gerçek sürücüde anlamlı.');
+            $this->markTestSkipped('Yalnız gerçek sürücüde anlamlı. ' . self::KOMUT);
         }
 
         $sahip = \App\Models\User::factory()->clinicOwner()->create();

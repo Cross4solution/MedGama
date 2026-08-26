@@ -30,11 +30,20 @@ class SifreliSutunGenisligiTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Atlama mesajı komutu SÖYLEMELİ.
+     *
+     * Bu ölçütler varsayılan koşuda atlanıyor ve tam olarak bu yüzden bir
+     * üretim hatası aylarca görülmedi. Atlandığını okuyan kişi, nasıl
+     * koşturacağını da okumalı — yoksa atlama sessizlikle aynı şey.
+     */
+    private const KOMUT = "MySQL'e karşı koşun: DB_CONNECTION=mysql DB_DATABASE=medagama_test DB_SSL_DISABLED=1 php artisan test (bkz. docs/YEREL-TEST.md)";
+
     public function test_sifreli_alanlarin_sutunu_varchar_degil(): void
     {
         if (DB::connection()->getDriverName() !== 'mysql') {
             $this->markTestSkipped(
-                'Sütun genişliği yalnız gerçek sürücüde ölçülebilir; SQLite varchar sınırını uygulamıyor.'
+                'Sütun genişliği yalnız gerçek sürücüde ölçülebilir; SQLite varchar sınırını uygulamıyor. ' . self::KOMUT
             );
         }
 
