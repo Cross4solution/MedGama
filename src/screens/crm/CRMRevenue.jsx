@@ -98,7 +98,21 @@ const CRMRevenue = () => {
 
       const sd = statsRes?.data || statsRes;
       setStats(sd);
-      if (sd?.available_currencies?.length) setCurrencies(sd.available_currencies);
+      if (sd?.available_currencies?.length) {
+        setCurrencies(sd.available_currencies);
+
+        // Seçili para birimi listede yoksa listenin ilkine geç.
+        //
+        // Eskiden yalnız liste doldurulurdu, seçim `useState('EUR')` olduğu
+        // yerde kalırdı. Yalnız TL ile fatura kesen bir klinikte tarayıcı
+        // eşleşmeyen değer için listenin ilkini (TRY) GÖSTERİYOR, React ise
+        // hâlâ EUR sanıyordu: ekranda "TRY (₺)" yazarken API'ye EUR sorulup
+        // "€0 Toplam Gelir" çiziliyordu. Klinik 1500 TL kazanmışken ekran
+        // sıfır diyordu.
+        if (!sd.available_currencies.includes(currency)) {
+          setCurrency(sd.available_currencies[0]);
+        }
+      }
 
       const cd = chartRes?.data || chartRes;
       setChartData(Array.isArray(cd) ? cd : []);
