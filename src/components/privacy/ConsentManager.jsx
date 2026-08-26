@@ -8,8 +8,7 @@ import { consentAPI } from '../../lib/api';
  * zaman onay verdiğini görür; geri alınabilir olanları buradan geri alır.
  */
 export default function ConsentManager({ showToast }) {
-  const { i18n } = useTranslation();
-  const isTr = i18n.language?.startsWith('tr');
+  const { t, i18n } = useTranslation();
 
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,11 +22,11 @@ export default function ConsentManager({ showToast }) {
       const res = await consentAPI.list();
       setItems(res?.data?.data || res?.data || []);
     } catch {
-      setError(isTr ? 'Onay kayıtları yüklenemedi.' : 'Could not load consent records.');
+      setError(t('riza.couldNotLoadConsentRecords', 'Could not load consent records.'));
     } finally {
       setLoading(false);
     }
-  }, [isTr]);
+  }, [t]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -36,16 +35,16 @@ export default function ConsentManager({ showToast }) {
     try {
       if (item.granted) {
         await consentAPI.revoke(item.type);
-        showToast?.(isTr ? 'Onayınız geri alındı.' : 'Consent withdrawn.');
+        showToast?.(t('riza.consentWithdrawn', 'Consent withdrawn.'));
       } else {
         await consentAPI.grant(item.type);
-        showToast?.(isTr ? 'Onayınız kaydedildi.' : 'Consent recorded.');
+        showToast?.(t('riza.consentRecorded', 'Consent recorded.'));
       }
       await load();
     } catch (err) {
       showToast?.(
         err?.data?.message ||
-          (isTr ? 'İşlem tamamlanamadı.' : 'Could not complete the action.'),
+          (t('riza.couldNotCompleteTheAction', 'Could not complete the action.')),
         'error'
       );
     } finally {
@@ -56,7 +55,7 @@ export default function ConsentManager({ showToast }) {
   const formatDate = (iso) => {
     if (!iso) return '';
     try {
-      return new Date(iso).toLocaleDateString(isTr ? 'tr-TR' : 'en-US', {
+      return new Date(iso).toLocaleDateString((i18n.language || 'tr-TR'), {
         day: 'numeric', month: 'long', year: 'numeric',
       });
     } catch { return ''; }
@@ -66,17 +65,15 @@ export default function ConsentManager({ showToast }) {
     <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
       <h2 className="text-sm font-bold text-gray-900 mb-1 flex items-center gap-2">
         <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-teal-500 to-emerald-500" />
-        {isTr ? 'Verdiğim Onaylar' : 'My Consents'}
+        {t('riza.myConsents', 'My Consents')}
       </h2>
       <p className="text-xs text-gray-500 mb-4">
-        {isTr
-          ? 'Hangi metne ne zaman onay verdiğinizi buradan görebilir, isteğe bağlı olanları geri alabilirsiniz.'
-          : 'See what you consented to and when, and withdraw the optional ones.'}
+        {t('riza.seeWhatYouConsentedTo', 'See what you consented to and when, and withdraw the optional ones.')}
       </p>
 
       {loading ? (
         <div className="flex items-center gap-2 text-xs text-gray-500 py-3">
-          <Loader2 className="w-4 h-4 animate-spin" /> {isTr ? 'Yükleniyor...' : 'Loading...'}
+          <Loader2 className="w-4 h-4 animate-spin" /> {t('riza.loading', 'Loading...')}
         </div>
       ) : error ? (
         <p className="text-xs text-red-500">{error}</p>
@@ -93,7 +90,7 @@ export default function ConsentManager({ showToast }) {
                   {item.required && (
                     <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-gray-500 bg-gray-200/70 rounded px-1.5 py-0.5">
                       <Lock className="w-2.5 h-2.5" />
-                      {isTr ? 'Zorunlu' : 'Required'}
+                      {t('riza.required', 'Required')}
                     </span>
                   )}
                 </p>
@@ -102,7 +99,7 @@ export default function ConsentManager({ showToast }) {
                     <>
                       <Check className="w-3 h-3 text-emerald-600" />
                       <span className="text-emerald-700">
-                        {isTr ? 'Onaylandı' : 'Granted'}
+                        {t('riza.granted', 'Granted')}
                         {item.granted_at ? ` · ${formatDate(item.granted_at)}` : ''}
                       </span>
                       <span className="text-gray-400">· v{item.granted_version || item.version}</span>
@@ -112,8 +109,8 @@ export default function ConsentManager({ showToast }) {
                       <X className="w-3 h-3 text-gray-400" />
                       <span className="text-gray-500">
                         {item.revoked_at
-                          ? (isTr ? `Geri alındı · ${formatDate(item.revoked_at)}` : `Withdrawn · ${formatDate(item.revoked_at)}`)
-                          : (isTr ? 'Onay verilmedi' : 'Not granted')}
+                          ? t('riza.withdrawnAt', { tarih: formatDate(item.revoked_at), defaultValue: 'Withdrawn · {{tarih}}' })
+                          : (t('riza.notGranted', 'Not granted'))}
                       </span>
                     </>
                   )}
@@ -121,7 +118,7 @@ export default function ConsentManager({ showToast }) {
                 {item.needs_renewal && (
                   <p className="text-[11px] text-amber-600 mt-1 flex items-center gap-1">
                     <Info className="w-3 h-3" />
-                    {isTr ? 'Metin güncellendi, yeniden onayınız gerekiyor.' : 'The text was updated; please renew your consent.'}
+                    {t('riza.theTextWasUpdatedPlease', 'The text was updated; please renew your consent.')}
                   </p>
                 )}
               </div>
@@ -139,12 +136,12 @@ export default function ConsentManager({ showToast }) {
                   {busy === item.type
                     ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     : item.granted
-                      ? (isTr ? 'Geri Al' : 'Withdraw')
-                      : (isTr ? 'Onayla' : 'Grant')}
+                      ? (t('riza.withdraw', 'Withdraw'))
+                      : (t('riza.grant', 'Grant'))}
                 </button>
               ) : (
                 <span className="flex-shrink-0 text-[11px] text-gray-400 mt-1">
-                  {isTr ? 'Hizmet için gerekli' : 'Required for service'}
+                  {t('riza.requiredForService', 'Required for service')}
                 </span>
               )}
             </li>
@@ -154,9 +151,7 @@ export default function ConsentManager({ showToast }) {
 
       <p className="mt-3 text-[11px] text-gray-400 leading-relaxed flex items-start gap-1.5">
         <ShieldCheck className="w-3 h-3 mt-0.5 flex-shrink-0" />
-        {isTr
-          ? 'Onay ve geri alma işlemleriniz tarih, sürüm ve kaynak bilgisiyle kayıt altına alınır. Zorunlu onaylar hizmetin verilebilmesi için gereklidir; kaldırmak isterseniz hesabınızı kapatma hakkınızı kullanabilirsiniz.'
-          : 'Your consents and withdrawals are recorded with date, version and source. Required consents are necessary to provide the service; to remove them you can exercise your right to close your account.'}
+        {t('riza.yourConsentsAndWithdrawalsAre', 'Your consents and withdrawals are recorded with date, version and source. Required consents are necessary to provide the service; to remove them you can exercise your right to close your account.')}
       </p>
     </div>
   );

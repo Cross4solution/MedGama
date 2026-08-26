@@ -12,8 +12,7 @@ import { Calendar, Clock, Video, Building2, Loader2, Check, XCircle, CalendarClo
 // Lightweight incoming-appointments view for doctors & clinics (not the full CRM).
 // Manage your own schedule: confirm / cancel / join — no filters, charts or leads.
 export default function DoctorAppointments() {
-  const { t, i18n } = useTranslation();
-  const isTr = i18n.language?.startsWith('tr');
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
@@ -89,11 +88,11 @@ export default function DoctorAppointments() {
 
   const statusBadge = (s) => {
     const map = {
-      pending: ['bg-amber-50 text-amber-700', isTr ? 'Onay Bekliyor' : 'Pending'],
-      confirmed: ['bg-teal-50 text-teal-700', isTr ? 'Onaylandı' : 'Confirmed'],
-      completed: ['bg-gray-100 text-gray-600', isTr ? 'Tamamlandı' : 'Completed'],
-      cancelled: ['bg-red-50 text-red-600', isTr ? 'İptal' : 'Cancelled'],
-      no_show: ['bg-red-50 text-red-600', isTr ? 'Gelmedi' : 'No-show'],
+      pending: ['bg-amber-50 text-amber-700', t('hekimRandevu.pending', 'Pending')],
+      confirmed: ['bg-teal-50 text-teal-700', t('hekimRandevu.confirmed', 'Confirmed')],
+      completed: ['bg-gray-100 text-gray-600', t('hekimRandevu.completed', 'Completed')],
+      cancelled: ['bg-red-50 text-red-600', t('hekimRandevu.cancelled', 'Cancelled')],
+      no_show: ['bg-red-50 text-red-600', t('hekimRandevu.noShow', 'No-show')],
     };
     const [cls, label] = map[s] || ['bg-gray-100 text-gray-600', s];
     return <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${cls}`}>{label}</span>;
@@ -112,7 +111,7 @@ export default function DoctorAppointments() {
 
         {/* Tabs */}
         <div className="flex gap-2 mb-5">
-          {[['upcoming', isTr ? 'Yaklaşan' : 'Upcoming'], ['past', isTr ? 'Geçmiş' : 'Past']].map(([k, label]) => (
+          {[['upcoming', t('hekimRandevu.upcoming', 'Upcoming')], ['past', t('hekimRandevu.past', 'Past')]].map(([k, label]) => (
             <button key={k} onClick={() => setFilter(k)}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${filter === k ? 'bg-teal-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-teal-300'}`}>
               {label}
@@ -147,12 +146,12 @@ export default function DoctorAppointments() {
                   className="w-12 h-12 rounded-full object-cover flex-shrink-0"
                   onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900 truncate">{a.patient?.fullname || (isTr ? 'Hasta' : 'Patient')}</p>
+                  <p className="text-sm font-semibold text-gray-900 truncate">{a.patient?.fullname || (t('hekimRandevu.patient', 'Patient'))}</p>
                   <div className="flex items-center gap-3 mt-1 text-xs text-gray-500 flex-wrap">
                     <span className="inline-flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{a.appointment_date}</span>
                     <span className="inline-flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{(a.appointment_time || '').slice(0, 5) || '--:--'}</span>
                     <span className="inline-flex items-center gap-1">
-                      {a.appointment_type === 'online' ? <><Video className="w-3.5 h-3.5" />{isTr ? 'Online' : 'Online'}</> : <><Building2 className="w-3.5 h-3.5" />{isTr ? 'Klinik' : 'In-person'}</>}
+                      {a.appointment_type === 'online' ? <><Video className="w-3.5 h-3.5" />{t('hekimRandevu.online', 'Online')}</> : <><Building2 className="w-3.5 h-3.5" />{t('hekimRandevu.inPerson', 'In-person')}</>}
                     </span>
                   </div>
                 </div>
@@ -162,13 +161,13 @@ export default function DoctorAppointments() {
                     {canJoin(a) && (
                       <button onClick={() => navigate(`/telehealth/call/${a.id}`)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700">
-                        <Video className="w-3.5 h-3.5" />{isTr ? 'Katıl' : 'Join'}
+                        <Video className="w-3.5 h-3.5" />{t('hekimRandevu.join', 'Join')}
                       </button>
                     )}
                     {a.status === 'pending' && isUpcoming(a) && (
                       <button onClick={() => setStatus(a.id, 'confirmed')} disabled={busyId === a.id}
                         className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-teal-200 text-teal-700 text-xs font-semibold hover:bg-teal-50 disabled:opacity-50">
-                        {busyId === a.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}{isTr ? 'Onayla' : 'Confirm'}
+                        {busyId === a.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}{t('hekimRandevu.confirm', 'Confirm')}
                       </button>
                     )}
                     {/* Reddetme hakkı sunucudan gelir: randevuya 2 saatten az
@@ -176,18 +175,18 @@ export default function DoctorAppointments() {
                     {isUpcoming(a) && a.doctor_can_reject && (
                       <button onClick={() => setStatus(a.id, 'cancelled')} disabled={busyId === a.id}
                         className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 text-xs font-medium">
-                        <XCircle className="w-3.5 h-3.5" />{isTr ? 'Reddet' : 'Reject'}
+                        <XCircle className="w-3.5 h-3.5" />{t('hekimRandevu.reject', 'Reject')}
                       </button>
                     )}
                     {isUpcoming(a) && <AddToCalendar appointment={{
                       id: a.id,
-                      title: `${a.patient?.fullname || (isTr ? 'Hasta' : 'Patient')} — Medagama`,
+                      title: `${a.patient?.fullname || (t('hekimRandevu.patient', 'Patient'))} — Medagama`,
                       date: a.appointment_date,
                       time: a.appointment_time,
                       startsAt: a.starts_at,
                       durationMin: 30,
-                      description: a.appointment_type === 'online' ? (isTr ? 'Online görüşme' : 'Online consultation') : '',
-                      location: a.appointment_type === 'online' ? (isTr ? 'Online' : 'Online') : (a.clinic?.fullname || ''),
+                      description: a.appointment_type === 'online' ? (t('hekimRandevu.onlineConsultation', 'Online consultation')) : '',
+                      location: a.appointment_type === 'online' ? (t('hekimRandevu.online', 'Online')) : (a.clinic?.fullname || ''),
                     }} />}
                   </div>
                 </div>

@@ -15,7 +15,6 @@ import {
 
 function CRMTelehealth() {
   const { t, i18n } = useTranslation();
-  const isTr = i18n.language?.startsWith('tr');
   const { user, isPro } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -418,9 +417,9 @@ function CRMTelehealth() {
                   kimin saati olduğunu söylemiyor. */}
               {(() => {
                 const apt = session?.appointment;
-                const g = appointmentTimeDisplay(apt, isTr ? 'tr-TR' : 'en-US');
+                const g = appointmentTimeDisplay(apt, (i18n.language || 'tr-TR'));
                 const tarih = apt?.starts_at
-                  ? formatDateInZone(apt.starts_at, viewerTimezone(), isTr ? 'tr-TR' : 'en-US')
+                  ? formatDateInZone(apt.starts_at, viewerTimezone(), (i18n.language || 'tr-TR'))
                   : (apt?.appointment_date || '—');
                 return (
                   <>
@@ -430,7 +429,7 @@ function CRMTelehealth() {
                       {g.time || apt?.appointment_time || '—'}
                       {g.showProvider && (
                         <span className="ml-1 text-gray-500">
-                          ({isTr ? 'klinikte' : 'clinic'} {g.providerTime})
+                          ({t('crmTelesaglik.clinic', 'clinic')} {g.providerTime})
                         </span>
                       )}
                     </p>

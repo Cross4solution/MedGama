@@ -20,7 +20,6 @@ function getFirstDayOfMonth(year, month) {
 
 export default function BookAppointmentModal({ open, onClose, targetId, targetName, targetType = 'doctor', initialType = null, clinicDoctors = [] }) {
   const { t, i18n } = useTranslation();
-  const isTr = i18n.language?.startsWith('tr');
   const { user } = useAuth();
 
   const isClinic = targetType === 'clinic';
@@ -54,13 +53,20 @@ export default function BookAppointmentModal({ open, onClose, targetId, targetNa
   const firstDay = useMemo(() => getFirstDayOfMonth(calYear, calMonth), [calYear, calMonth]);
   const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
 
-  const dayNames = isTr
-    ? ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
-    : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  // Gün ve ay adları elle iki dilde yazılıydı: Türkçe değilse İngilizce.
+  // Dokuz dil destekleniyor ve takvim adları çeviri dosyasına ait bir şey
+  // değil — tarayıcı bunları zaten her dil için biliyor.
+  const dil = i18n.language || 'tr-TR';
+  const dayNames = useMemo(() => {
+    const b = new Intl.DateTimeFormat(dil, { weekday: 'short' });
+    // 2024-01-01 pazartesi; hafta pazartesiyle başlıyor.
+    return Array.from({ length: 7 }, (_, i) => b.format(new Date(2024, 0, 1 + i)));
+  }, [dil]);
 
-  const monthNames = isTr
-    ? ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık']
-    : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const monthNames = useMemo(() => {
+    const b = new Intl.DateTimeFormat(dil, { month: 'long' });
+    return Array.from({ length: 12 }, (_, i) => b.format(new Date(2024, i, 1)));
+  }, [dil]);
 
   // Fetch slots for the selected/effective doctor
   const fetchAvailability = useCallback(() => {
@@ -215,7 +221,7 @@ export default function BookAppointmentModal({ open, onClose, targetId, targetNa
               {isClinic && selectedDoctor && (
                 <div className="flex justify-between text-sm"><span className="text-gray-500">{t('common.doctor')}</span><span className="font-medium text-gray-900">{selectedDoctor.fullname}</span></div>
               )}
-              <div className="flex justify-between text-sm"><span className="text-gray-500">{t('booking.date')}</span><span className="font-medium text-gray-900">{selectedDate?.toLocaleDateString(isTr ? 'tr-TR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span></div>
+              <div className="flex justify-between text-sm"><span className="text-gray-500">{t('booking.date')}</span><span className="font-medium text-gray-900">{selectedDate?.toLocaleDateString((i18n.language || 'tr-TR'), { day: 'numeric', month: 'long', year: 'numeric' })}</span></div>
               <div className="flex justify-between text-sm"><span className="text-gray-500">{t('booking.time')}</span><span className="font-medium text-gray-900">{selectedSlot?.start_time?.slice(0, 5)}</span></div>
               <div className="flex justify-between text-sm"><span className="text-gray-500">{t('booking.type')}</span><span className="font-medium text-gray-900">{(() => { const at = APPOINTMENT_TYPES.find(a => a.id === appointmentType); return at ? t(at.labelKey) : ''; })()}</span></div>
             </div>
@@ -400,7 +406,7 @@ export default function BookAppointmentModal({ open, onClose, targetId, targetNa
                   )}
                   <div className="flex items-center gap-3 text-sm">
                     <Calendar className="w-4 h-4 text-teal-600 flex-shrink-0" />
-                    <span className="text-gray-700">{selectedDate?.toLocaleDateString(isTr ? 'tr-TR' : 'en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                    <span className="text-gray-700">{selectedDate?.toLocaleDateString((i18n.language || 'tr-TR'), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <Clock className="w-4 h-4 text-teal-600 flex-shrink-0" />

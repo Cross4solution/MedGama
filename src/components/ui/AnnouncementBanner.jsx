@@ -58,7 +58,9 @@ export default function AnnouncementBanner() {
             </div>
             {ann.is_dismissible && (
               <button onClick={() => handleDismiss(ann.id)}
-                className={`p-1 rounded-lg hover:bg-black/5 transition-colors flex-shrink-0 ${cfg.text} opacity-50 hover:opacity-80`}>
+                type="button"
+                aria-label={t('announcement.dismiss', 'Dismiss announcement')}
+                className={`p-1.5 rounded-lg hover:bg-black/5 transition-colors flex-shrink-0 ${cfg.text} opacity-50 hover:opacity-80`}>
                 <X className="w-3.5 h-3.5" />
               </button>
             )}

@@ -59,8 +59,7 @@ const DurumRozeti = ({ durum, gecikmis, t }) => {
 export default function PatientInvoices() {
   const { t, i18n } = useTranslation();
   const { notify } = useToast();
-  const isTr = i18n.language?.startsWith('tr');
-  const dil = isTr ? 'tr-TR' : 'en-US';
+  const dil = (i18n.language || 'tr-TR');
 
   const [faturalar, setFaturalar] = useState([]);
   const [yukleniyor, setYukleniyor] = useState(true);

@@ -13,8 +13,7 @@ import { catalogAPI, geoAPI } from '../../lib/api';
  * kendi seçtiği genel şehir adıdır (kişisel veri değil).
  */
 export default function LocationPicker({ onLocated }) {
-  const { i18n } = useTranslation();
-  const isTr = i18n.language?.startsWith('tr');
+  const { t, i18n } = useTranslation();
 
   const [cities, setCities] = useState([]);
   const [cityId, setCityId] = useState(null);
@@ -64,7 +63,7 @@ export default function LocationPicker({ onLocated }) {
       const res = await geoAPI.forward(label);
       const hit = res?.data || res || {};
       if (hit.latitude == null || hit.longitude == null) {
-        setError(isTr ? 'Şehir konumu bulunamadı.' : 'Could not locate that city.');
+        setError(t('konumSecici.couldNotLocateThatCity', 'Could not locate that city.'));
         return;
       }
       await geoAPI.saveLocation({
@@ -76,18 +75,18 @@ export default function LocationPicker({ onLocated }) {
       setDone(label);
       onLocated?.({ lat: hit.latitude, lon: hit.longitude, city: label });
     } catch {
-      setError(isTr ? 'Konum güncellenemedi.' : 'Could not update location.');
+      setError(t('konumSecici.couldNotUpdateLocation', 'Could not update location.'));
     } finally {
       setBusy(false);
     }
-  }, [nameOf, isTr, onLocated]);
+  }, [nameOf, onLocated]);
 
   /** GPS → yalnız kendi backend'imize kaydedilir (3. taraf yok). */
   const useMyLocation = useCallback(() => {
     setError('');
     setDone('');
     if (!navigator?.geolocation) {
-      setError(isTr ? 'Tarayıcı konum desteklemiyor.' : 'Geolocation not supported.');
+      setError(t('konumSecici.geolocationNotSupported', 'Geolocation not supported.'));
       return;
     }
     setBusy(true);
@@ -99,26 +98,26 @@ export default function LocationPicker({ onLocated }) {
             longitude: pos.coords.longitude,
           });
           setCityId(null);
-          setDone(isTr ? 'mevcut konumunuz' : 'your current location');
+          setDone(t('konumSecici.yourCurrentLocation', 'your current location'));
           onLocated?.({ lat: pos.coords.latitude, lon: pos.coords.longitude });
         } catch {
-          setError(isTr ? 'Konum kaydedilemedi.' : 'Could not save location.');
+          setError(t('konumSecici.couldNotSaveLocation', 'Could not save location.'));
         } finally {
           setBusy(false);
         }
       },
       () => {
         setBusy(false);
-        setError(isTr ? 'Konum izni verilmedi.' : 'Location permission denied.');
+        setError(t('konumSecici.locationPermissionDenied', 'Location permission denied.'));
       },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
     );
-  }, [isTr, onLocated]);
+  }, [onLocated]);
 
   return (
     <div>
       <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
-        {isTr ? 'Şehir / Konum' : 'City / Location'}
+        {t('konumSecici.cityLocation', 'City / Location')}
       </label>
 
       <div className="flex items-center gap-2">
@@ -131,7 +130,7 @@ export default function LocationPicker({ onLocated }) {
           >
             <MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
             <span className={`truncate ${selected ? 'text-gray-800' : 'text-gray-400'}`}>
-              {selected ? nameOf(selected) : (isTr ? 'Şehir seçin' : 'Select city')}
+              {selected ? nameOf(selected) : (t('konumSecici.selectCity', 'Select city'))}
             </span>
           </button>
 
@@ -145,13 +144,13 @@ export default function LocationPicker({ onLocated }) {
                     autoFocus
                     value={q}
                     onChange={(e) => setQ(e.target.value)}
-                    placeholder={isTr ? 'Ara…' : 'Search…'}
+                    placeholder={t('konumSecici.search', 'Search…')}
                     className="flex-1 text-sm outline-none bg-transparent"
                   />
                 </div>
                 <div className="max-h-56 overflow-y-auto">
                   {filtered.length === 0 ? (
-                    <p className="px-3 py-3 text-xs text-gray-400">{isTr ? 'Sonuç yok' : 'No results'}</p>
+                    <p className="px-3 py-3 text-xs text-gray-400">{t('konumSecici.noResults', 'No results')}</p>
                   ) : (
                     filtered.map((c) => (
                       <button
@@ -179,22 +178,20 @@ export default function LocationPicker({ onLocated }) {
           className="inline-flex items-center gap-1.5 px-3 h-10 rounded-lg border border-teal-200 bg-teal-50 text-teal-700 text-xs font-semibold hover:bg-teal-100 transition-colors disabled:opacity-50 whitespace-nowrap"
         >
           {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <MapPin className="w-3.5 h-3.5" />}
-          {isTr ? 'Konumumu kullan' : 'Use current location'}
+          {t('konumSecici.useCurrentLocation', 'Use current location')}
         </button>
       </div>
 
       {done && (
         <p className="mt-1.5 text-[11px] text-emerald-600 flex items-center gap-1">
           <Check className="w-3 h-3" />
-          {isTr ? `Konum güncellendi: ${done}` : `Location updated: ${done}`}
+          {t('konumSecici.locationUpdatedTo', { konum: done, defaultValue: 'Location updated: {{konum}}' })}
         </p>
       )}
       {error && <p className="mt-1.5 text-[11px] text-red-500">{error}</p>}
       {!done && !error && (
         <p className="mt-1.5 text-[11px] text-gray-400">
-          {isTr
-            ? 'Yakınınızdaki klinik ve paylaşımları görmek için konumunuzu güncelleyin.'
-            : 'Update your location to see nearby clinics and posts.'}
+          {t('konumSecici.updateYourLocationToSee', 'Update your location to see nearby clinics and posts.')}
         </p>
       )}
     </div>

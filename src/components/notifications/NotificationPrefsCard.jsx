@@ -19,15 +19,16 @@ import { useTranslation } from 'react-i18next';
 // İçerik çevirisi tercihi burada DEĞİL: kullanıcı açısından bir dil ayarı,
 // bildirim ayarı değil. Profil ekranında, dil seçiminin hemen altında duruyor.
 const AYARLAR = [
-  { key: 'email_review_received', tr: 'Yeni değerlendirme geldiğinde e-posta', en: 'Email me about new reviews' },
-  { key: 'email_review_response', tr: 'Değerlendirmeme yanıt verilince e-posta', en: 'Email me when someone replies to my review' },
-  { key: 'email_support',         tr: 'Destek talebime yanıt gelince e-posta', en: 'Email me about support replies' },
-  { key: 'inapp_social',          tr: 'Beğeni ve yorum bildirimleri', en: 'Likes and comments' },
+  // Etiketler iki dilde sabitti (`isTr ? tr : en`). Artık çeviri anahtarı;
+  // İngilizce metin yalnız yedek.
+  { key: 'email_review_received', anahtar: 'bildirimTercihi.emailNewReviews',   yedek: 'Email me about new reviews' },
+  { key: 'email_review_response', anahtar: 'bildirimTercihi.emailReviewReply',  yedek: 'Email me when someone replies to my review' },
+  { key: 'email_support',         anahtar: 'bildirimTercihi.emailSupport',      yedek: 'Email me about support replies' },
+  { key: 'inapp_social',          anahtar: 'bildirimTercihi.likesComments',     yedek: 'Likes and comments' },
 ];
 
 export default function NotificationPrefsCard() {
-  const { i18n } = useTranslation();
-  const isTr = i18n.language?.startsWith('tr');
+  const { t } = useTranslation();
   const [prefs, setPrefs] = useState(null);
   const [saving, setSaving] = useState(null);
   const [error, setError] = useState('');
@@ -62,7 +63,7 @@ export default function NotificationPrefsCard() {
       await authAPI.updateNotificationPrefs({ [key]: next[key] });
     } catch {
       setPrefs(prefs);        // başarısızsa eski hâline dön
-      setError(isTr ? 'Kaydedilemedi, tekrar deneyin.' : 'Could not save, please try again.');
+      setError(t('bildirimTercihi.couldNotSavePleaseTry', 'Could not save, please try again.'));
     } finally {
       setSaving(null);
     }
@@ -72,7 +73,7 @@ export default function NotificationPrefsCard() {
     <div className="rounded-2xl border border-gray-200/60 bg-white/95 shadow-lg shadow-gray-200/40 overflow-hidden">
       <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
         <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">
-          {isTr ? 'Bildirim Tercihleri' : 'Notification Settings'}
+          {t('bildirimTercihi.notificationSettings', 'Notification Settings')}
         </div>
       </div>
 
@@ -83,7 +84,7 @@ export default function NotificationPrefsCard() {
           </div>
         ) : (
           <>
-            {AYARLAR.map(({ key, tr, en }) => {
+            {AYARLAR.map(({ key, anahtar, yedek }) => {
               const acik = prefs?.[key] ?? true;
               return (
                 <button
@@ -92,7 +93,7 @@ export default function NotificationPrefsCard() {
                   disabled={saving === key}
                   className="w-full flex items-center justify-between gap-3 px-2.5 py-2.5 rounded-xl text-left hover:bg-gray-50/80 transition-colors disabled:opacity-60"
                 >
-                  <span className="text-[13px] text-gray-700 leading-snug">{isTr ? tr : en}</span>
+                  <span className="text-[13px] text-gray-700 leading-snug">{t(anahtar, yedek)}</span>
                   <span
                     className={`relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full transition-colors ${acik ? 'bg-teal-600' : 'bg-gray-300'}`}
                   >

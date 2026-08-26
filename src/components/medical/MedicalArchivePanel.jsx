@@ -14,9 +14,8 @@ import {
  * Erişim backend'de audit-log'a yazılır.
  */
 export default function MedicalArchivePanel({ appointmentId }) {
-  const { i18n } = useTranslation();
+  const { t } = useTranslation();
   const { notify } = useToast();
-  const isTr = i18n.language?.startsWith('tr');
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -29,11 +28,11 @@ export default function MedicalArchivePanel({ appointmentId }) {
       const res = await appointmentAPI.medicalContext(appointmentId);
       setCtx(res?.data || null);
     } catch {
-      notify({ type: 'error', message: isTr ? 'Tıbbi bilgiler yüklenemedi.' : 'Failed to load medical info.' });
+      notify({ type: 'error', message: t('tibbiArsiv.failedToLoadMedicalInfo', 'Failed to load medical info.') });
     } finally {
       setLoading(false);
     }
-  }, [appointmentId, isTr, notify]);
+  }, [appointmentId, notify]);
 
   const toggle = () => {
     const next = !open;
@@ -54,7 +53,7 @@ export default function MedicalArchivePanel({ appointmentId }) {
       a.remove();
       window.URL.revokeObjectURL(url);
     } catch {
-      notify({ type: 'error', message: isTr ? 'Belge indirilemedi.' : 'Failed to download document.' });
+      notify({ type: 'error', message: t('tibbiArsiv.failedToDownloadDocument', 'Failed to download document.') });
     } finally {
       setDownloadingId(null);
     }
@@ -75,7 +74,7 @@ export default function MedicalArchivePanel({ appointmentId }) {
       >
         <span className="flex items-center gap-2 text-xs font-semibold text-teal-800">
           <ShieldCheck className="w-4 h-4 text-teal-600" />
-          {isTr ? 'Hasta Tıbbi Bilgileri (Anamnez)' : 'Patient Medical Info (Anamnesis)'}
+          {t('tibbiArsiv.patientMedicalInfoAnamnesis', 'Patient Medical Info (Anamnesis)')}
         </span>
         {open ? <ChevronUp className="w-4 h-4 text-teal-600" /> : <ChevronDown className="w-4 h-4 text-teal-600" />}
       </button>
@@ -84,39 +83,39 @@ export default function MedicalArchivePanel({ appointmentId }) {
         <div className="px-4 pb-4 pt-1 space-y-2.5">
           {loading ? (
             <div className="flex items-center gap-2 text-xs text-gray-500 py-3">
-              <Loader2 className="w-4 h-4 animate-spin" /> {isTr ? 'Yükleniyor...' : 'Loading...'}
+              <Loader2 className="w-4 h-4 animate-spin" /> {t('tibbiArsiv.loading', 'Loading...')}
             </div>
           ) : !ctx ? null : isEmpty ? (
-            <p className="text-xs text-gray-400 italic py-1">{isTr ? 'Hastanın kayıtlı tıbbi bilgisi yok.' : 'No medical info on record.'}</p>
+            <p className="text-xs text-gray-400 italic py-1">{t('tibbiArsiv.noMedicalInfoOnRecord', 'No medical info on record.')}</p>
           ) : (
             <>
               {conditions.length > 0 && (
                 <div className="flex items-start gap-2 text-xs">
                   <AlertTriangle className="w-3.5 h-3.5 text-amber-500 mt-0.5 flex-shrink-0" />
-                  <span><b className="text-gray-700">{isTr ? 'Durumlar/Alerjiler:' : 'Conditions/Allergies:'}</b> {conditions.join(', ')}</span>
+                  <span><b className="text-gray-700">{t('tibbiArsiv.conditionsAllergies', 'Conditions/Allergies:')}</b> {conditions.join(', ')}</span>
                 </div>
               )}
               {medications.length > 0 && (
                 <div className="flex items-start gap-2 text-xs">
                   <Pill className="w-3.5 h-3.5 text-teal-500 mt-0.5 flex-shrink-0" />
-                  <span><b className="text-gray-700">{isTr ? 'İlaçlar:' : 'Medications:'}</b> {medications.join(', ')}</span>
+                  <span><b className="text-gray-700">{t('tibbiArsiv.medications', 'Medications:')}</b> {medications.join(', ')}</span>
                 </div>
               )}
               {vaccinations.length > 0 && (
                 <div className="flex items-start gap-2 text-xs">
                   <Syringe className="w-3.5 h-3.5 text-violet-500 mt-0.5 flex-shrink-0" />
-                  <span><b className="text-gray-700">{isTr ? 'Aşılar:' : 'Vaccinations:'}</b> {vaccinations.join(', ')}</span>
+                  <span><b className="text-gray-700">{t('tibbiArsiv.vaccinations', 'Vaccinations:')}</b> {vaccinations.join(', ')}</span>
                 </div>
               )}
               {notes && (
                 <div className="flex items-start gap-2 text-xs">
                   <StickyNote className="w-3.5 h-3.5 text-amber-500 mt-0.5 flex-shrink-0" />
-                  <span><b className="text-gray-700">{isTr ? 'Notlar:' : 'Notes:'}</b> {notes}</span>
+                  <span><b className="text-gray-700">{t('tibbiArsiv.notes', 'Notes:')}</b> {notes}</span>
                 </div>
               )}
               {documents.length > 0 && (
                 <div className="space-y-1.5 border-t border-teal-100 pt-2.5">
-                  <p className="text-[11px] font-semibold text-gray-500">{isTr ? 'Belgeler' : 'Documents'}</p>
+                  <p className="text-[11px] font-semibold text-gray-500">{t('tibbiArsiv.documents', 'Documents')}</p>
                   {documents.map((doc) => (
                     <div key={doc.id} className="flex items-center justify-between gap-2 bg-white border border-gray-100 rounded-lg px-3 py-2">
                       <span className="flex items-center gap-2 min-w-0 text-xs text-gray-700">
@@ -129,7 +128,7 @@ export default function MedicalArchivePanel({ appointmentId }) {
                         className="inline-flex items-center gap-1 text-teal-600 hover:text-teal-800 text-xs font-semibold disabled:opacity-50 flex-shrink-0"
                       >
                         {downloadingId === doc.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-                        {isTr ? 'İndir' : 'Download'}
+                        {t('tibbiArsiv.download', 'Download')}
                       </button>
                     </div>
                   ))}

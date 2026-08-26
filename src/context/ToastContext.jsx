@@ -105,7 +105,7 @@ export function ToastProvider({ children }) {
                   type="button"
                   onClick={(e) => { e.stopPropagation(); remove(t.id); }}
                   aria-label={ceviri('toast.dismiss', 'Dismiss notification')}
-                  className={`p-1 rounded-lg hover:bg-black/5 transition-colors flex-shrink-0 ${cfg.text} opacity-40 hover:opacity-80`}
+                  className={`p-1.5 rounded-lg hover:bg-black/5 transition-colors flex-shrink-0 ${cfg.text} opacity-40 hover:opacity-80`}
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>

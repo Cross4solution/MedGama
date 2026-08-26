@@ -8,8 +8,7 @@ import { healthAccessLogAPI } from '../../lib/api';
  * KVKK/GDPR erişim hakkı: hasta, verisine kimin ne zaman neye eriştiğini görür.
  */
 export default function AccessHistory() {
-  const { i18n } = useTranslation();
-  const isTr = i18n.language?.startsWith('tr');
+  const { t, i18n } = useTranslation();
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -25,11 +24,11 @@ export default function AccessHistory() {
       setLogs(res?.data?.data || res?.data || []);
       setLoaded(true);
     } catch {
-      setError(isTr ? 'Erişim geçmişi yüklenemedi.' : 'Could not load access history.');
+      setError(t('erisimGecmisi.couldNotLoadAccessHistory', 'Could not load access history.'));
     } finally {
       setLoading(false);
     }
-  }, [isTr]);
+  }, [t]);
 
   useEffect(() => {
     if (open && !loaded && !loading) load();
@@ -38,17 +37,19 @@ export default function AccessHistory() {
   const formatWhen = (iso) => {
     if (!iso) return '';
     try {
-      return new Date(iso).toLocaleString(isTr ? 'tr-TR' : 'en-US', {
+      return new Date(iso).toLocaleString((i18n.language || 'tr-TR'), {
         day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit',
       });
     } catch { return iso; }
   };
 
   const roleLabel = (roleId) => {
-    const map = isTr
-      ? { doctor: 'Doktor', clinicOwner: 'Klinik', clinic: 'Klinik', hospital: 'Hastane', superAdmin: 'Yönetici', saasAdmin: 'Yönetici' }
-      : { doctor: 'Doctor', clinicOwner: 'Clinic', clinic: 'Clinic', hospital: 'Hospital', superAdmin: 'Admin', saasAdmin: 'Admin' };
-    return map[roleId] || '';
+    // Rol adları iki dilde sabitti; ortak `roles.*` anahtarları zaten var.
+    const anahtar = {
+      doctor: 'doctor', clinicOwner: 'clinic', clinic: 'clinic',
+      hospital: 'hospital', superAdmin: 'admin', saasAdmin: 'admin',
+    }[roleId];
+    return anahtar ? t(`erisimGecmisi.role_${anahtar}`) : '';
   };
 
   return (
@@ -63,12 +64,10 @@ export default function AccessHistory() {
           </span>
           <span>
             <span className="block text-sm font-bold text-gray-900">
-              {isTr ? 'Erişim Geçmişi' : 'Access History'}
+              {t('erisimGecmisi.accessHistory', 'Access History')}
             </span>
             <span className="block text-[11px] text-gray-400 mt-0.5">
-              {isTr
-                ? 'Sağlık verilerinize kim, ne zaman, neye baktı'
-                : 'Who viewed your health data, when, and what'}
+              {t('erisimGecmisi.whoViewedYourHealthData', 'Who viewed your health data, when, and what')}
             </span>
           </span>
         </span>
@@ -79,7 +78,7 @@ export default function AccessHistory() {
         <div className="px-5 pb-5 border-t border-gray-100 pt-4">
           {loading ? (
             <div className="flex items-center gap-2 text-xs text-gray-500 py-3">
-              <Loader2 className="w-4 h-4 animate-spin" /> {isTr ? 'Yükleniyor...' : 'Loading...'}
+              <Loader2 className="w-4 h-4 animate-spin" /> {t('erisimGecmisi.loading', 'Loading...')}
             </div>
           ) : error ? (
             <p className="text-xs text-red-500 py-2">{error}</p>
@@ -87,7 +86,7 @@ export default function AccessHistory() {
             <div className="py-6 text-center">
               <Clock className="w-8 h-8 text-gray-200 mx-auto mb-2" />
               <p className="text-sm text-gray-500">
-                {isTr ? 'Henüz kimse verilerinize erişmedi.' : 'Nobody has accessed your data yet.'}
+                {t('erisimGecmisi.nobodyHasAccessedYourData', 'Nobody has accessed your data yet.')}
               </p>
             </div>
           ) : (
@@ -115,9 +114,7 @@ export default function AccessHistory() {
           )}
 
           <p className="mt-3 text-[11px] text-gray-400 leading-relaxed">
-            {isTr
-              ? 'Her erişim otomatik olarak kaydedilir. Verilerinize yalnızca siz ve randevu aldığınız sağlık kuruluşu erişebilir.'
-              : 'Every access is logged automatically. Only you and the provider you booked can access your data.'}
+            {t('erisimGecmisi.everyAccessIsLoggedAutomatically', 'Every access is logged automatically. Only you and the provider you booked can access your data.')}
           </p>
         </div>
       )}

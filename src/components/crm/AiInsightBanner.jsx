@@ -11,12 +11,14 @@ import { useTranslation } from 'react-i18next';
  */
 
 // ── Insight generation (client-side) ─────────────────────────
-function generateInsights({ appointments, randevularBiliniyor, alerts, stats, patients, t, isTr }) {
+function generateInsights({ appointments, randevularBiliniyor, alerts, stats, patients, t }) {
   const insights = [];
-  const now = new Date();
-  const hour = now.getHours();
-  // Şerit Türkçe arayüzde de İngilizce yazıyordu.
-  const tr = (turkce, ingilizce) => (isTr ? turkce : ingilizce);
+  // Şerit iki dil biliyordu: Türkçe değilse İngilizce. Dokuz dil destekleniyor,
+  // yani Almanca ya da Arapça arayüzde İngilizce metin çıkıyordu. Metinler artık
+  // çeviri anahtarından geliyor; sayı ve ad ara-değer, çoğul eki i18next'in
+  // dil kuralına bırakılmış (İngilizce "s" eki elle ekleniyordu — Rusçada üç,
+  // Arapçada altı çoğul biçimi var).
+  const ic = (anahtar, yedek, degerler) => t(`yapayZekaIcgoru.${anahtar}`, { ...degerler, defaultValue: yedek });
 
   // 1. Urgent / critical alerts
   const unreadCritical = (alerts || []).filter((a) => !a.read && a.type === 'critical');
@@ -27,7 +29,7 @@ function generateInsights({ appointments, randevularBiliniyor, alerts, stats, pa
       icon: AlertTriangle,
       iconColor: 'text-red-500',
       text: unreadCritical[0].message,
-      sub: `${unreadCritical.length} critical alert${unreadCritical.length > 1 ? 's' : ''} require your attention`,
+      sub: ic('criticalAlerts', '{{count}} critical alert requires your attention', { count: unreadCritical.length }),
       priority: 10,
       tag: 'urgent',
     });
@@ -38,7 +40,7 @@ function generateInsights({ appointments, randevularBiliniyor, alerts, stats, pa
       icon: AlertTriangle,
       iconColor: 'text-amber-500',
       text: unreadWarning[0].message,
-      sub: `${unreadWarning.length} pending warning${unreadWarning.length > 1 ? 's' : ''} to review`,
+      sub: ic('pendingWarnings', '{{count}} pending warning to review', { count: unreadWarning.length }),
       priority: 8,
       tag: 'warning',
     });
@@ -60,14 +62,11 @@ function generateInsights({ appointments, randevularBiliniyor, alerts, stats, pa
     insights.push({
       icon: CalendarDays,
       iconColor: 'text-blue-500',
-      text: tr(
-        `${inProgress[0].patient} şu anda görüşmede (${inProgress[0].type}).`,
-        `${inProgress[0].patient} is currently in session (${inProgress[0].type}).`,
-      ),
-      sub: tr(
-        `Bugün ${upcoming.length} randevu daha var`,
-        `${upcoming.length} more appointment${upcoming.length !== 1 ? 's' : ''} ahead today`,
-      ),
+      text: ic('inSession', '{{hasta}} is currently in session ({{tur}}).', {
+        hasta: inProgress[0].patient,
+        tur: inProgress[0].type,
+      }),
+      sub: ic('moreAhead', '{{count}} more appointment ahead today', { count: upcoming.length }),
       priority: 7,
       tag: 'schedule',
     });
@@ -76,14 +75,15 @@ function generateInsights({ appointments, randevularBiliniyor, alerts, stats, pa
     insights.push({
       icon: CalendarDays,
       iconColor: 'text-teal-500',
-      text: tr(
-        `Sıradaki: ${next.patient}, saat ${next.time} — ${next.type}.`,
-        `Next up: ${next.patient} at ${next.time} — ${next.type}.`,
-      ),
-      sub: tr(
-        `Bugün toplam ${total} randevu, ${completed.length} tamamlandı${cancelled.length > 0 ? `, ${cancelled.length} iptal` : ''}`,
-        `${total} total appointments today, ${completed.length} completed${cancelled.length > 0 ? `, ${cancelled.length} cancelled` : ''}`,
-      ),
+      text: ic('nextUp', 'Next up: {{hasta}} at {{saat}} — {{tur}}.', {
+        hasta: next.patient, saat: next.time, tur: next.type,
+      }),
+      sub: cancelled.length > 0
+        ? ic('todayTotalsWithCancelled',
+            '{{toplam}} total appointments today, {{tamamlanan}} completed, {{iptal}} cancelled',
+            { toplam: total, tamamlanan: completed.length, iptal: cancelled.length })
+        : ic('todayTotals', '{{toplam}} total appointments today, {{tamamlanan}} completed',
+            { toplam: total, tamamlanan: completed.length }),
       priority: 6,
       tag: 'schedule',
     });
@@ -110,14 +110,15 @@ function generateInsights({ appointments, randevularBiliniyor, alerts, stats, pa
     icon: Sparkles,
     iconColor: 'text-violet-500',
     text: total === 0
-      ? tr('Bugün randevunuz yok.', 'You have no appointments today.')
-      : tr(`Bugün ${total} randevunuz var.`, `You have ${total} appointment${total > 1 ? 's' : ''} today.`),
+      ? ic('noAppointmentsToday', 'You have no appointments today.')
+      : ic('haveAppointments', 'You have {{count}} appointment today.', { count: total }),
     sub: total === 0
-      ? tr('Takviminiz boş.', 'Your calendar is clear.')
-      : tr(
-          `${completed.length} tamamlandı, ${upcoming.length} sırada${cancelled.length ? `, ${cancelled.length} iptal` : ''}.`,
-          `${completed.length} done, ${upcoming.length} upcoming${cancelled.length ? `, ${cancelled.length} cancelled` : ''} — ${hour < 12 ? 'morning is busy' : hour < 17 ? 'afternoon ahead' : 'wrapping up'}.`,
-        ),
+      ? ic('calendarClear', 'Your calendar is clear.')
+      : (cancelled.length
+          ? ic('doneUpcomingCancelled', '{{tamamlanan}} done, {{sirada}} upcoming, {{iptal}} cancelled.',
+              { tamamlanan: completed.length, sirada: upcoming.length, iptal: cancelled.length })
+          : ic('doneUpcoming', '{{tamamlanan}} done, {{sirada}} upcoming.',
+              { tamamlanan: completed.length, sirada: upcoming.length })),
     priority: 3,
     tag: 'overview',
   });
@@ -130,13 +131,13 @@ function generateInsights({ appointments, randevularBiliniyor, alerts, stats, pa
 // ── Component ────────────────────────────────────────────────
 export default function AiInsightBanner({ appointments, randevularBiliniyor = true, alerts, stats, patients }) {
   const { t, i18n } = useTranslation();
-  const isTr = i18n.language?.startsWith('tr');
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
   const insights = useMemo(
-    () => generateInsights({ appointments, randevularBiliniyor, alerts, stats, patients, t, isTr }),
-    [appointments, randevularBiliniyor, alerts, stats, patients, t, isTr],
+    () => generateInsights({ appointments, randevularBiliniyor, alerts, stats, patients, t }),
+    [appointments, randevularBiliniyor, alerts, stats, patients, t],
   );
 
   // Auto-rotate every 8 seconds

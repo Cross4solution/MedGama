@@ -4,8 +4,7 @@ import { useTranslation } from 'react-i18next';
 import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 export default function OnlineConsultationModal({ open, onClose, targetId, targetName, targetType = 'doctor' }) {
-  const { i18n } = useTranslation();
-  const isTr = i18n.language?.startsWith('tr');
+  const { t } = useTranslation();
 
   const [step, setStep] = useState(1); // 1 = info, 2 = device check, 3 = queue
   const [checkingDevices, setCheckingDevices] = useState(false);
@@ -62,7 +61,7 @@ export default function OnlineConsultationModal({ open, onClose, targetId, targe
               <Video className="w-5 h-5 text-teal-600" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-gray-900">{isTr ? 'Görüntülü Görüşme' : 'Telehealth'}</h2>
+              <h2 className="text-base font-bold text-gray-900">{t('cevrimiciGorusme.telehealth', 'Telehealth')}</h2>
               <p className="text-xs text-gray-500">{targetName}</p>
             </div>
           </div>
@@ -79,11 +78,9 @@ export default function OnlineConsultationModal({ open, onClose, targetId, targe
                 <div className="flex items-start gap-3">
                   <Shield className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-900 mb-1">{isTr ? 'Güvenli Video Görüşme' : 'Secure Video Call'}</h3>
+                    <h3 className="text-sm font-semibold text-gray-900 mb-1">{t('cevrimiciGorusme.secureVideoCall', 'Secure Video Call')}</h3>
                     <p className="text-xs text-gray-600 leading-relaxed">
-                      {isTr
-                        ? 'Uçtan uca şifreli görüşme. Verileriniz KVKK ve GDPR uyumlu olarak korunur.'
-                        : 'End-to-end encrypted session. Your data is protected and GDPR compliant.'}
+                      {t('cevrimiciGorusme.endToEndEncryptedSession', 'End-to-end encrypted session. Your data is protected and GDPR compliant.')}
                     </p>
                   </div>
                 </div>
@@ -92,15 +89,15 @@ export default function OnlineConsultationModal({ open, onClose, targetId, targe
               <div className="space-y-2.5">
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                   <Clock className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm text-gray-700">{isTr ? 'Ortalama süre: 15-30 dakika' : 'Average duration: 15-30 minutes'}</span>
+                  <span className="text-sm text-gray-700">{t('cevrimiciGorusme.averageDuration1530Minutes', 'Average duration: 15-30 minutes')}</span>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                   <Monitor className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm text-gray-700">{isTr ? 'Kamera ve mikrofon gerekli' : 'Camera and microphone required'}</span>
+                  <span className="text-sm text-gray-700">{t('cevrimiciGorusme.cameraAndMicrophoneRequired', 'Camera and microphone required')}</span>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                   <Wifi className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm text-gray-700">{isTr ? 'Kararlı internet bağlantısı önerilir' : 'Stable internet connection recommended'}</span>
+                  <span className="text-sm text-gray-700">{t('cevrimiciGorusme.stableInternetConnectionRecommende', 'Stable internet connection recommended')}</span>
                 </div>
               </div>
 
@@ -109,7 +106,7 @@ export default function OnlineConsultationModal({ open, onClose, targetId, targe
                 className="w-full py-3 bg-teal-600 text-white rounded-xl font-semibold text-sm hover:bg-teal-700 transition-colors flex items-center justify-center gap-2"
               >
                 <Video className="w-4 h-4" />
-                {isTr ? 'Cihaz Kontrolüne Başla' : 'Start Device Check'}
+                {t('cevrimiciGorusme.startDeviceCheck', 'Start Device Check')}
               </button>
             </div>
           )}
@@ -117,13 +114,13 @@ export default function OnlineConsultationModal({ open, onClose, targetId, targe
           {/* Step 2: Device Check */}
           {step === 2 && (
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-gray-700">{isTr ? 'Cihaz Kontrolü' : 'Device Check'}</h3>
+              <h3 className="text-sm font-semibold text-gray-700">{t('cevrimiciGorusme.deviceCheck', 'Device Check')}</h3>
 
               <div className="space-y-2.5">
                 {[
-                  { key: 'internet', icon: Wifi, label: isTr ? 'İnternet Bağlantısı' : 'Internet Connection' },
-                  { key: 'mic', icon: Mic, label: isTr ? 'Mikrofon' : 'Microphone' },
-                  { key: 'camera', icon: Monitor, label: isTr ? 'Kamera' : 'Camera' },
+                  { key: 'internet', icon: Wifi, label: t('cevrimiciGorusme.internetConnection', 'Internet Connection') },
+                  { key: 'mic', icon: Mic, label: t('cevrimiciGorusme.microphone', 'Microphone') },
+                  { key: 'camera', icon: Monitor, label: t('cevrimiciGorusme.camera', 'Camera') },
                 ].map(item => (
                   <div key={item.key} className="flex items-center justify-between p-3.5 bg-gray-50 rounded-xl">
                     <div className="flex items-center gap-3">
@@ -144,14 +141,14 @@ export default function OnlineConsultationModal({ open, onClose, targetId, targe
               {!checkingDevices && (
                 <div className="flex gap-3 pt-2">
                   <button onClick={() => setStep(1)} className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors">
-                    {isTr ? 'Geri' : 'Back'}
+                    {t('cevrimiciGorusme.back', 'Back')}
                   </button>
                   <button
                     onClick={handleJoin}
                     className="flex-1 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors flex items-center justify-center gap-2"
                   >
                     <Video className="w-4 h-4" />
-                    {isTr ? 'Görüşmeye Katıl' : 'Join Call'}
+                    {t('cevrimiciGorusme.joinCall', 'Join Call')}
                   </button>
                 </div>
               )}
@@ -164,7 +161,7 @@ export default function OnlineConsultationModal({ open, onClose, targetId, targe
               {joining ? (
                 <>
                   <Loader2 className="w-10 h-10 text-teal-600 animate-spin mx-auto" />
-                  <p className="text-sm text-gray-600 font-medium">{isTr ? 'Bağlanılıyor...' : 'Connecting...'}</p>
+                  <p className="text-sm text-gray-600 font-medium">{t('cevrimiciGorusme.connecting', 'Connecting...')}</p>
                 </>
               ) : (
                 <>
@@ -172,20 +169,18 @@ export default function OnlineConsultationModal({ open, onClose, targetId, targe
                     <Video className="w-8 h-8 text-teal-600" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">{isTr ? 'Bekleme Odasında' : 'In Waiting Room'}</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">{t('cevrimiciGorusme.inWaitingRoom', 'In Waiting Room')}</h3>
                     <p className="text-sm text-gray-500">
-                      {isTr
-                        ? `${targetName} sizi kısa süre içinde kabul edecek.`
-                        : `${targetName} will accept you shortly.`}
+                      {t('cevrimiciGorusme.willAcceptShortly', { kisi: targetName, defaultValue: '{{kisi}} will accept you shortly.' })}
                     </p>
                   </div>
                   <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
                     <p className="text-xs text-amber-700 font-medium">
-                      {isTr ? 'Tahmini bekleme süresi: 2-5 dakika' : 'Estimated wait time: 2-5 minutes'}
+                      {t('cevrimiciGorusme.estimatedWaitTime25', 'Estimated wait time: 2-5 minutes')}
                     </p>
                   </div>
                   <button onClick={handleClose} className="w-full py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors">
-                    {isTr ? 'Görüşmeden Ayrıl' : 'Leave Call'}
+                    {t('cevrimiciGorusme.leaveCall', 'Leave Call')}
                   </button>
                 </>
               )}

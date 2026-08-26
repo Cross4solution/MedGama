@@ -164,7 +164,6 @@ const HospitalStatCards = () => {
 const CRMDashboard = () => {
   const { user, isPro } = useAuth();
   const { t, i18n } = useTranslation();
-  const isTr = i18n.language?.startsWith('tr');
   const [appointmentFilter, setAppointmentFilter] = useState('all');
   const [apiAppointments, setApiAppointments] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -194,7 +193,7 @@ const CRMDashboard = () => {
           date: a.appointment_date,
           // Panel saati de bakanın kendi diliminde: randevu ekranıyla farklı
           // saat göstermesi kafa karıştırıyordu.
-          time: appointmentTimeDisplay(a, isTr ? 'tr-TR' : 'en-US').time
+          time: appointmentTimeDisplay(a, (i18n.language || 'tr-TR')).time
             || a.appointment_time || '09:00',
           endTime: '',
           patient: a.patient?.fullname || 'Patient',
@@ -213,7 +212,7 @@ const CRMDashboard = () => {
 
   const paraBirimi = { EUR: '€', USD: '$', TRY: '₺', GBP: '£' }[gelirOzeti?.currency] || '';
   const sayi = (v) => (v === null || v === undefined ? '—' : v);
-  const tutar = (v) => (v === null || v === undefined ? '—' : `${paraBirimi}${Number(v).toLocaleString(isTr ? 'tr-TR' : 'en-US')}`);
+  const tutar = (v) => (v === null || v === undefined ? '—' : `${paraBirimi}${Number(v).toLocaleString((i18n.language || 'tr-TR'))}`);
 
   const bugun = new Date().toISOString().slice(0, 10);
   const bugunkuRandevu = apiAppointments
@@ -224,13 +223,13 @@ const CRMDashboard = () => {
   // kaldırıldı — randevular artık doğrudan onaylı geliyor, onay diye bir
   // adım kalmadı.
   const STATS = [
-    { label: t('crm.dashboard.todayAppointments', isTr ? 'Bugünkü randevu' : "Today's appointments"),
+    { label: t('crm.dashboard.todayAppointments', t('crmPano.todaySAppointments', 'Today\'s appointments')),
       value: sayi(bugunkuRandevu), icon: CalendarDays, bgColor: 'bg-blue-50', iconColor: 'text-blue-600', borderColor: 'border-blue-100' },
-    { label: t('crm.dashboard.newPatientsMonth', isTr ? 'Bu ay yeni hasta' : 'New patients this month'),
+    { label: t('crm.dashboard.newPatientsMonth', t('crmPano.newPatientsThisMonth', 'New patients this month')),
       value: sayi(hastaOzeti?.new_this_month), icon: Clock, bgColor: 'bg-amber-50', iconColor: 'text-amber-600', borderColor: 'border-amber-100' },
-    { label: t('crm.dashboard.todayRevenue', isTr ? 'Bugünkü gelir' : "Today's revenue"),
+    { label: t('crm.dashboard.todayRevenue', t('crmPano.todaySRevenue', 'Today\'s revenue')),
       value: tutar(gelirOzeti?.today_revenue), icon: DollarSign, bgColor: 'bg-emerald-50', iconColor: 'text-emerald-600', borderColor: 'border-emerald-100' },
-    { label: t('crm.dashboard.totalPatients', isTr ? 'Toplam hasta' : 'Total patients'),
+    { label: t('crm.dashboard.totalPatients', t('crmPano.totalPatients', 'Total patients')),
       value: sayi(hastaOzeti?.total), icon: Users, bgColor: 'bg-violet-50', iconColor: 'text-violet-600', borderColor: 'border-violet-100' },
   ];
 
@@ -533,14 +532,14 @@ const CRMDashboard = () => {
                     gösteriyor ve altında dönem filtreleri var. Üstteki kutu
                     bugünü sayınca ikisi çelişiyordu. */}
                 <h2 className="text-sm font-bold text-gray-900">
-                  {t('crm.dashboard.appointmentsTitle', isTr ? 'Randevular' : 'Appointments')}
+                  {t('crm.dashboard.appointmentsTitle', t('crmPano.appointments', 'Appointments'))}
                 </h2>
                 <p className="text-[11px] text-gray-400">
                   {/* Veri gelmediyse "0 randevu" bir HÜKÜM olurdu; kutulardaki
                       "—" ile aynı ayrım burada da geçerli. */}
                   {apiAppointments === null
                     ? '—'
-                    : `${appointments.length} ${isTr ? 'randevu' : 'appointments'}`}
+                    : `${appointments.length} ${t('crmPano.appointments2', 'appointments')}`}
                 </p>
               </div>
             </div>
@@ -709,7 +708,7 @@ const CRMDashboard = () => {
               // Fatura yoksa gösterilecek bir şey de yok. Eskiden burada
               // uydurma bir hafta (€8.400) çiziliyordu.
               <p className="px-5 py-8 text-center text-xs text-gray-400">
-                {isTr ? 'Henüz gelir kaydı yok.' : 'No revenue recorded yet.'}
+                {t('crmPano.noRevenueRecordedYet', 'No revenue recorded yet.')}
               </p>
             ) : (
               <div className="px-5 py-4">
@@ -753,7 +752,7 @@ const CRMDashboard = () => {
               <UpgradeBanner t={t} label={t('crm.dashboard.upgradePatients', 'Upgrade to see your recent patients')} />
             ) : sonHastalar.length === 0 ? (
               <p className="px-5 py-8 text-center text-xs text-gray-400">
-                {isTr ? 'Henüz hasta kaydı yok.' : 'No patients yet.'}
+                {t('crmPano.noPatientsYet', 'No patients yet.')}
               </p>
             ) : (
               // Liste gerçek randevulardan türetiliyor. Yanlarındaki risk

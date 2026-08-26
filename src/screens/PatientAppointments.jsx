@@ -14,15 +14,18 @@ import useModalDavranisi from '../hooks/useModalDavranisi';
  * dilimindeyse kliniğin yerel saati de yazılır — tek bir "14:00" yurt
  * dışındaki hasta için hangi ülkenin saati olduğunu belirsiz bırakıyordu.
  */
-const AppointmentTime = ({ appointment, isTr }) => {
-  const g = appointmentTimeDisplay(appointment, isTr ? 'tr-TR' : 'en-US');
+const AppointmentTime = ({ appointment }) => {
+  // Saat biçimi kullanıcının DİLİNE göre; eskiden "Türkçe mi" sorusuna göre
+  // seçiliyordu ve dokuz dilin yedisi Amerikan biçimine düşüyordu.
+  const { t, i18n } = useTranslation();
+  const g = appointmentTimeDisplay(appointment, i18n.language || 'tr-TR');
   return (
     <div className="flex items-center gap-2 text-gray-700">
       <Clock className="w-4 h-4 text-gray-400" />
       <span className="font-medium">{g.time || '--:--'}</span>
       {g.showProvider && (
         <span className="text-xs text-gray-500">
-          ({isTr ? 'klinikte' : 'clinic'} {g.providerTime})
+          ({t('hastaRandevu.clinic', 'clinic')} {g.providerTime})
         </span>
       )}
     </div>
@@ -36,7 +39,6 @@ import {
 export default function PatientAppointments() {
   const { t, i18n } = useTranslation();
   const { notify } = useToast();
-  const isTr = i18n.language?.startsWith('tr');
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -66,7 +68,7 @@ export default function PatientAppointments() {
       const list = res?.data || [];
       setAppointments(list);
     } catch (err) {
-      setError(isTr ? 'Randevular yüklenemedi.' : 'Failed to load appointments.');
+      setError(t('hastaRandevu.failedToLoadAppointments', 'Failed to load appointments.'));
     } finally {
       setLoading(false);
     }
@@ -91,7 +93,7 @@ export default function PatientAppointments() {
       setShowCancelModal(false);
       setSelectedAppointment(null);
     } catch (err) {
-      notify({ type: 'error', message: isTr ? 'Randevu iptal edilemedi.' : 'Failed to cancel appointment.' });
+      notify({ type: 'error', message: t('hastaRandevu.failedToCancelAppointment', 'Failed to cancel appointment.') });
     } finally {
       setCancellingId(null);
     }
@@ -129,10 +131,10 @@ export default function PatientAppointments() {
 
   const getStatusBadge = (status) => {
     const badges = {
-      pending: { label: isTr ? 'Onay Bekliyor' : 'Pending', color: 'bg-amber-100 text-amber-700 border-amber-200' },
-      confirmed: { label: isTr ? 'Onaylandı' : 'Confirmed', color: 'bg-teal-100 text-teal-700 border-teal-200' },
-      completed: { label: isTr ? 'Tamamlandı' : 'Completed', color: 'bg-green-100 text-green-700 border-green-200' },
-      cancelled: { label: isTr ? 'İptal Edildi' : 'Cancelled', color: 'bg-gray-100 text-gray-600 border-gray-200' },
+      pending: { label: t('hastaRandevu.pending', 'Pending'), color: 'bg-amber-100 text-amber-700 border-amber-200' },
+      confirmed: { label: t('hastaRandevu.confirmed', 'Confirmed'), color: 'bg-teal-100 text-teal-700 border-teal-200' },
+      completed: { label: t('hastaRandevu.completed', 'Completed'), color: 'bg-green-100 text-green-700 border-green-200' },
+      cancelled: { label: t('hastaRandevu.cancelled', 'Cancelled'), color: 'bg-gray-100 text-gray-600 border-gray-200' },
     };
     const badge = badges[status] || badges.pending;
     return (
@@ -155,18 +157,18 @@ export default function PatientAppointments() {
   };
 
   const getTypeLabel = (type) => {
-    if (type === 'online' || type === 'video') return isTr ? 'Online Görüşme' : 'Video Call';
-    if (type === 'phone') return isTr ? 'Telefon Görüşmesi' : 'Phone Call';
-    return isTr ? 'Yüz Yüze' : 'In-Person';
+    if (type === 'online' || type === 'video') return t('hastaRandevu.videoCall', 'Video Call');
+    if (type === 'phone') return t('hastaRandevu.phoneCall', 'Phone Call');
+    return t('hastaRandevu.inPerson', 'In-Person');
   };
 
   // Takvim günü — saat dilimi kaydırmasın diye yerel olarak çözümlenir
-  const formatDate = (dateStr) => formatLocalDate(dateStr, isTr ? 'tr-TR' : 'en-US');
+  const formatDate = (dateStr) => formatLocalDate(dateStr, (i18n.language || 'tr-TR'));
 
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">{isTr ? 'Lütfen giriş yapın.' : 'Please log in.'}</p>
+        <p className="text-gray-500">{t('hastaRandevu.pleaseLogIn', 'Please log in.')}</p>
       </div>
     );
   }
@@ -177,20 +179,20 @@ export default function PatientAppointments() {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {isTr ? 'Randevularım' : 'My Appointments'}
+            {t('hastaRandevu.myAppointments', 'My Appointments')}
           </h1>
           <p className="text-sm text-gray-500">
-            {isTr ? 'Tüm randevularınızı görüntüleyin ve yönetin' : 'View and manage all your appointments'}
+            {t('hastaRandevu.viewAndManageAllYour', 'View and manage all your appointments')}
           </p>
         </div>
 
         {/* Filter Tabs */}
         <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
           {[
-            { key: 'all', label: isTr ? 'Tümü' : 'All' },
-            { key: 'upcoming', label: isTr ? 'Yaklaşan' : 'Upcoming' },
-            { key: 'completed', label: isTr ? 'Tamamlanan' : 'Completed' },
-            { key: 'cancelled', label: isTr ? 'İptal Edilen' : 'Cancelled' },
+            { key: 'all', label: t('hastaRandevu.all', 'All') },
+            { key: 'upcoming', label: t('hastaRandevu.upcoming', 'Upcoming') },
+            { key: 'completed', label: t('hastaRandevu.completed2', 'Completed') },
+            { key: 'cancelled', label: t('hastaRandevu.cancelled2', 'Cancelled') },
           ].map(tab => (
             <button
               key={tab.key}
@@ -218,7 +220,7 @@ export default function PatientAppointments() {
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-semibold text-red-900">{isTr ? 'Hata' : 'Error'}</p>
+              <p className="text-sm font-semibold text-red-900">{t('hastaRandevu.error', 'Error')}</p>
               <p className="text-sm text-red-700 mt-1">{error}</p>
             </div>
           </div>
@@ -231,17 +233,17 @@ export default function PatientAppointments() {
               <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
                 <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {isTr ? 'Randevu Bulunamadı' : 'No Appointments Found'}
+                  {t('hastaRandevu.noAppointmentsFound', 'No Appointments Found')}
                 </h3>
                 <p className="text-sm text-gray-500 mb-6">
-                  {isTr ? 'Henüz randevunuz bulunmuyor.' : 'You don\'t have any appointments yet.'}
+                  {t('hastaRandevu.noAppointmentsYet', "You don't have any appointments yet.")}
                 </p>
                 <button
                   onClick={() => navigate('/telehealth-appointment')}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-xl font-semibold text-sm shadow-md hover:shadow-lg transition-all"
                 >
                   <Calendar className="w-4 h-4" />
-                  {isTr ? 'Randevu Al' : 'Book Appointment'}
+                  {t('hastaRandevu.bookAppointment', 'Book Appointment')}
                 </button>
               </div>
             ) : (
@@ -260,7 +262,7 @@ export default function PatientAppointments() {
                         </div>
                         <div>
                           <h3 className="text-base font-bold text-gray-900">
-                            {appointment.doctor?.fullname || appointment.doctor_name || (isTr ? 'Doktor' : 'Doctor')}
+                            {appointment.doctor?.fullname || appointment.doctor_name || (t('hastaRandevu.doctor', 'Doctor'))}
                           </h3>
                           {appointment.clinic?.fullname && (
                             <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
@@ -277,7 +279,7 @@ export default function PatientAppointments() {
                           <Calendar className="w-4 h-4 text-gray-400" />
                           <span className="font-medium">{formatDate(appointment.appointment_date)}</span>
                         </div>
-                        <AppointmentTime appointment={appointment} isTr={isTr} />
+                        <AppointmentTime appointment={appointment} />
                         <div className="flex items-center gap-2 text-gray-700">
                           {getTypeIcon(appointment.appointment_type)}
                           <span className="font-medium">{getTypeLabel(appointment.appointment_type)}</span>
@@ -303,7 +305,7 @@ export default function PatientAppointments() {
                           className="px-4 py-2 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors flex items-center gap-2 shadow-sm"
                         >
                           <Video className="w-4 h-4" />
-                          {isTr ? 'Görüşmeye Katıl' : 'Join Call'}
+                          {t('hastaRandevu.joinCall', 'Join Call')}
                         </button>
                       )}
                       {(appointment.status === 'pending' || appointment.status === 'confirmed') && (
@@ -317,14 +319,14 @@ export default function PatientAppointments() {
                           ) : (
                             <XCircle className="w-4 h-4" />
                           )}
-                          {isTr ? 'İptal Et' : 'Cancel'}
+                          {t('hastaRandevu.cancel', 'Cancel')}
                         </button>
                       )}
                       {(appointment.status === 'pending' || appointment.status === 'confirmed') && (
                         <AddToCalendar
                           appointment={{
                             id: appointment.id,
-                            title: `${appointment.doctor?.fullname || appointment.doctor_name || (isTr ? 'Doktor' : 'Doctor')} — Medagama`,
+                            title: `${appointment.doctor?.fullname || appointment.doctor_name || (t('hastaRandevu.doctor', 'Doctor'))} — Medagama`,
                             date: appointment.appointment_date,
                             time: appointment.appointment_time,
                             // Mutlak an: takvime her ülkede aynı ana düşsün.
@@ -332,7 +334,7 @@ export default function PatientAppointments() {
                             durationMin: 30,
                             description: getTypeLabel(appointment.appointment_type),
                             location: appointment.appointment_type === 'online'
-                              ? (isTr ? 'Online görüşme' : 'Online consultation')
+                              ? (t('hastaRandevu.onlineConsultation', 'Online consultation'))
                               : (appointment.clinic?.address || appointment.clinic?.fullname || ''),
                           }}
                         />
@@ -378,32 +380,30 @@ export default function PatientAppointments() {
                 <XCircle className="w-8 h-8 text-red-600" />
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-2">
-                {isTr ? 'Randevuyu İptal Et' : 'Cancel Appointment'}
+                {t('hastaRandevu.cancelAppointment', 'Cancel Appointment')}
               </h3>
               <p className="text-sm text-gray-500 mb-6">
-                {isTr 
-                  ? 'Bu randevuyu iptal etmek istediğinizden emin misiniz? Bu işlem geri alınamaz.'
-                  : 'Are you sure you want to cancel this appointment? This action cannot be undone.'}
+                {t('hastaRandevu.areYouSureYouWant', 'Are you sure you want to cancel this appointment? This action cannot be undone.')}
               </p>
 
               <div className="bg-gray-50 rounded-xl p-4 text-left mb-6 space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">{isTr ? 'Doktor' : 'Doctor'}</span>
+                  <span className="text-gray-500">{t('hastaRandevu.doctor', 'Doctor')}</span>
                   <span className="font-medium text-gray-900">
                     {selectedAppointment.doctor?.fullname || selectedAppointment.doctor_name || '--'}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">{isTr ? 'Tarih' : 'Date'}</span>
+                  <span className="text-gray-500">{t('hastaRandevu.date', 'Date')}</span>
                   <span className="font-medium text-gray-900">{formatDate(selectedAppointment.appointment_date)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">{isTr ? 'Saat' : 'Time'}</span>
+                  <span className="text-gray-500">{t('hastaRandevu.time', 'Time')}</span>
                   <span className="font-medium text-gray-900">
                     {(() => {
-                      const g = appointmentTimeDisplay(selectedAppointment, isTr ? 'tr-TR' : 'en-US');
+                      const g = appointmentTimeDisplay(selectedAppointment, (i18n.language || 'tr-TR'));
                       return g.showProvider
-                        ? `${g.time} (${isTr ? 'klinikte' : 'clinic'} ${g.providerTime})`
+                        ? `${g.time} (${t('hastaRandevu.clinic', 'clinic')} ${g.providerTime})`
                         : g.time;
                     })()}
                   </span>
@@ -415,7 +415,7 @@ export default function PatientAppointments() {
                   onClick={() => setShowCancelModal(false)}
                   className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors"
                 >
-                  {isTr ? 'Vazgeç' : 'Keep'}
+                  {t('hastaRandevu.keep', 'Keep')}
                 </button>
                 <button
                   onClick={handleCancelConfirm}
@@ -425,10 +425,10 @@ export default function PatientAppointments() {
                   {cancellingId === selectedAppointment.id ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      {isTr ? 'İptal Ediliyor...' : 'Cancelling...'}
+                      {t('hastaRandevu.cancelling', 'Cancelling...')}
                     </>
                   ) : (
-                    <>{isTr ? 'İptal Et' : 'Cancel Appointment'}</>
+                    <>{t('hastaRandevu.cancelAppointment2', 'Cancel Appointment')}</>
                   )}
                 </button>
               </div>

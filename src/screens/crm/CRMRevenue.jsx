@@ -42,7 +42,7 @@ const PaymentStatusBadge = ({ status }) => {
 
 // ─── Main Component ──────────────────────────────────────────
 const CRMRevenue = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, isPro } = useAuth();
 
   const isSuperAdmin = user?.role === 'superAdmin' || user?.role_id === 'superAdmin' || user?.role === 'saasAdmin' || user?.role_id === 'saasAdmin';
@@ -250,6 +250,27 @@ const CRMRevenue = () => {
     }
   };
 
+  // Eksen etiketlerini arka uç üretiyordu: `Jan`, `d M`, `W12`. PHP'nin
+  // biçimlendirmesi dilden bağımsız İngilizce, yani Türkçe arayüzde de "Jan"
+  // yazıyordu. Yanıt makine-okur alanları da taşıyor (`month`, `date`,
+  // `week_start`); etiketi onlardan burada üretiyoruz — biçimlendirme
+  // kullanıcının dilini bilen tek yerde.
+  const grafikVerisi = useMemo(() => chartData.map((d) => {
+    const dil = i18n.language || 'tr';
+    let etiket = d.label;
+
+    if (d.month) {
+      etiket = new Date(2000, d.month - 1, 1).toLocaleDateString(dil, { month: 'short' });
+    } else if (d.date) {
+      etiket = new Date(d.date).toLocaleDateString(dil, { day: 'numeric', month: 'short' });
+    } else if (d.week_start) {
+      // Hafta numarası dile göre değişmiyor; yalnız "W" öneki İngilizce.
+      etiket = t('crm.revenue.weekShort', 'H') + String(d.label || '').replace(/^W/, '');
+    }
+
+    return { ...d, etiket };
+  }), [chartData, i18n.language, t]);
+
   // ── Pie chart data for top services ──
   const pieData = useMemo(() => {
     return topServices.map((s, i) => ({
@@ -373,9 +394,9 @@ const CRMRevenue = () => {
           </div>
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={chartData} barSize={28}>
+              <BarChart data={grafikVerisi} barSize={28}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
-                <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
+                <XAxis dataKey="etiket" tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} tickFormatter={v => fmtK(v, currency)} />
                 <Tooltip formatter={(v) => fmt(v, currency)} labelStyle={{ fontSize: 12, fontWeight: 600 }} contentStyle={{ borderRadius: 12, border: '1px solid #E5E7EB', fontSize: 12 }} />
                 <Bar dataKey="total" fill="#0D9488" radius={[6, 6, 0, 0]} />

@@ -100,11 +100,13 @@ const ALL_TABS = [
  * ekranında dil seçiminin altında duruyor.
  */
 const BILDIRIM_AYARLARI = [
-  { key: 'email_review_received', tr: 'Yeni değerlendirme geldiğinde e-posta', en: 'Email me about new reviews' },
-  { key: 'email_review_response', tr: 'Değerlendirmeme yanıt verilince e-posta', en: 'Email me when someone replies to my review' },
-  { key: 'email_support',         tr: 'Destek talebime yanıt gelince e-posta', en: 'Email me about support replies' },
-  { key: 'inapp_social',          tr: 'Beğeni ve yorum bildirimleri', en: 'Likes and comments' },
-  { key: 'sound_enabled',         tr: 'Bildirim sesi', en: 'Notification sound' },
+  // Etiketler iki dilde sabitti (`isTr ? tr : en`). Artık çeviri anahtarı;
+  // İngilizce metin yalnız yedek.
+  { key: 'email_review_received', anahtar: 'bildirimTercihi.emailNewReviews',   yedek: 'Email me about new reviews' },
+  { key: 'email_review_response', anahtar: 'bildirimTercihi.emailReviewReply',  yedek: 'Email me when someone replies to my review' },
+  { key: 'email_support',         anahtar: 'bildirimTercihi.emailSupport',      yedek: 'Email me about support replies' },
+  { key: 'inapp_social',          anahtar: 'bildirimTercihi.likesComments',     yedek: 'Likes and comments' },
+  { key: 'sound_enabled',         anahtar: 'bildirimTercihi.notificationSound', yedek: 'Notification sound' },
 ];
 
 const CRMSettings = ({ standalone = false }) => {
@@ -112,7 +114,6 @@ const CRMSettings = ({ standalone = false }) => {
   const { t, i18n } = useTranslation();
   const { user, updateUser } = useAuth();
   const location = useLocation();
-  const isTr = i18n.language?.startsWith('tr');
   const hasCrm = !!(user?.is_crm_active);
   const isClinicOwner = user?.role_id === 'clinicOwner' || user?.role_id === 'clinic';
   const TABS = ALL_TABS
@@ -449,7 +450,7 @@ const CRMSettings = ({ standalone = false }) => {
         biography: clinic.biography,
       });
     } catch (err) {
-      setClinicHata(err?.message || (isTr ? 'Kaydedilemedi' : 'Could not save'));
+      setClinicHata(err?.message || (t('crmAyar.couldNotSave', 'Could not save')));
     } finally {
       setClinicSaving(false);
     }
@@ -472,15 +473,15 @@ const CRMSettings = ({ standalone = false }) => {
     setSifreBilgi('');
 
     if (!eskiSifre) {
-      setSifreHata(isTr ? 'Mevcut şifrenizi girin.' : 'Enter your current password.');
+      setSifreHata(t('crmAyar.enterYourCurrentPassword', 'Enter your current password.'));
       return;
     }
     if (yeniSifre.length < 8) {
-      setSifreHata(isTr ? 'Yeni şifre en az 8 karakter olmalı.' : 'New password must be at least 8 characters.');
+      setSifreHata(t('crmAyar.newPasswordMustBeAt', 'New password must be at least 8 characters.'));
       return;
     }
     if (yeniSifre !== yeniSifre2) {
-      setSifreHata(isTr ? 'Yeni şifreler eşleşmiyor.' : 'New passwords do not match.');
+      setSifreHata(t('crmAyar.newPasswordsDoNotMatch', 'New passwords do not match.'));
       return;
     }
 
@@ -497,9 +498,7 @@ const CRMSettings = ({ standalone = false }) => {
       // jetonu da öldü. Kullanıcı sebebini bilerek giriş ekranına gitsin,
       // bir sonraki istekte açıklamasız bir 401 yemesin.
       if (yanit?.data?.relogin_required ?? yanit?.relogin_required) {
-        setSifreBilgi(isTr
-          ? 'Şifreniz güncellendi. Güvenliğiniz için tüm cihazlardaki oturumlar kapatıldı; yeni şifrenizle tekrar giriş yapın.'
-          : 'Your password has been updated. For your security all sessions were signed out; please sign in again with your new password.');
+        setSifreBilgi(t('crmAyar.yourPasswordHasBeenUpdated', 'Your password has been updated. For your security all sessions were signed out; please sign in again with your new password.'));
         setTimeout(() => {
           localStorage.removeItem('auth_state');
           localStorage.removeItem('access_token');
@@ -508,9 +507,9 @@ const CRMSettings = ({ standalone = false }) => {
         return;
       }
 
-      setSifreBilgi(isTr ? 'Şifreniz güncellendi.' : 'Your password has been updated.');
+      setSifreBilgi(t('crmAyar.yourPasswordHasBeenUpdated2', 'Your password has been updated.'));
     } catch (err) {
-      setSifreHata(err?.data?.message || err?.message || (isTr ? 'Şifre güncellenemedi.' : 'Could not update password.'));
+      setSifreHata(err?.data?.message || err?.message || (t('crmAyar.couldNotUpdatePassword', 'Could not update password.')));
     } finally {
       setSifreKaydediliyor(false);
     }
@@ -525,7 +524,7 @@ const CRMSettings = ({ standalone = false }) => {
       localStorage.removeItem('access_token');
       window.location.href = '/login';
     } catch (err) {
-      setSifreHata(err?.message || (isTr ? 'Çıkış yapılamadı.' : 'Could not sign out.'));
+      setSifreHata(err?.message || (t('crmAyar.couldNotSignOut', 'Could not sign out.')));
       setCikisYapiliyor(false);
     }
   };
@@ -571,7 +570,7 @@ const CRMSettings = ({ standalone = false }) => {
         setNotificationSoundEnabled(oncekiDeger);
         updateUser?.({ notification_sound: oncekiDeger });
       }
-      setNotifHata(isTr ? 'Kaydedilemedi, tekrar deneyin.' : 'Could not save, please try again.');
+      setNotifHata(t('crmAyar.couldNotSavePleaseTry', 'Could not save, please try again.'));
     } finally {
       setNotifKaydediliyor(null);
     }
@@ -1347,7 +1346,7 @@ const CRMSettings = ({ standalone = false }) => {
                 </div>
               ) : !clinic.id ? (
                 <p className="px-6 py-8 text-sm text-gray-500">
-                  {isTr ? 'Bu hesaba bağlı bir klinik kaydı yok.' : 'No clinic record is linked to this account.'}
+                  {t('crmAyar.noClinicRecordIsLinked', 'No clinic record is linked to this account.')}
                 </p>
               ) : (
                 <>
@@ -1371,7 +1370,7 @@ const CRMSettings = ({ standalone = false }) => {
                         className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.clinicBio', isTr ? 'Tanıtım' : 'About')}</label>
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.clinicBio', t('crmAyar.about', 'About'))}</label>
                       <textarea rows={4} value={clinic.biography} onChange={(e) => setClinic({...clinic, biography: e.target.value})}
                         className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                     </div>
@@ -1411,11 +1410,11 @@ const CRMSettings = ({ standalone = false }) => {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {BILDIRIM_AYARLARI.map(({ key, tr, en }) => {
+                    {BILDIRIM_AYARLARI.map(({ key, anahtar, yedek }) => {
                       const acik = notifications?.[key] ?? true;
                       return (
                         <label key={key} className="flex items-center justify-between cursor-pointer group">
-                          <span className="text-sm text-gray-600 group-hover:text-gray-800">{isTr ? tr : en}</span>
+                          <span className="text-sm text-gray-600 group-hover:text-gray-800">{t(anahtar, yedek)}</span>
                           <button
                             type="button"
                             onClick={() => bildirimDegistir(key)}
@@ -1518,9 +1517,7 @@ const CRMSettings = ({ standalone = false }) => {
                   </Link>
                 </div>
                 <p className="mt-3 text-[11px] text-gray-400">
-                  {t('crm.settings.signOutAllHint', isTr
-                    ? 'Tüm cihazlardan çıkış, bu oturum dahil her yerde çıkış yapar.'
-                    : 'Signing out of all devices ends every session, including this one.')}
+                  {t('crm.settings.signOutAllHint', t('crmAyar.signingOutOfAllDevices', 'Signing out of all devices ends every session, including this one.'))}
                 </p>
               </div>
             </div>

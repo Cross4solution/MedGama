@@ -44,7 +44,6 @@ const StatusBadge = ({ status, t }) => {
 // ─── Main Component ──────────────────────────────────────────
 const CRMSmartCalendar = () => {
   const { t, i18n } = useTranslation();
-  const isTr = i18n.language?.startsWith('tr');
   const navigate = useNavigate();
   const { user, isPro } = useAuth();
   const calendarRef = useRef(null);
@@ -527,7 +526,7 @@ const CRMSmartCalendar = () => {
                   <div className="flex items-center gap-1.5 mb-1"><CalendarDays className="w-3.5 h-3.5 text-gray-400" /><p className="text-[10px] font-semibold text-gray-400 uppercase">{t('common.date', 'Date')}</p></div>
                   <p className="text-sm text-gray-800 font-medium">
                     {selectedEvent.starts_at
-                      ? formatDateInZone(selectedEvent.starts_at, viewerTimezone(), isTr ? 'tr-TR' : 'en-US')
+                      ? formatDateInZone(selectedEvent.starts_at, viewerTimezone(), (i18n.language || 'tr-TR'))
                       : (selectedEvent.appointment_date || selectedEvent.start?.slice(0, 10))}
                   </p>
                 </div>
@@ -537,14 +536,14 @@ const CRMSmartCalendar = () => {
                       dilimdeyse kliniğin saati de yazılıyor. */}
                   <p className="text-sm text-gray-800 font-medium">
                     {(() => {
-                      const g = appointmentTimeDisplay(selectedEvent, isTr ? 'tr-TR' : 'en-US');
+                      const g = appointmentTimeDisplay(selectedEvent, (i18n.language || 'tr-TR'));
                       const saat = g.time || selectedEvent.appointment_time || selectedEvent.start?.slice(11, 16);
                       return (
                         <>
                           {saat}
                           {g.showProvider && (
                             <span className="ml-1 text-[11px] font-normal text-gray-500">
-                              ({isTr ? 'klinikte' : 'clinic'} {g.providerTime})
+                              ({t('akilliTakvim.clinic', 'clinic')} {g.providerTime})
                             </span>
                           )}
                         </>
