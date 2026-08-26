@@ -342,17 +342,18 @@ class ContactMessageController extends Controller
     /** Ek için 30 dakikalık imzalı bağlantı. */
     private static function ekBaglantisi(ContactMessage $msg, ContactMessageAttachment $ek): string
     {
-        // Eski kayıtlar herkese açık diskte duruyor; yolları olduğu gibi
-        // geçiliyor ki geçmiş kutular kırılmasın. Yeni hiçbir ek oraya düşmüyor.
-        if (str_starts_with($ek->file_path, 'contact-messages/')
-            && !Storage::disk('public')->exists($ek->file_path)) {
-            return URL::temporarySignedRoute(
-                'contact-messages.attachment',
-                now()->addMinutes(30),
-                ['id' => $msg->id, 'attachmentId' => $ek->id],
-            );
-        }
-
-        return '/storage/' . $ek->file_path;
+        // Her ek imzalı yoldan geçiyor — eskiler de. Eskiler herkese açık
+        // diskte duruyordu ve bağlantıları `/storage/...` olarak veriliyordu:
+        // oturum yok, imza yok, süre yok. İletişim kutusuna hasta yazıyor ve
+        // rapor ekliyor; o adres bir kez sızdığında kalıcı olarak açıktı.
+        //
+        // İmzalı uç dosyayı EncryptedFileStorage üzerinden okuyor, o da özel
+        // diskte bulamazsa herkese açık diske ve şifresiz eski biçime düşüyor.
+        // Yani geçmiş kutular kırılmadan kapanıyor.
+        return URL::temporarySignedRoute(
+            'contact-messages.attachment',
+            now()->addMinutes(30),
+            ['id' => $msg->id, 'attachmentId' => $ek->id],
+        );
     }
 }
