@@ -23,7 +23,11 @@ const YEREL = Boolean(process.env.E2E_API_ORIGIN);
 
 const HESAPLAR = {
   hasta: {
-    email: process.env.E2E_PATIENT_EMAIL || (YEREL ? 'hasta@yerel.test' : 'patient@demo.com'),
+    // Yerel varsayılan TOHUMUN yarattığı hesap olmalı. `hasta@yerel.test`
+    // hiçbir tohumda üretilmiyordu; eski yerel veritabanında elle kalmış bir
+    // kayıt sayesinde çalışıyor gibi görünüyordu. Veritabanı sıfırdan
+    // kurulduğunda giriş testi kırmızı yandı — testin kendi kurulumu bayattı.
+    email: process.env.E2E_PATIENT_EMAIL || (YEREL ? 'patient@medagama.com' : 'patient@demo.com'),
     sifre: process.env.E2E_PATIENT_PASSWORD || (YEREL ? 'Password123!' : 'patient123'),
   },
   doktor: {

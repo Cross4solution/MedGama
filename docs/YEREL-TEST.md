@@ -188,3 +188,38 @@ zorluyor ve macOS'ta yerel MySQL'e SSL ile bağlanılamıyor.
 Bu koşuda **üç test daha çalışıyor** (SQLite'ta atlanan Türkçe katlama
 ölçütleri) ve `SifreliSutunGenisligiTest` bütün şifreli alanların sütun
 türünü denetliyor. Sürücüye bağlı bir hata aranıyorsa ilk yapılacak şey bu.
+
+## Neden yığın SQLite ile koşulmamalı
+
+Yerel arka uç `.env` içinde `DB_CONNECTION=sqlite` ile geliyordu. Üretim ise
+TiDB (MySQL uyumlu). Aradaki fark test edilebilirliği doğrudan etkiliyor,
+çünkü SQLite **iki kuralı hiç uygulamıyor**:
+
+| | SQLite | MySQL / TiDB |
+|---|---|---|
+| `varchar(N)` uzunluğu | yok sayar | `Data too long` hatası |
+| `LOWER()` Türkçe harfler | katlamaz | katlar |
+
+Bunun bedeli ölçüldü: `chat_messages.attachment_url` sütunu şifrelenmiş
+değeri taşıyamıyordu ve **sohbete dosya eklemek canlıda 500 veriyordu**.
+Birim paketi de e2e paketi de yeşildi, çünkü ikisi de SQLite üzerinde
+koşuyordu. Aynı sınıftan dört alan daha bulundu (doğrulama 500 karaktere
+izin verirken sütun 255 tutuyordu).
+
+Yerel arka ucu üretimin sürücüsüne çevirmek için `backend/.env`:
+
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=medagama_e2e
+DB_USERNAME=root
+DB_PASSWORD=
+DB_SSL_DISABLED=1
+```
+
+Ardından `php artisan config:clear && php artisan migrate --force && php artisan db:seed --force`.
+
+Sürücüye bağlı bir kusur, üretimin kullandığı sürücüde koşulana kadar
+görünmez — bu dosyadaki en pahalı ders bu.
+
