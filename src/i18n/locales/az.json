@@ -106,7 +106,9 @@
     "years": "il",
     "loadFailedTitle": "Yüklənə bilmədi",
     "loadFailedHint": "Serverə çıxmaq mümkün olmadı. Bu, qeydinizin olmadığı demək deyil — bağlantınızı yoxlayıb yenidən cəhd edin.",
-    "admin": "Admin"
+    "admin": "Admin",
+    "clearFilters": "Filtrləri təmizlə",
+    "publish": "Dərc et"
   },
   "nav": {
     "home": "Ana səhifə",
@@ -2261,22 +2263,7 @@
       "unknownAuthor": "Naməlum müəllif",
       "unknownReporter": "Naməlum şikayətçi"
     },
-    "featureToggles": {
-      "title": "Xüsusiyyət Ayarları",
-      "subtitle": "Platforma genelində xüsusiyyətləri və sistem ayarlarını idarə edin",
-      "modules": "Modul Açarları",
-      "modulesDesc": "Platforma modullarını aktiv/deaktiv edin",
-      "platform": "Platforma Ayarları",
-      "platformDesc": "Əsas konfiqurasiya",
-      "enabled": "Aktiv",
-      "disabled": "Deaktiv",
-      "save": "Saxla",
-      "lastUpdated": "Son yenilənmə",
-      "settingUpdated": "Ayar yeniləndi.",
-      "noSettings": "Ayar tapılmadı.",
-      "systemConfig": "Sistem Konfiqurasiyası",
-      "systemConfigDesc": "Xüsusiyyət dəyişiklikləri bütün platformada dərhal qüvvəyə minir. Bütün dəyişikliklər Audit Qeydlərində saxlanılır."
-    },
+    "featureToggles": "Funksiya açarları",
     "auditLogs": {
       "title": "Audit Qeydləri",
       "subtitle": "Kritik məlumat dəyişikliklərini və sistem hadisələrini izləyin",
@@ -2660,7 +2647,18 @@
     },
     "filter": {
       "all": "Hamısı"
-    }
+    },
+    "exportCsv": "CSV ixrac et",
+    "exportReport": "Hesabatı ixrac et",
+    "announce": "Elan et",
+    "publishGlobalAnnouncement": "Ümumi elan dərc et",
+    "financials": "Maliyyə",
+    "supportManagement": "Dəstək idarəetməsi",
+    "resetPassword": "Parolu sıfırla",
+    "openFullReview": "Tam nəzərdən keçirməni aç",
+    "suspended": "Dayandırılıb",
+    "block": "Blokla",
+    "unblock": "Bloku aç"
   },
   "errors": {
     "notFound_title": "Səhifə tapılmadı",

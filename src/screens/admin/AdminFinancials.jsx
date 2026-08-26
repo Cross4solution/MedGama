@@ -153,7 +153,7 @@ export default function AdminFinancials() {
         <div>
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <CreditCard className="w-5 h-5 text-purple-600" />
-            Financials
+            {t('admin.financials', 'Financials')}
           </h1>
           <p className="text-sm text-gray-500 mt-0.5">{t('adminFinancials.proSubscriptionsRevenueAndBilling', "Pro subscriptions, revenue, and billing overview")}</p>
         </div>

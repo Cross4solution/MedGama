@@ -345,7 +345,7 @@ export default function AdminSupport() {
         <div>
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <LifeBuoy className="w-5 h-5 text-purple-600" />
-            Support Management
+            {t('admin.supportManagement', 'Support Management')}
           </h1>
           <p className="text-sm text-gray-500 mt-0.5">{t('adminSupport.manageIncomingSupportTicketsRespond', "Manage incoming support tickets, respond & resolve")}</p>
         </div>
@@ -353,12 +353,12 @@ export default function AdminSupport() {
           <button onClick={handleRefresh} disabled={refreshing}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors shadow-sm disabled:opacity-50">
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
-            Refresh
+            {t('common.refresh', 'Refresh')}
           </button>
           <button onClick={handleExport} disabled={tickets.length === 0}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
             <Download className="w-3.5 h-3.5" />
-            Export Report
+            {t('admin.exportReport', 'Export Report')}
           </button>
         </div>
       </div>
@@ -426,7 +426,7 @@ export default function AdminSupport() {
         {(statusFilter || priorityFilter || search) && (
           <button onClick={() => { setStatusFilter(''); setPriorityFilter(''); setSearch(''); setPage(1); }}
             className="text-xs text-purple-600 hover:text-purple-700 font-medium px-2 py-1">
-            Clear filters
+            {t('common.clearFilters', 'Clear filters')}
           </button>
         )}
       </div>

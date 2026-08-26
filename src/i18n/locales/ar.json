@@ -106,7 +106,9 @@
     "years": "سنة",
     "loadFailedTitle": "تعذّر التحميل",
     "loadFailedHint": "تعذّر الوصول إلى الخادم. هذا لا يعني أنه لا توجد سجلات — تحقّق من اتصالك وأعد المحاولة.",
-    "admin": "المسؤول"
+    "admin": "المسؤول",
+    "clearFilters": "مسح عوامل التصفية",
+    "publish": "نشر"
   },
   "nav": {
     "home": "الرئيسية",
@@ -2761,22 +2763,7 @@
       "unknownAuthor": "كاتب غير معروف",
       "unknownReporter": "مُبلِّغ غير معروف"
     },
-    "featureToggles": {
-      "title": "إعدادات الميزات",
-      "subtitle": "التحكم في ميزات المنصة وإعدادات النظام",
-      "modules": "مفاتيح الوحدات",
-      "modulesDesc": "تفعيل أو تعطيل وحدات المنصة",
-      "platform": "إعدادات المنصة",
-      "platformDesc": "التهيئة الأساسية",
-      "enabled": "مفعّل",
-      "disabled": "معطّل",
-      "save": "حفظ",
-      "lastUpdated": "آخر تحديث",
-      "settingUpdated": "تم تحديث الإعداد.",
-      "noSettings": "لم يتم العثور على إعدادات.",
-      "systemConfig": "تكوين النظام",
-      "systemConfigDesc": "تسري تغييرات الميزات فوراً على كامل المنصة. يتم تسجيل جميع التغييرات في سجلات التدقيق لتتبع الامتثال."
-    },
+    "featureToggles": "مفاتيح الميزات",
     "announcements": {
       "activate": "تفعيل",
       "allUsers": "جميع المستخدمين",
@@ -2986,7 +2973,18 @@
     },
     "filter": {
       "all": "الكل"
-    }
+    },
+    "exportCsv": "تصدير CSV",
+    "exportReport": "تصدير التقرير",
+    "announce": "إعلان",
+    "publishGlobalAnnouncement": "نشر إعلان عام",
+    "financials": "الشؤون المالية",
+    "supportManagement": "إدارة الدعم",
+    "resetPassword": "إعادة تعيين كلمة المرور",
+    "openFullReview": "فتح المراجعة الكاملة",
+    "suspended": "موقوف",
+    "block": "حظر",
+    "unblock": "إلغاء الحظر"
   },
   "errors": {
     "notFound_title": "الصفحة غير موجودة",

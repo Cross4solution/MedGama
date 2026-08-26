@@ -106,7 +106,9 @@
     "loadError": "Veriler yüklenirken bir hata oluştu.",
     "loadFailedTitle": "İçerik yüklenemedi",
     "loadFailedHint": "Sunucuya ulaşılamadı. Bu, kaydınızın olmadığı anlamına gelmez — bağlantınızı kontrol edip tekrar deneyin.",
-    "admin": "Yönetici"
+    "admin": "Yönetici",
+    "clearFilters": "Filtreleri temizle",
+    "publish": "Yayınla"
   },
   "nav": {
     "home": "Ana Sayfa",
@@ -2946,15 +2948,21 @@
       "pendingDocs": "Bekleyen Belge",
       "todayAppts": "Bugünkü Randevu"
     },
-    "featureToggles": {
-      "modules": "Modül Anahtarları",
-      "modulesDesc": "Platform modüllerini genel olarak açıp kapatın",
-      "platform": "Platform Ayarları",
-      "platformDesc": "Temel platform yapılandırması"
-    },
+    "featureToggles": "Özellik Anahtarları",
     "filter": {
       "all": "Tümü"
-    }
+    },
+    "exportCsv": "CSV dışa aktar",
+    "exportReport": "Rapor dışa aktar",
+    "announce": "Duyuru yap",
+    "publishGlobalAnnouncement": "Genel duyuru yayınla",
+    "financials": "Finans",
+    "supportManagement": "Destek Yönetimi",
+    "resetPassword": "Parolayı sıfırla",
+    "openFullReview": "Tam incelemeyi aç",
+    "suspended": "Askıya alındı",
+    "block": "Engelle",
+    "unblock": "Engeli kaldır"
   },
   "errors": {
     "notFound_title": "Sayfa Bulunamadı",

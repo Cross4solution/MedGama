@@ -130,7 +130,7 @@ export default function AdminDashboard() {
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-purple-600 text-white hover:bg-purple-700 transition-colors shadow-sm"
           >
             <Megaphone className="w-3.5 h-3.5" />
-            Announce
+            {t('admin.announce', 'Announce')}
           </button>
         </div>
       </div>
@@ -139,7 +139,7 @@ export default function AdminDashboard() {
       {announcementOpen && (
         <div className="bg-purple-50 border border-purple-200 rounded-2xl p-5">
           <h3 className="text-sm font-bold text-purple-900 mb-2 flex items-center gap-2">
-            <Megaphone className="w-4 h-4 text-purple-600" /> Publish Global Announcement
+            <Megaphone className="w-4 h-4 text-purple-600" /> {t('admin.publishGlobalAnnouncement', 'Publish Global Announcement')}
           </h3>
           <textarea
             value={announcementText}
@@ -155,7 +155,7 @@ export default function AdminDashboard() {
               disabled={!announcementText.trim()}
               className="px-4 py-2 rounded-lg text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 transition-colors disabled:opacity-40 shadow-sm"
             >
-              Publish
+              {t('common.publish', 'Publish')}
             </button>
           </div>
         </div>

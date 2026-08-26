@@ -106,7 +106,9 @@
     "years": "ans",
     "loadFailedTitle": "Chargement impossible",
     "loadFailedHint": "Le serveur est injoignable. Cela ne signifie pas que vous n'avez aucun élément — vérifiez votre connexion et réessayez.",
-    "admin": "Admin"
+    "admin": "Admin",
+    "clearFilters": "Effacer les filtres",
+    "publish": "Publier"
   },
   "nav": {
     "home": "Accueil",
@@ -2221,22 +2223,7 @@
       "unknownAuthor": "Auteur inconnu",
       "unknownReporter": "Signaleur inconnu"
     },
-    "featureToggles": {
-      "title": "Paramètres des fonctionnalités",
-      "subtitle": "Contrôler les fonctionnalités et les paramètres système de la plateforme",
-      "modules": "Bascules de modules",
-      "modulesDesc": "Activer ou désactiver les modules de la plateforme",
-      "platform": "Paramètres de la plateforme",
-      "platformDesc": "Configuration principale",
-      "enabled": "Activé",
-      "disabled": "Désactivé",
-      "save": "Enregistrer",
-      "lastUpdated": "Dernière mise à jour",
-      "settingUpdated": "Paramètre mis à jour.",
-      "noSettings": "Aucun paramètre trouvé.",
-      "systemConfig": "Configuration système",
-      "systemConfigDesc": "Les modifications des fonctionnalités prennent effet immédiatement sur toute la plateforme. Toutes les modifications sont enregistrées dans les journaux d'audit."
-    },
+    "featureToggles": "Commutateurs de fonctionnalités",
     "auditLogs": {
       "title": "Journaux d'audit",
       "subtitle": "Suivre les modifications critiques de données et les événements système",
@@ -2620,7 +2607,18 @@
     },
     "filter": {
       "all": "Tout"
-    }
+    },
+    "exportCsv": "Exporter en CSV",
+    "exportReport": "Exporter le rapport",
+    "announce": "Annoncer",
+    "publishGlobalAnnouncement": "Publier une annonce globale",
+    "financials": "Finances",
+    "supportManagement": "Gestion du support",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "openFullReview": "Ouvrir l'examen complet",
+    "suspended": "Suspendu",
+    "block": "Bloquer",
+    "unblock": "Débloquer"
   },
   "errors": {
     "notFound_title": "Page non trouvée",

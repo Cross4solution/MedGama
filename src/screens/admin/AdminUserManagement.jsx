@@ -69,7 +69,7 @@ function PasswordResetModal({ user: targetUser, onClose, onSuccess }) {
       >
         <div className="px-5 py-4 border-b border-gray-100">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-            <KeyRound className="w-4 h-4 text-indigo-600" /> Reset Password
+            <KeyRound className="w-4 h-4 text-indigo-600" /> {t('admin.resetPassword', 'Reset Password')}
           </h3>
           <p className="text-xs text-gray-500 mt-1">{t('adminUserManagement.setANewPasswordFor', "Set a new password for")} <strong>{targetUser.fullname}</strong></p>
         </div>
@@ -249,7 +249,7 @@ function UserDetailDrawer({ user: u, onClose }) {
                   ))}
                   <Link to={`/admin/verification/review?id=${u.id}`} onClick={onClose}
                     className="flex items-center gap-1.5 text-xs font-medium text-purple-600 hover:text-purple-700 mt-1">
-                    <ExternalLink className="w-3 h-3" /> Open Full Review
+                    <ExternalLink className="w-3 h-3" /> {t('admin.openFullReview', 'Open Full Review')}
                   </Link>
                 </div>
               )}
@@ -627,7 +627,7 @@ export default function AdminUserManagement() {
                           <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" title={t('adminUserManagement.active', "Active")} />
                         ) : (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-50 text-red-600 border border-red-200">
-                            <Ban className="w-3 h-3" /> Suspended
+                            <Ban className="w-3 h-3" /> {t('admin.suspended', 'Suspended')}
                           </span>
                         )}
                       </td>
@@ -663,7 +663,7 @@ export default function AdminUserManagement() {
                                   className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors"
                                   title={t('adminUserManagement.suspend', "Suspend")}
                                 >
-                                  <Ban className="w-3 h-3" /> Block
+                                  <Ban className="w-3 h-3" /> {t('admin.block', 'Block')}
                                 </button>
                               ) : (
                                 <button
@@ -671,7 +671,7 @@ export default function AdminUserManagement() {
                                   className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors"
                                   title={t('adminUserManagement.reactivate', "Reactivate")}
                                 >
-                                  <RotateCcw className="w-3 h-3" /> Unblock
+                                  <RotateCcw className="w-3 h-3" /> {t('admin.unblock', 'Unblock')}
                                 </button>
                               )}
                             </>

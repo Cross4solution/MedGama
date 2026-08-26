@@ -72,7 +72,7 @@
     "upgrade": "Upgraden",
     "backToHome": "Zurück zur Startseite",
     "cancelled": "Storniert",
-    "clearAll": "Alle zurücksetzen",
+    "clearAll": "Alle löschen",
     "comment": "Kommentieren",
     "comments": "Kommentare",
     "creating": "Wird erstellt …",
@@ -106,7 +106,9 @@
     "years": "J.",
     "loadFailedTitle": "Konnte nicht geladen werden",
     "loadFailedHint": "Der Server ist nicht erreichbar. Das heißt nicht, dass keine Einträge vorhanden sind — prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
-    "admin": "Admin"
+    "admin": "Admin",
+    "clearFilters": "Filter zurücksetzen",
+    "publish": "Veröffentlichen"
   },
   "nav": {
     "home": "Startseite",
@@ -2761,22 +2763,7 @@
       "unknownAuthor": "Unbekannter Autor",
       "unknownReporter": "Unbekannte meldende Person"
     },
-    "featureToggles": {
-      "title": "Funktionseinstellungen",
-      "subtitle": "Plattformweite Funktionen und Systemeinstellungen steuern",
-      "modules": "Modulschalter",
-      "modulesDesc": "Plattformmodule global aktivieren oder deaktivieren",
-      "platform": "Plattformeinstellungen",
-      "platformDesc": "Kernkonfiguration der Plattform",
-      "enabled": "Aktiviert",
-      "disabled": "Deaktiviert",
-      "save": "Speichern",
-      "lastUpdated": "Zuletzt aktualisiert",
-      "settingUpdated": "Einstellung aktualisiert.",
-      "noSettings": "Keine Einstellungen gefunden.",
-      "systemConfig": "Systemkonfiguration",
-      "systemConfigDesc": "Änderungen an Funktionen werden sofort plattformweit wirksam. Alle Änderungen werden in den Prüfprotokollen erfasst."
-    },
+    "featureToggles": "Funktionsschalter",
     "announcements": {
       "activate": "Aktivieren",
       "allUsers": "Alle Nutzer",
@@ -2986,7 +2973,18 @@
     },
     "filter": {
       "all": "Alle"
-    }
+    },
+    "exportCsv": "CSV exportieren",
+    "exportReport": "Bericht exportieren",
+    "announce": "Ankündigen",
+    "publishGlobalAnnouncement": "Globale Ankündigung veröffentlichen",
+    "financials": "Finanzen",
+    "supportManagement": "Support-Verwaltung",
+    "resetPassword": "Passwort zurücksetzen",
+    "openFullReview": "Vollständige Prüfung öffnen",
+    "suspended": "Gesperrt",
+    "block": "Sperren",
+    "unblock": "Entsperren"
   },
   "errors": {
     "notFound_title": "Seite nicht gefunden",

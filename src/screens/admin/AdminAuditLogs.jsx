@@ -285,12 +285,12 @@ export default function AdminAuditLogs() {
           <button onClick={handleRefresh} disabled={refreshing}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors shadow-sm disabled:opacity-50">
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
-            Refresh
+            {t('common.refresh', 'Refresh')}
           </button>
           <button onClick={handleExportCSV} disabled={logs.length === 0}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
             <Download className="w-3.5 h-3.5" />
-            Export CSV
+            {t('admin.exportCsv', 'Export CSV')}
           </button>
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -387,7 +387,7 @@ export default function AdminAuditLogs() {
 
           {hasActiveFilters && (
             <button onClick={clearAllFilters} className="text-xs text-purple-600 hover:text-purple-700 font-medium px-2 py-1">
-              Clear all
+              {t('common.clearAll', 'Clear all')}
             </button>
           )}
         </div>

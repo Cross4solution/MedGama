@@ -106,7 +106,9 @@
     "years": "anni",
     "loadFailedTitle": "Caricamento non riuscito",
     "loadFailedHint": "Server non raggiungibile. Non significa che non ci siano voci — controlla la connessione e riprova.",
-    "admin": "Admin"
+    "admin": "Admin",
+    "clearFilters": "Cancella filtri",
+    "publish": "Pubblica"
   },
   "nav": {
     "home": "Home",
@@ -2221,22 +2223,7 @@
       "unknownAuthor": "Autore sconosciuto",
       "unknownReporter": "Segnalante sconosciuto"
     },
-    "featureToggles": {
-      "title": "Impostazioni funzionalità",
-      "subtitle": "Controlla le funzionalità e le impostazioni di sistema della piattaforma",
-      "modules": "Interruttori moduli",
-      "modulesDesc": "Attiva o disattiva i moduli della piattaforma",
-      "platform": "Impostazioni piattaforma",
-      "platformDesc": "Configurazione principale",
-      "enabled": "Attivato",
-      "disabled": "Disattivato",
-      "save": "Salva",
-      "lastUpdated": "Ultimo aggiornamento",
-      "settingUpdated": "Impostazione aggiornata.",
-      "noSettings": "Nessuna impostazione trovata.",
-      "systemConfig": "Configurazione di sistema",
-      "systemConfigDesc": "Le modifiche alle funzionalità hanno effetto immediato su tutta la piattaforma. Tutte le modifiche vengono registrate nei registri di audit."
-    },
+    "featureToggles": "Interruttori funzionalità",
     "auditLogs": {
       "title": "Registri di audit",
       "subtitle": "Traccia modifiche critiche ai dati ed eventi di sistema",
@@ -2620,7 +2607,18 @@
     },
     "filter": {
       "all": "Tutti"
-    }
+    },
+    "exportCsv": "Esporta CSV",
+    "exportReport": "Esporta report",
+    "announce": "Annuncia",
+    "publishGlobalAnnouncement": "Pubblica annuncio globale",
+    "financials": "Finanze",
+    "supportManagement": "Gestione supporto",
+    "resetPassword": "Reimposta password",
+    "openFullReview": "Apri revisione completa",
+    "suspended": "Sospeso",
+    "block": "Blocca",
+    "unblock": "Sblocca"
   },
   "errors": {
     "notFound_title": "Pagina non trovata",

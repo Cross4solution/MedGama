@@ -57,7 +57,10 @@
     "clinic": "Klinika",
     "menu": "Menyu",
     "links": "Havolalar",
-    "admin": "Admin"
+    "admin": "Admin",
+    "clearAll": "Hammasini tozalash",
+    "clearFilters": "Filtrlarni tozalash",
+    "publish": "Chop etish"
   },
   "nav": {
     "home": "Bosh sahifa",
@@ -1015,22 +1018,7 @@
       "suspendConfirm": "\"{{name}}\" foydalanuvchisi to'xtatilsinmi? Platformaga kirishi bekor qilinadi.",
       "hideConfirm": "Bu post yashiriladi. Ishonchingiz komilmi?"
     },
-    "featureToggles": {
-      "title": "Xususiyat Sozlamalari",
-      "subtitle": "Platforma bo'ylab xususiyatlar va tizim sozlamalarini boshqaring",
-      "modules": "Modul Sozlamalari",
-      "modulesDesc": "Platforma modullarini global ravishda yoqing yoki o'chiring",
-      "platform": "Platforma Sozlamalari",
-      "platformDesc": "Asosiy platforma konfiguratsiyasi",
-      "enabled": "Yoqilgan",
-      "disabled": "O'chirilgan",
-      "save": "Saqlash",
-      "lastUpdated": "Oxirgi yangilanish",
-      "settingUpdated": "Sozlama yangilandi.",
-      "noSettings": "Sozlama topilmadi.",
-      "systemConfig": "Tizim Konfiguratsiyasi",
-      "systemConfigDesc": "Xususiyat o'zgarishlari butun platformada darhol kuchga kiradi. Barcha o'zgarishlar Audit Yozuvlarida saqlanadi."
-    },
+    "featureToggles": "Funksiya kalitlari",
     "auditLogs": {
       "title": "Audit Yozuvlari",
       "subtitle": "Muhim ma'lumot o'zgarishlarini va tizim hodisalarini kuzating",
@@ -1062,7 +1050,18 @@
       "gdprDesc": "Barcha qayta ishlash faoliyatlari GDPR 30-modda talablariga muvofiq qayd etiladi. Audit yozuvlari kamida 6 yil saqlanadi.",
       "page": "Sahifa {{current}} / {{total}}",
       "loadFailedHint": "Jurnal o'qib bo'lmadi — bu hech narsa yozilmagan degani emas."
-    }
+    },
+    "exportCsv": "CSV eksport",
+    "exportReport": "Hisobotni eksport qilish",
+    "announce": "E'lon qilish",
+    "publishGlobalAnnouncement": "Umumiy e'lon chop etish",
+    "financials": "Moliya",
+    "supportManagement": "Qoʻllab-quvvatlashni boshqarish",
+    "resetPassword": "Parolni tiklash",
+    "openFullReview": "To'liq ko'rikni ochish",
+    "suspended": "Toʻxtatilgan",
+    "block": "Bloklash",
+    "unblock": "Blokdan chiqarish"
   },
   "errors": {
     "notFound_title": "Sahifa topilmadi",

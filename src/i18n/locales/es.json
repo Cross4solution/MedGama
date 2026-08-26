@@ -106,7 +106,9 @@
     "years": "años",
     "loadFailedTitle": "No se pudo cargar",
     "loadFailedHint": "No se pudo contactar con el servidor. Esto no significa que no tengas registros: comprueba tu conexión e inténtalo de nuevo.",
-    "admin": "Admin"
+    "admin": "Admin",
+    "clearFilters": "Borrar filtros",
+    "publish": "Publicar"
   },
   "nav": {
     "home": "Inicio",
@@ -2221,22 +2223,7 @@
       "unknownAuthor": "Autor desconocido",
       "unknownReporter": "Denunciante desconocido"
     },
-    "featureToggles": {
-      "title": "Ajustes de funciones",
-      "subtitle": "Controlar funciones y ajustes del sistema de la plataforma",
-      "modules": "Interruptores de módulos",
-      "modulesDesc": "Activa o desactiva módulos de la plataforma",
-      "platform": "Ajustes de la plataforma",
-      "platformDesc": "Configuración principal",
-      "enabled": "Activado",
-      "disabled": "Desactivado",
-      "save": "Guardar",
-      "lastUpdated": "Última actualización",
-      "settingUpdated": "Ajuste actualizado.",
-      "noSettings": "No se encontraron ajustes.",
-      "systemConfig": "Configuración del sistema",
-      "systemConfigDesc": "Los cambios en las funciones surten efecto inmediatamente en toda la plataforma. Todos los cambios se registran en los registros de auditoría."
-    },
+    "featureToggles": "Interruptores de funciones",
     "auditLogs": {
       "title": "Registros de auditoría",
       "subtitle": "Seguimiento de cambios críticos de datos y eventos del sistema",
@@ -2620,7 +2607,18 @@
     },
     "filter": {
       "all": "Todo"
-    }
+    },
+    "exportCsv": "Exportar CSV",
+    "exportReport": "Exportar informe",
+    "announce": "Anunciar",
+    "publishGlobalAnnouncement": "Publicar anuncio global",
+    "financials": "Finanzas",
+    "supportManagement": "Gestión de soporte",
+    "resetPassword": "Restablecer contraseña",
+    "openFullReview": "Abrir revisión completa",
+    "suspended": "Suspendido",
+    "block": "Bloquear",
+    "unblock": "Desbloquear"
   },
   "errors": {
     "notFound_title": "Página no encontrada",

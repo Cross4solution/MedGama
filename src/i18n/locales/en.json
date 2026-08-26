@@ -93,7 +93,7 @@
     "of": "of",
     "upgrade": "Upgrade",
     "cancelled": "Cancelled",
-    "clearAll": "Clear All",
+    "clearAll": "Clear all",
     "creating": "Creating...",
     "filters": "Filters",
     "noData": "No data available",
@@ -125,7 +125,9 @@
     "loadError": "Something went wrong while loading the data.",
     "loadFailedTitle": "Could not load",
     "loadFailedHint": "The server could not be reached. This does not mean you have no records — check your connection and try again.",
-    "admin": "Admin"
+    "admin": "Admin",
+    "clearFilters": "Clear filters",
+    "publish": "Publish"
   },
   "nav": {
     "home": "Home",
@@ -2933,15 +2935,21 @@
       "pendingDocs": "Pending Docs",
       "todayAppts": "Today's Appts"
     },
-    "featureToggles": {
-      "modules": "Module Toggles",
-      "modulesDesc": "Enable or disable platform modules globally",
-      "platform": "Platform Settings",
-      "platformDesc": "Core platform configuration"
-    },
+    "featureToggles": "Feature toggles",
     "filter": {
       "all": "All"
-    }
+    },
+    "exportCsv": "Export CSV",
+    "exportReport": "Export report",
+    "announce": "Announce",
+    "publishGlobalAnnouncement": "Publish global announcement",
+    "financials": "Financials",
+    "supportManagement": "Support management",
+    "resetPassword": "Reset password",
+    "openFullReview": "Open full review",
+    "suspended": "Suspended",
+    "block": "Block",
+    "unblock": "Unblock"
   },
   "errors": {
     "notFound_title": "Page Not Found",

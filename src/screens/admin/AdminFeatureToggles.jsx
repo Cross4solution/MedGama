@@ -122,7 +122,7 @@ export default function AdminFeatureToggles() {
       <div>
         <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
           <Settings2 className="w-5 h-5 text-purple-600" />
-          Feature Toggles
+          {t('admin.featureToggles', 'Feature Toggles')}
         </h1>
         <p className="text-sm text-gray-500 mt-0.5">{t('adminFeatureToggles.controlPlatformWideFeaturesAnd', "Control platform-wide features and system settings")}</p>
       </div>
