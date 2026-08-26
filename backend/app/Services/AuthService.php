@@ -536,6 +536,56 @@ class AuthService
             MedStreamComment::where('author_id', $user->id)->update(['is_active' => false]);
             MedStreamLike::where('user_id', $user->id)->update(['is_active' => false]);
             MedStreamBookmark::where('user_id', $user->id)->update(['is_active' => false]);
+
+            // ── Yasal dayanağı OLMAYAN serbest metinler siliniyor ──────────
+            //
+            // Silme talebinden sonra şunlar duruyordu (ölçüldü): sohbet
+            // mesajlarının gövdesi, iletişim kutusuna yazdıkları ve
+            // değerlendirme metinleri. Üçü de kullanıcının kendi yazdığı
+            // serbest metin ve hiçbirinin saklanması için bir yükümlülük yok.
+            //
+            // Satırlar kalıyor, İÇERİK gidiyor: karşı tarafın sohbet akışı
+            // kopmasın, ama silinen kişinin sözleri ortada kalmasın.
+            //
+            // Ne SİLİNMEDİĞİ en az bunun kadar önemli — aşağısı bilinçli:
+            //
+            //   randevular + patient_medical_snapshot → tıbbi kayıt
+            //   hasta belgeleri                        → tıbbi kayıt
+            //   faturalar                              → vergi/ticaret hukuku
+            //   rıza kayıtları                         → rızanın kanıtı
+            //
+            // GDPR md. 17(3)(b) ve (e) silme hakkını tam olarak bu durumlarda
+            // sınırlıyor; KVKK md. 7 de saklama yükümlülüğü olan veriyi ayrı
+            // tutuyor. SÜRELER mevzuata göre değişir ve burada belirlenmiyor.
+            // Sütunlar NOT NULL; içerik boşaltılıyor, satır duruyor.
+            //
+            // Mesaj gövdesi `encrypted` cast'li: sorgu kurucusuyla yazmak
+            // şifrelemeyi ATLAR ve satır bir daha okunamaz hâle gelir
+            // (`DecryptException`). Model üzerinden yazılıyor ki cast çalışsın.
+            Message::where('sender_id', $user->id)
+                ->chunkById(200, function ($mesajlar) {
+                    foreach ($mesajlar as $mesaj) {
+                        $mesaj->body = '';
+                        $mesaj->is_active = false;
+                        $mesaj->save();
+                    }
+                });
+
+            ContactMessage::where('sender_id', $user->id)->update([
+                'subject' => 'Silinmiş mesaj',
+                'body'    => '',
+            ]);
+
+            // Değerlendirmeler MedStream gönderileriyle aynı muameleyi görüyor:
+            // ikisi de kullanıcının yayımladığı içerik.
+            $degerlendirmeler = DoctorReview::where('patient_id', $user->id)->get();
+            DoctorReview::where('patient_id', $user->id)->update([
+                'comment'    => '',
+                'is_visible' => false,
+            ]);
+            foreach ($degerlendirmeler->pluck('doctor_id')->unique() as $hekimId) {
+                DoctorReview::recalculateAggregatedRating($hekimId);
+            }
         });
 
         \Log::info('GDPR: Account deleted (soft)', ['user_id' => $user->id]);
