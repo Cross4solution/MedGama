@@ -55,7 +55,6 @@ class UctanUcaYolculukTest extends TestCase
             'start_time'       => '11:00',
             'duration_minutes' => 30,
             'is_available'     => true,
-            'is_active'        => true,
         ]);
 
         // ── 2. Hasta kaydoluyor ──
@@ -219,7 +218,6 @@ class UctanUcaYolculukTest extends TestCase
             'start_time'       => '14:00',
             'duration_minutes' => 30,
             'is_available'     => true,
-            'is_active'        => true,
         ]);
 
         $this->olarak($sahipJeton)

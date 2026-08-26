@@ -49,7 +49,6 @@ class DoktorMusaitligiTest extends TestCase
             'start_time'       => '10:00',
             'duration_minutes' => 30,
             'is_available'     => true,
-            'is_active'        => true,
         ], $ek));
     }
 
@@ -137,7 +136,6 @@ class DoktorMusaitligiTest extends TestCase
             'start_time'       => '11:00',
             'duration_minutes' => 30,
             'is_available'     => true,
-            'is_active'        => true,
         ]);
 
         $this->assertSame(0, $this->slotSayisi(), 'başka hekimin slotu bu hekimde göründü');

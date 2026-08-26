@@ -455,8 +455,13 @@ class ClinicController extends Controller
                 'onboarding_step'      => 3,
             ]);
 
-            // Also mark user as onboarding completed
-            $user->update(['onboarding_completed' => true]);
+            // Kullanıcı sütununu yazmaya ÇALIŞAN satır kaldırıldı.
+            //
+            // `onboarding_completed` User'ın `$fillable` listesinde değil, yani
+            // bu çağrı hiçbir zaman bir şey yazmadı. Kimse fark etmedi çünkü
+            // kimse o sütuna bakmıyor: `UserResource` bayrağı KLİNİKTEN
+            // türetiyor. Alanı fillable yapmak ikinci ve ayrışabilir bir
+            // gerçek üretirdi; tek gerçek kliniğin kendi bayrağı.
         }
 
         return response()->json([

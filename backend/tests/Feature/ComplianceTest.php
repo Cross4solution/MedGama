@@ -76,7 +76,6 @@ class ComplianceTest extends TestCase
             [
                 'doctor_id'  => $doctor->id,
                 'answers'    => ['allergy' => 'Penicillin', 'blood_type' => 'A+'],
-                'is_active'  => true,
             ]
         );
 
@@ -132,7 +131,6 @@ class ComplianceTest extends TestCase
             [
                 'doctor_id'  => $doctor->id,
                 'answers'    => ['test' => 'value'],
-                'is_active'  => true,
             ]
         );
 

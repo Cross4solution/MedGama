@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Database\Eloquent\Model;
 use App\Listeners\BroadcastNotificationCreated;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -43,6 +44,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Toplu atamada düşen alan artık SESSİZ değil.
+        //
+        // `$model->update(['alan' => ...])`, `alan` o modelin `$fillable`
+        // listesinde yoksa onu atar ve yine `true` döner: istisna yok, uyarı
+        // yok. İki gerçek hata böyle kaçtı ve ikisi de "başarı" dönüyordu:
+        //
+        //   • Hasta etiketi silme — etiket ekranda kalıyordu.
+        //   • Tıbbi kayıt silme — kayıt duruyor, denetim günlüğü ise "silindi"
+        //     yazıyordu; yani izin kendisi yanlış oluyordu.
+        //
+        // Üretimde AÇMIYORUZ: canlıda istisnaya dönüşmesi, bugüne dek sessizce
+        // çalışmış bir isteği 500'e çevirir. Yerelde ve testte gürültülü olması
+        // yeterli — bir sonraki örneği paket kırmızı yanarak bildirir.
+        Model::preventSilentlyDiscardingAttributes(!$this->app->isProduction());
+
         // Broadcast database notifications via WebSocket in real-time
         Event::listen(NotificationSent::class, BroadcastNotificationCreated::class);
 

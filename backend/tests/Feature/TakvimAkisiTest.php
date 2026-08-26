@@ -116,6 +116,35 @@ class TakvimAkisiTest extends TestCase
         $this->assertSame($ilk, $ikinci);
     }
 
+    public function test_yenileme_eski_baglantiyi_olduruyor(): void
+    {
+        // `POST /calendar/feed/regenerate` ucunun tek varlık sebebi bu: bağlantı
+        // sızdığında geri alabilmek. Jetonu tazeleyip eskisini de geçerli
+        // bırakan bir uygulama, düğmeyi anlamsız kılar ve daha kötüsü, kullanıcı
+        // sorunu çözdüğünü sanır — akış hâlâ randevularını yayınlıyorken.
+        $klinik = Clinic::factory()->create();
+        $doktor = User::factory()->doctor()->create(['clinic_id' => $klinik->id, 'is_verified' => true]);
+        $hasta  = User::factory()->patient()->create();
+
+        $this->randevu($hasta, $doktor, $klinik, 'yenileme denemesi');
+
+        $eski = $hasta->getOrCreateCalendarToken();
+        $this->get('/api/calendar/feed/' . $eski)->assertOk();
+
+        $jeton = $hasta->createToken('test')->plainTextToken;
+        app('auth')->forgetGuards();
+
+        $yeni = $this->withHeader('Authorization', 'Bearer ' . $jeton)
+            ->postJson('/api/calendar/feed/regenerate')
+            ->assertOk()
+            ->json('token');
+
+        $this->assertNotSame($eski, $yeni, 'yenileme belirteci değiştirmedi');
+
+        $this->get('/api/calendar/feed/' . $eski)->assertStatus(404);
+        $this->get('/api/calendar/feed/' . $yeni)->assertOk();
+    }
+
     public function test_doktor_kendi_randevularini_goruyor(): void
     {
         $klinik = Clinic::factory()->create();

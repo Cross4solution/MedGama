@@ -91,7 +91,13 @@ class PatientRecordController extends Controller
             abort(403, 'Bu kaydı silme yetkiniz yok.');
         }
 
-        $record->update(['is_active' => false]);
+        // `update(['is_active' => false])` HİÇBİR ŞEY YAPMIYORDU: `is_active`
+        // PatientRecord'un `$fillable` listesinde yok, toplu atama koruması
+        // alanı sessizce düşürüyordu. Uç başarı dönüyor, aşağıdaki denetim
+        // günlüğü "silindi" yazıyor, kayıt duruyordu — denetim izi de yanlış
+        // oluyordu. Yaşam döngüsü bayrağı doğrudan atanıyor.
+        $record->is_active = false;
+        $record->save();
 
         HealthDataAuditLog::log(
             accessorId: $user->id,

@@ -86,18 +86,25 @@ class DemoAccountService
             'password'          => bcrypt(self::SIFRE),
             'role_id'           => $rolId,
             'is_active'         => true,
-            'is_demo'           => true,
             'is_verified'       => true,
             'email_verified_at' => now(),
             'country'           => 'TR',
         ]);
+
+        // `is_demo` User'ın `$fillable` listesinde değil: yukarıdaki diziye
+        // yazılsaydı toplu atama koruması onu sessizce düşürürdü ve demo
+        // hesapları demo olarak İŞARETLENMEMİŞ olurdu. Bayrak dışarıdan gelen
+        // bir veri değil, hesabın ne olduğunu söyleyen bir damga.
+        $kullanici->forceFill(['is_demo' => true])->save();
 
         if ($doktorMu) {
             DoctorProfile::updateOrCreate(
                 ['user_id' => $kullanici->id],
                 [
                     'title'                => 'Kardiyoloji Uzmanı',
-                    'biography'            => 'Demo hesabı — CRM denemesi için oluşturuldu.',
+                    // Alan adı `bio`: `biography` DoctorProfile'da yok ve toplu
+                    // atama onu sessizce düşürüyordu — demo hekimin özgeçmişi hep boştu.
+                    'bio'                  => 'Demo hesabı — CRM denemesi için oluşturuldu.',
                     'onboarding_completed' => true,
                     'online_consultation'  => true,
                     'timezone'             => 'Europe/Istanbul',
@@ -195,8 +202,7 @@ class DemoAccountService
                 'password'          => bcrypt(self::SIFRE),
                 'role_id'           => 'patient',
                 'is_active'         => true,
-                'is_demo'           => true,
-                'is_verified'       => true,
+                    'is_verified'       => true,
                 'email_verified_at' => now(),
                 'country'           => 'TR',
             ],
@@ -240,7 +246,8 @@ class DemoAccountService
             'diagnosis_note' => 'Üst solunum yolu enfeksiyonu; istirahat ve sıvı önerildi.',
             'vitals'         => ['Tansiyon' => '120/80', 'Nabız' => '76', 'Ateş' => '36.8'],
             'prescriptions'  => [['name' => 'Parasetamol 500mg', 'dosage' => 'Günde 3 kez']],
-            'is_active'      => true,
+            // `is_active` PatientRecord'da toplu atamaya kapalı; sütunun
+            // varsayılanı zaten aktif.
         ]);
 
         Invoice::create([
@@ -274,11 +281,13 @@ class DemoAccountService
             'role_id'           => 'doctor',
             'clinic_id'         => $klinik->id,
             'is_active'         => true,
-            'is_demo'           => true,
             'is_verified'       => true,
             'email_verified_at' => now(),
             'country'           => 'TR',
         ]);
+
+        // Aynı sebep: `is_demo` toplu atamaya kapalı.
+        $hekim->forceFill(['is_demo' => true])->save();
 
         DoctorProfile::updateOrCreate(
             ['user_id' => $hekim->id],
@@ -385,15 +394,21 @@ class DemoAccountService
         ];
 
         foreach ($mesajlar as [$metin, $dakika]) {
-            \App\Models\ChatMessage::create([
+            // Zaman damgaları `$fillable`da değil: toplu atamada sessizce
+            // düşerlerdi ve demo sohbeti "az önce" görünürdü. Yaratımdan sonra
+            // doğrudan yazılıyor.
+            $mesaj = \App\Models\ChatMessage::create([
                 'conversation_id' => $sohbet->id,
                 'sender_id'       => $doktor->id,
                 'message_type'    => 'text',
                 'content'         => $metin,
                 'read_at'         => null, // okunmamış: rozet bunun için var
-                'created_at'      => now()->subMinutes($dakika),
-                'updated_at'      => now()->subMinutes($dakika),
             ]);
+
+            $mesaj->forceFill([
+                'created_at' => now()->subMinutes($dakika),
+                'updated_at' => now()->subMinutes($dakika),
+            ])->save();
         }
     }
 

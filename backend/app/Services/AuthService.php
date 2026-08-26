@@ -96,7 +96,9 @@ class AuthService
                     'codename'    => \Illuminate\Support\Str::slug($clinicName) . '-' . \Illuminate\Support\Str::random(4),
                     'owner_id'    => $user->id,
                     'is_verified' => false,
-                    'is_active'   => true,
+                    // `is_active` Clinic'te toplu atamaya kapalı; sütunun
+                    // varsayılanı zaten aktif. Diziye yazmak onu sessizce
+                    // düşürüyordu — yani satır hiçbir zaman bir şey yapmadı.
                 ]);
                 $user->update(['clinic_id' => $clinic->id]);
             }

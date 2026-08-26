@@ -578,7 +578,17 @@ class PatientService
         $query = CrmTag::active();
         $this->kapsamUygula($query, $user);
 
-        $query->findOrFail($tagId)->update(['is_active' => false]);
+        $etiket = $query->findOrFail($tagId);
+
+        // `update(['is_active' => false])` HİÇBİR ŞEY YAPMIYORDU: `is_active`
+        // CrmTag'in `$fillable` listesinde yok, dolayısıyla toplu atama
+        // koruması alanı sessizce düşürüyordu. Uç yine 200 ve "Tag removed."
+        // dönüyordu — etiket ekranda kalıyor, kullanıcı sildiğini sanıyordu.
+        //
+        // Alanı `$fillable`a eklemek yerine doğrudan atanıyor: `is_active`
+        // dışarıdan gelen bir veri değil, kaydın yaşam döngüsü bayrağı.
+        $etiket->is_active = false;
+        $etiket->save();
     }
 
     public function setStage(string $patientId, User $user, string $stage): CrmProcessStage

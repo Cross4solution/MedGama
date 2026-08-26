@@ -156,7 +156,6 @@ class YayinKesintisiTest extends TestCase
             'start_time'       => '09:00',
             'duration_minutes' => 30,
             'is_available'     => true,
-            'is_active'        => true,
         ]);
 
         $this->olarak($hasta)->postJson('/api/appointments', [

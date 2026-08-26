@@ -50,7 +50,6 @@ class TakvimSlotuYetkiTest extends TestCase
             'start_time'       => $saat,
             'duration_minutes' => 30,
             'is_available'     => true,
-            'is_active'        => true,
         ]);
     }
 
