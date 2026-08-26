@@ -21,6 +21,16 @@ const { oturumDosyasi, cerezBandiniKapat, apiIstek } = require('./yardimcilar');
 test.describe('Dil ve içerik çevirisi', () => {
   test.use({ storageState: oturumDosyasi('hasta') });
 
+  // SIRAYLA çalışıyorlar.
+  //
+  // Testler aynı kullanıcının TEK bir sunucu ayarını açıp kapatıyor. Paralel
+  // koşuda ikisi aynı anda dokununca biri diğerinin yazdığını okuyor ve
+  // "anahtar kapatıldı ama sunucu hâlâ açık diyor" diye düşüyordu. Tek
+  // başına koşturulduğunda 16/16 geçiyor — yani kusur üründe değil, paylaşılan
+  // durumda. Kalıcı olarak kararsız bir test, gerçek kırmızıyı da görünmez
+  // yapar.
+  test.describe.configure({ mode: 'serial' });
+
   /** Sunucudaki güncel çeviri durumu. */
   const durumOku = async (page) => {
     const { govde } = await apiIstek(page, '/api/translation/status');

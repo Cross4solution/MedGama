@@ -33,7 +33,15 @@ test.describe('CRM randevuları', () => {
 
     // Şerit "onay bekleyenler" değil, "hâlâ reddedilebilenler".
     const serit = page.getByText(/Randevular otomatik onaylı/i);
-    const { govde } = await apiIstek(page, '/api/appointments?per_page=50');
+    const { http, govde } = await apiIstek(page, '/api/appointments?per_page=50');
+
+    // Ön koşul AÇIKÇA kuruluyor. Liste alınamadığında `hepsi` boş kalıyor,
+    // "reddedilebilir randevu yok" sanılıyor ve ölçüt sessizce atlanıyordu —
+    // ya da ekran veriyi çekemediği için şerit çizilmiyor ve ölçüt düşüyordu.
+    // İkisi de yanıltıcı: kusur üründe değil, ölçümün kendisinde.
+    test.skip(http === 429, 'Hız sınırına takıldı — bu koşuda ölçüm yapılamaz');
+    expect(http, 'randevu listesi alınamadı; ölçümün ön koşulu kurulamıyor').toBe(200);
+
     const hepsi = govde?.data || [];
     const reddedilebilir = hepsi.filter((a) => a.doctor_can_reject);
 
