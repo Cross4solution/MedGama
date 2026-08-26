@@ -162,3 +162,29 @@ Yerel koşuda birkaç test kırık kalıyor ve bunlar **uygulama hatası değil*
 
 Bunları düzeltmek spec'leri yerel veriden türetecek şekilde yazmayı
 gerektiriyor; yapılırsa buradaki liste güncellenmeli.
+
+## Gerçek sürücüye karşı koşmak (MySQL)
+
+Varsayılan paket SQLite üzerinde koşuyor ve SQLite **iki şeyi sessizce
+farklı yapıyor**: `varchar` uzunluğunu uygulamıyor ve `LOWER()` Türkçe
+harfleri katlamıyor. İkisi de üretimde (TiDB/MySQL) farklı davranıyor, yani
+paket yeşilken canlı bozuk olabiliyor — bir kez oldu:
+`chat_messages.attachment_url` şifreli değeri taşıyamıyordu ve sohbete dosya
+eklemek canlıda 500 veriyordu. Yerelde hiçbir test kırmızı yanmıyordu.
+
+```bash
+mysql -u root -e "CREATE DATABASE IF NOT EXISTS medagama_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+cd backend
+DB_CONNECTION=mysql DB_HOST=127.0.0.1 DB_PORT=3306 \
+DB_DATABASE=medagama_test DB_USERNAME=root DB_PASSWORD= \
+DB_SSL_DISABLED=1 \
+php artisan test
+```
+
+`DB_SSL_DISABLED=1` gerekiyor: yapılandırma canlıdaki TiDB için SSL'e
+zorluyor ve macOS'ta yerel MySQL'e SSL ile bağlanılamıyor.
+
+Bu koşuda **üç test daha çalışıyor** (SQLite'ta atlanan Türkçe katlama
+ölçütleri) ve `SifreliSutunGenisligiTest` bütün şifreli alanların sütun
+türünü denetliyor. Sürücüye bağlı bir hata aranıyorsa ilk yapılacak şey bu.
