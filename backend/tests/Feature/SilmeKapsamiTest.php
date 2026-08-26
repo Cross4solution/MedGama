@@ -198,6 +198,47 @@ class SilmeKapsamiTest extends TestCase
         );
     }
 
+    // ── Saklama sayacı ──────────────────────────────────────────────────
+
+    public function test_silme_saklama_sayacini_baslatiyor(): void
+    {
+        /*
+         * `model:prune` haftalık çalışıyor ve kullanıcıda üç yıl bekliyor.
+         * Koşulu `onlyTrashed()`: yumuşak silinmemiş satır kuyruğa hiç
+         * girmez.
+         *
+         * Ölçüldüğünde silme yalnız `is_active = false` yapıyordu, yani
+         * `deleted_at` NULL kalıyordu. Sonuç: saklama politikası yazılıydı,
+         * testi vardı, zamanlayıcıda duruyordu — ve silinen hesaplar için
+         * HİÇ çalışmıyordu. Anonimleşmiş satır süresiz kalıyordu.
+         *
+         * "Süresiz saklama" bir politika değil, politikanın yokluğudur.
+         */
+        $satir = User::withTrashed()->find($this->hasta->id);
+
+        $this->assertNotNull($satir, 'satır tümüyle kaldırılmış — anonim iz kalmalı');
+        $this->assertNotNull(
+            $satir->deleted_at,
+            'hesap yumuşak silinmemiş: budama kuyruğuna hiç girmiyor, saklama süresi işlemiyor',
+        );
+        $this->assertTrue(
+            User::onlyTrashed()->where('id', $this->hasta->id)->exists(),
+            'budama sorgusu bu satırı görmüyor',
+        );
+    }
+
+    public function test_silinen_hastanin_randevusu_klinikte_okunabilir_kaliyor(): void
+    {
+        // Yumuşak silme, ilişkiyi varsayılan olarak görünmez yapıyor. Klinik
+        // geçmiş randevusunda hasta adını BOŞ görürdü — kayıt duruyor ama
+        // kime ait olduğu okunamıyor. Kimlik zaten anonimleştirildi, o yüzden
+        // getirilmesinde kişisel veri yok.
+        $randevu = Appointment::with('patient')->find($this->randevu->id);
+
+        $this->assertNotNull($randevu->patient, 'silinen hastanın randevusu artık kimsiz görünüyor');
+        $this->assertSame('Deleted User', $randevu->patient->fullname);
+    }
+
     public function test_baska_kullanicinin_mesaji_etkilenmiyor(): void
     {
         $baskasi = User::factory()->patient()->create();

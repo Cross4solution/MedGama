@@ -532,6 +532,16 @@ class AuthService
 
             $user->tokens()->delete();
 
+            // Yumuşak silme, SAKLAMA SAYACINI başlatıyor.
+            //
+            // `model:prune` haftalık çalışıyor ve kullanıcıda üç yıl bekliyor
+            // (`User::prunable`), ama koşulu `onlyTrashed()`. Silme daha önce
+            // yalnız `is_active = false` yapıyordu, yani `deleted_at` NULL
+            // kalıyor ve satır budama kuyruğuna HİÇ girmiyordu: politika
+            // yazılıydı, testi vardı, zamanlayıcıda duruyordu — ve silinen
+            // hesaplar için hiç çalışmıyordu. Ölçüldü.
+            $user->delete();
+
             MedStreamPost::where('author_id', $user->id)->update(['is_active' => false]);
             MedStreamComment::where('author_id', $user->id)->update(['is_active' => false]);
             MedStreamLike::where('user_id', $user->id)->update(['is_active' => false]);

@@ -236,7 +236,15 @@ class Appointment extends Model
 
     public function patient()
     {
-        return $this->belongsTo(User::class, 'patient_id');
+        // Hesabını silen hasta YUMUŞAK silinmiş oluyor (saklama sayacı ancak
+        // öyle başlıyor). Varsayılan ilişki yumuşak silinmişi getirmez ve
+        // klinik geçmiş randevusunda hasta adını BOŞ görürdü — kayıt duruyor
+        // ama kime ait olduğu görünmüyor.
+        //
+        // Kimlik zaten anonimleştirildi ("Deleted User"), yani burada dönen
+        // satırda kişisel veri yok; getirilmesinin tek işlevi listenin
+        // okunabilir kalması.
+        return $this->belongsTo(User::class, 'patient_id')->withTrashed();
     }
 
     public function doctor()
