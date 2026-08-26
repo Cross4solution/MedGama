@@ -300,7 +300,8 @@
     "resetLinkSent": "Si el correo existe, se ha enviado un enlace de restablecimiento.",
     "tooManyAttempts": "Demasiados intentos. Espera un momento e inténtalo de nuevo.",
     "invalidCredentialsDetail": "Credenciales no válidas. Comprueba tu correo y contraseña.",
-    "signInToContinue": "Inicia sesión para continuar."
+    "signInToContinue": "Inicia sesión para continuar.",
+    "sessionExpired": "Su sesión ha finalizado. Inicie sesión de nuevo."
   },
   "aboutPage": {
     "heroDesc": "Un mercado de salud y turismo médico, independiente del idioma y la ubicación, que reúne a pacientes con médicos expertos y clínicas/hospitales verificados en una sola plataforma digital.",

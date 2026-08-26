@@ -300,7 +300,8 @@
     "resetLinkSent": "E-posta kayıtlıysa sıfırlama bağlantısı gönderildi.",
     "tooManyAttempts": "Çok fazla deneme. Lütfen biraz bekleyip tekrar deneyin.",
     "invalidCredentialsDetail": "Geçersiz kimlik bilgileri. E-posta ve şifrenizi kontrol edin.",
-    "signInToContinue": "Devam etmek için giriş yapın."
+    "signInToContinue": "Devam etmek için giriş yapın.",
+    "sessionExpired": "Oturumunuz sona erdi. Lütfen tekrar giriş yapın."
   },
   "aboutPage": {
     "heroDesc": "Hastaları uzman doktorlar ve onaylı klinik/hastanelerle aynı dijital platformda buluşturan, dil ve lokasyon bağımsız sağlık ve sağlık turizmi pazar yeri.",

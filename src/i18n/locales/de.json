@@ -300,7 +300,8 @@
     "resetLinkSent": "Falls die E-Mail-Adresse existiert, wurde ein Link zum Zurücksetzen gesendet.",
     "tooManyAttempts": "Zu viele Versuche. Bitte warten Sie einen Moment und versuchen Sie es erneut.",
     "invalidCredentialsDetail": "Ungültige Zugangsdaten. Bitte prüfen Sie E-Mail und Passwort.",
-    "signInToContinue": "Bitte melden Sie sich an, um fortzufahren."
+    "signInToContinue": "Bitte melden Sie sich an, um fortzufahren.",
+    "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an."
   },
   "aboutPage": {
     "heroDesc": "Ein sprach- und ortsunabhängiger Marktplatz für Gesundheit und Medizintourismus, der Patienten mit erfahrenen Ärzten und verifizierten Kliniken/Krankenhäusern auf einer Plattform zusammenbringt.",

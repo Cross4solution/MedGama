@@ -300,7 +300,8 @@
     "resetLinkSent": "Si l'adresse existe, un lien de réinitialisation a été envoyé.",
     "tooManyAttempts": "Trop de tentatives. Patientez un instant et réessayez.",
     "invalidCredentialsDetail": "Identifiants invalides. Vérifiez votre e-mail et votre mot de passe.",
-    "signInToContinue": "Connectez-vous pour continuer."
+    "signInToContinue": "Connectez-vous pour continuer.",
+    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter."
   },
   "aboutPage": {
     "heroDesc": "Une place de marché santé et tourisme médical, indépendante de la langue et du lieu, qui réunit patients, médecins experts et cliniques/hôpitaux vérifiés sur une même plateforme.",

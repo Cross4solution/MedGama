@@ -319,7 +319,8 @@
     "resetLinkSent": "Password reset link sent if the email exists.",
     "tooManyAttempts": "Too many attempts. Please wait a moment and try again.",
     "invalidCredentialsDetail": "Invalid credentials. Please check your email and password.",
-    "signInToContinue": "Please sign in to continue."
+    "signInToContinue": "Please sign in to continue.",
+    "sessionExpired": "Your session ended. Please sign in again."
   },
   "aboutPage": {
     "heroDesc": "A language- and location-independent health and medical-tourism marketplace that brings patients together with expert doctors and verified clinics/hospitals on one digital platform.",

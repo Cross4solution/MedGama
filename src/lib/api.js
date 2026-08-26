@@ -1,6 +1,11 @@
 import axios from 'axios';
 import { API_BASE_URL } from '../config/apiBase.js';
 
+// Sayfa açılışında birden çok istek aynı anda 401 alıyor. İlki depoyu
+// temizliyor, sonrakiler rolü boş okuyup yönlendirmeyi bozuyordu — ölçüldü:
+// aynı klinik oturumu bazen /clinic-login'e, bazen /login'e düşüyordu.
+let sonBilinenRol = '';
+
 const BASE_URL = API_BASE_URL;
 
 // ── Error Messages (centralized for future i18n migration) ──
@@ -82,6 +87,16 @@ api.interceptors.response.use(
       const isLoginOrRegister = url.includes('/login') || url.includes('/register');
       const hadToken = !!(error.config?.headers?.Authorization) || !!getStoredToken();
       if (!isLoginOrRegister && hadToken) {
+        // Rol, temizlikten ÖNCE okunmalı ve olayla birlikte taşınmalı.
+        // Dinleyici (AuthContext) React durumundan okuyordu ve o durum 401
+        // anında henüz dolmamış olabiliyor: ölçüldüğünde aynı klinik oturumu
+        // bazen /clinic-login'e, bazen /login'e düşüyordu.
+        try {
+          const kayitli = JSON.parse(localStorage.getItem('auth_state') || '{}')?.user?.role_id;
+          if (kayitli) sonBilinenRol = kayitli;
+        } catch {}
+        const rolId = sonBilinenRol;
+
         // 401: tüm token storage'larını temizle (localStorage + sessionStorage)
         try {
           localStorage.removeItem('auth_state');
@@ -90,7 +105,7 @@ api.interceptors.response.use(
           sessionStorage.removeItem('access_token');
           sessionStorage.removeItem('google_access_token');
         } catch {}
-        window.dispatchEvent(new CustomEvent('auth:logout'));
+        window.dispatchEvent(new CustomEvent('auth:logout', { detail: { rolId } }));
       }
     }
 

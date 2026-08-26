@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from '@/compat/router';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { getRedirectFromLoginResult, getRedirectForRole } from '../utils/authRedirect';
+import { guvenliDonusYolu } from '../utils/oturumBitisi';
 import { Helmet } from 'react-helmet-async';
 import {
   Heart, Stethoscope, Building2, CheckCircle, Shield, Lock,
@@ -164,10 +165,25 @@ const LoginPage = ({ role = 'patient' }) => {
   const { t } = useTranslation();
   const tokenClientRef = useRef(null);
 
+  // Oturumu düşen kullanıcı buraya `?expired=1&next=/tr/crm/patients` ile
+  // geliyor. `next` adres çubuğundan geldiği için doğrulanıyor: yalnız bu
+  // sitenin içindeki yollar kabul ediliyor (bkz. guvenliDonusYolu).
+  const sorgu = new URLSearchParams(location.search || '');
+  const oturumDoldu = sorgu.get('expired') === '1';
+  const donusYolu = guvenliDonusYolu(sorgu.get('next'));
+
+  useEffect(() => {
+    if (!oturumDoldu) return;
+    notify({
+      type: 'info',
+      message: t('auth.sessionExpired', 'Your session ended. Please sign in again.'),
+    });
+  }, [oturumDoldu, notify, t]);
+
   // Redirect already-authenticated users away from login pages
   useEffect(() => {
     if (user) {
-      navigate(getRedirectForRole(user?.role_id || user?.role || 'patient'), { replace: true });
+      navigate(donusYolu || getRedirectForRole(user?.role_id || user?.role || 'patient'), { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
@@ -325,7 +341,8 @@ const LoginPage = ({ role = 'patient' }) => {
         // Login never requires email verification — verification is register-only for patients/doctors
         notify({ type: 'success', message: t('auth.loginSuccess', 'Login successful') });
         // Redirect based on ACTUAL role from API — not the login page's assumed role
-        navigate(getRedirectFromLoginResult(res, config.redirectAfterLogin));
+        // Yarım kalan işe dönüş: kullanıcı nereden düştüyse oraya.
+        navigate(donusYolu || getRedirectFromLoginResult(res, config.redirectAfterLogin));
       } else if (currentPage === 'register') {
         // Müşteri kararı: kullanıcı @handle'ını kayıtta kendi seçer (zorunlu).
         if (!String(formData.username || '').trim()) {

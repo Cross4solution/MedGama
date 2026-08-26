@@ -300,7 +300,8 @@
     "resetLinkSent": "E-poçt qeydiyyatdadırsa, sıfırlama linki göndərildi.",
     "tooManyAttempts": "Çox sayda cəhd. Bir az gözləyib yenidən yoxlayın.",
     "invalidCredentialsDetail": "Yanlış məlumatlar. E-poçt və şifrənizi yoxlayın.",
-    "signInToContinue": "Davam etmək üçün daxil olun."
+    "signInToContinue": "Davam etmək üçün daxil olun.",
+    "sessionExpired": "Sessiyanız bitdi. Zəhmət olmasa yenidən daxil olun."
   },
   "aboutPage": {
     "heroDesc": "Xəstələri təcrübəli həkimlər və təsdiqlənmiş klinika/xəstəxanalarla eyni rəqəmsal platformada birləşdirən, dil və məkandan asılı olmayan sağlamlıq və tibbi turizm bazarı.",

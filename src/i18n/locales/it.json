@@ -300,7 +300,8 @@
     "resetLinkSent": "Se l'indirizzo esiste, è stato inviato un link per la reimpostazione.",
     "invalidCredentialsDetail": "Credenziali non valide. Controlla e-mail e password.",
     "signInToContinue": "Accedi per continuare.",
-    "tooManyAttempts": "Troppi tentativi. Attendi un momento e riprova."
+    "tooManyAttempts": "Troppi tentativi. Attendi un momento e riprova.",
+    "sessionExpired": "La tua sessione è terminata. Accedi di nuovo."
   },
   "aboutPage": {
     "heroDesc": "Un marketplace di salute e turismo medico, indipendente da lingua e posizione, che unisce pazienti, medici esperti e cliniche/ospedali verificati su un'unica piattaforma digitale.",

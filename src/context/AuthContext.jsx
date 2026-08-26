@@ -5,6 +5,8 @@ import { setNotificationSoundEnabled } from '../utils/notificationSound';
 import { useTranslation } from 'react-i18next';
 import useModalDavranisi from '../hooks/useModalDavranisi';
 import i18nOrnegi from '../i18n';
+import { cikisHedefi } from '../utils/oturumBitisi';
+import { LOCALES } from '../lib/locales';
 
 // Very light mock auth just for frontend flows
 const AuthContext = createContext(null);
@@ -509,16 +511,24 @@ export function AuthProvider({ children }) {
 
   // Listen for auth:logout event from API interceptor (token expired / 401)
   useEffect(() => {
-    const handleForceLogout = () => {
+    const handleForceLogout = (olay) => {
+      // Rol, hangi giriş sayfasına gidileceğini belirliyor (kliniğin girişi
+      // hastanınkinden ayrı). Kesişme noktası önemli: 401'i yakalayan yer
+      // depoyu zaten temizlemiş oluyor, o yüzden rolü olayla taşıyor. React
+      // durumu yalnız yedek — 401 anında henüz dolmamış olabiliyor.
+      const rolId = olay?.detail?.rolId || user?.role_id || user?.role || '';
+      const yol = window.location.pathname;
+
       clearLocalAuth();
-      // Redirect to home page on forced logout (401/token expire)
-      if (window.location.pathname !== '/') {
-        window.location.href = '/';
+
+      const hedef = cikisHedefi(yol, rolId, LOCALES);
+      if (yol !== hedef.split('?')[0]) {
+        window.location.href = hedef;
       }
     };
     window.addEventListener('auth:logout', handleForceLogout);
     return () => window.removeEventListener('auth:logout', handleForceLogout);
-  }, [clearLocalAuth]);
+  }, [clearLocalAuth, user]);
 
   return (
     <AuthContext.Provider value={value}>
