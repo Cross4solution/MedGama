@@ -43,10 +43,38 @@ class PatientRecord extends Model
 
     // ── Prunable (GDPR Art. 5(1)(e) — 10 year retention for health data) ──
 
+    /**
+     * Budama kuyruğu.
+     *
+     * İki yol var ve ikisi de gerekli:
+     *
+     *   1. Yumuşak silinmiş kayıt — on yıl sonra kalıcı siliniyor.
+     *   2. HESABINI SİLMİŞ hastanın kaydı — hasta silindikten on yıl sonra.
+     *
+     * İkincisi eksikti. Hesap silme tıbbi kayda dokunmuyor (klinik onu
+     * görmeye devam etmeli: kliniğin kendi saklama yükümlülüğü var, GDPR
+     * md. 17(3)(b) ve (h) silme hakkını burada sınırlıyor). Ama dokunmamak
+     * SÜRESİZ tutmak demek değil — saklama süresi dolduğunda kayıt gitmeli.
+     * Ölçüldüğünde silinen hesabın kayıtları hiçbir sayaca girmiyordu.
+     *
+     * Kliniğin görüşü bozulmuyor: kayıt on yıl boyunca listede kalıyor,
+     * yalnız sonunda kalıcı olarak siliniyor.
+     */
     public function prunable()
     {
-        return static::onlyTrashed()
-            ->where('deleted_at', '<=', now()->subYears(10));
+        $hastaSutunu = 'patient_id';
+
+        return static::withTrashed()
+            ->where(function ($q) use ($hastaSutunu) {
+                $q->where(function ($x) {
+                    $x->whereNotNull('deleted_at')
+                        ->where('deleted_at', '<=', now()->subYears(10));
+                })->orWhereIn($hastaSutunu, function ($alt) {
+                    $alt->select('id')->from('users')
+                        ->whereNotNull('deleted_at')
+                        ->where('deleted_at', '<=', now()->subYears(10));
+                });
+            });
     }
 
     // ── Dynamic Attributes ──

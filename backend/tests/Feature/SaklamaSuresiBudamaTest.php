@@ -150,4 +150,81 @@ class SaklamaSuresiBudamaTest extends TestCase
         $this->assertNotNull(User::withTrashed()->find($yeni->id), '2 yıllık kullanıcı erken silindi');
         $this->assertNull(User::withTrashed()->find($eski->id), '4 yıllık kullanıcı silinmedi');
     }
+
+    // ── Hesabını silmiş hastanın kayıtları ──────────────────────────────
+
+    public function test_hesabini_silen_hastanin_randevusu_hemen_gitmiyor(): void
+    {
+        /*
+         * Hesap silme tıbbi kayda DOKUNMUYOR ve dokunmamalı: klinik o kaydın
+         * kendi veri sorumlusu ve saklama yükümlülüğü var. GDPR md. 17(3)(b)
+         * ve (h) silme hakkını tam burada sınırlıyor.
+         *
+         * Yani hasta hesabını sildiği gün, kliniğin dosyası kaybolmaz.
+         */
+        [$hasta, $doktor] = $this->taraflar();
+
+        $randevu = Appointment::factory()->create([
+            'patient_id' => $hasta->id,
+            'doctor_id'  => $doktor->id,
+        ]);
+
+        $hasta->delete();
+        $this->budama();
+
+        $this->assertNotNull(
+            Appointment::withTrashed()->find($randevu->id),
+            'hasta hesabını siler silmez kliniğin tıbbi kaydı gitmiş',
+        );
+    }
+
+    public function test_hesabini_silen_hastanin_randevusu_on_yil_sonra_gidiyor(): void
+    {
+        /*
+         * Dokunmamak SÜRESİZ tutmak demek değil. Saklama süresi dolduğunda
+         * kayıt gitmeli — yoksa "saklama politikası" diye bir şey yok,
+         * yalnızca sonsuza dek biriken veri var.
+         *
+         * Ölçüldüğünde tam bu oluyordu: budama yalnız yumuşak silinmiş
+         * KAYDA bakıyordu, hesap silme ise kayda dokunmuyordu. İkisi
+         * birleşince silinen hesabın tıbbi kayıtları hiçbir sayaca
+         * girmiyordu.
+         */
+        [$hasta, $doktor] = $this->taraflar();
+
+        $randevu = Appointment::factory()->create([
+            'patient_id' => $hasta->id,
+            'doctor_id'  => $doktor->id,
+        ]);
+
+        $hasta->delete();
+        // Hasta on yıl önce silinmiş.
+        User::withTrashed()->where('id', $hasta->id)
+            ->update(['deleted_at' => now()->subYears(10)->subDay()]);
+
+        $this->budama();
+
+        $this->assertNull(
+            Appointment::withTrashed()->find($randevu->id),
+            'silinen hastanın randevusu on yıl sonra hâlâ duruyor',
+        );
+    }
+
+    public function test_yasayan_hastanin_kaydina_dokunulmuyor(): void
+    {
+        // En kritik güvence: sayaç YALNIZ silinmiş hesap için işliyor.
+        [$hasta, $doktor] = $this->taraflar();
+
+        $randevu = Appointment::factory()->create([
+            'patient_id' => $hasta->id,
+            'doctor_id'  => $doktor->id,
+        ]);
+
+        $this->budama();
+
+        $this->assertNotNull(
+            Appointment::find($randevu->id),
+            'hesabı duran hastanın randevusu silinmiş',
+        );
+    }
 }
