@@ -79,9 +79,14 @@ class MedStreamService
                 )
             )
             // Country filter (author's country field)
+            //
+            // TAM eşleşme. Sütun `varchar(5)` ve ISO kodu tutuyor
+            // (`GeoIpResolver` büyük harfe çeviriyor), yani alt dize aramanın
+            // anlamı yok — ve `LIKE '%..%'` hiçbir indeksi kullanamaz. Akışın
+            // her isteğinde kullanıcılar tablosu baştan sona taranıyordu.
             ->when($filters['country'] ?? null, fn($q, $v) =>
                 $q->whereHas('author', fn($uq) =>
-                    $uq->where('country', 'LIKE', '%' . $v . '%')
+                    $uq->where('country', mb_strtoupper((string) $v))
                 )
             )
             // State/eyalet filtresi (eyaleti olan ülkeler — ör. ABD)
@@ -123,7 +128,7 @@ class MedStreamService
                         // Fallback: aynı ülkedeki diğer update'ler de sonuç kümesine girsin
                         if ($geoCountry) {
                             $outer->orWhereHas('author', fn($uq) =>
-                                $uq->where('country', 'LIKE', '%' . $geoCountry . '%')
+                                $uq->where('country', mb_strtoupper((string) $geoCountry))
                             );
                         }
                     });
