@@ -3177,7 +3177,8 @@
     "delivered": "Your message has been delivered.",
     "sendFailed": "Failed to send message.",
     "maxFilesAllowed": "Maximum {{count}} files allowed.",
-    "fileTooLarge": "\"{{name}}\" exceeds 5 MB limit."
+    "fileTooLarge": "\"{{name}}\" exceeds 5 MB limit.",
+    "deliveredWithRejected": "Message sent, but these files were not delivered because their type is not supported: {{names}}"
   },
   "billing": {
     "statusPaid": "Paid",

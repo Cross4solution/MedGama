@@ -9,9 +9,11 @@ use App\Models\Clinic;
 use App\Models\ContactMessage;
 use App\Models\ContactMessageAttachment;
 use App\Models\User;
+use App\Services\EncryptedFileStorage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
 class ContactMessageController extends Controller
@@ -62,16 +64,32 @@ class ContactMessageController extends Controller
 
         // Handle attachments
         $attachments = [];
+        // Elenen dosyalar ARTIK sessizce yutulmuyor.
+        //
+        // Tür listesinde olmayan bir dosya `continue` ile atılıyordu ve istek
+        // 201 dönüyordu: gönderen, raporunu ilettiğini sanıyor, alıcı ekte
+        // hiçbir şey görmüyor, ortada hata da yok. Hangi dosyanın neden
+        // alınmadığı yanıtta söyleniyor.
+        $elenen = [];
+
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $mime = $file->getMimeType();
                 if (!in_array($mime, self::$allowedMimes, true)) {
-                    continue; // skip disallowed types silently
+                    $elenen[] = [
+                        'file_name' => $file->getClientOriginalName(),
+                        'mime_type' => $mime,
+                        'reason'    => 'unsupported_type',
+                    ];
+                    continue;
                 }
 
-                $ext      = \App\Support\DosyaUzantisi::guvenli($file, 'bin');
-                $filename = Str::uuid() . '.' . $ext;
-                $path     = $file->storeAs('contact-messages/' . $message->id, $filename, 'public');
+                // Herkese açık disk DEĞİL. Bu ekler hastadan geliyor ve bir
+                // sağlık sorusuna iliştirilmiş rapor ya da fotoğraf olabiliyor;
+                // `public` diskte kalıcı ve denetimsiz bir adres oluşuyordu.
+                // Sohbet ekleri için verilen kararın aynısı (bkz. ChatService).
+                $path = app(EncryptedFileStorage::class)
+                    ->storeUploaded($file, 'contact-messages/' . $message->id);
 
                 $attachments[] = ContactMessageAttachment::create([
                     'contact_message_id' => $message->id,
@@ -100,6 +118,9 @@ class ContactMessageController extends Controller
         return response()->json([
             'message'  => 'Message sent successfully.',
             'data'     => $this->formatMessage($message),
+            // Boş dizi de dönüyor: istemcinin alanın varlığına göre dal
+            // seçmesi gerekmesin.
+            'rejected_attachments' => $elenen,
         ], 201);
     }
 
@@ -219,12 +240,19 @@ class ContactMessageController extends Controller
         $message    = $this->erisebilirMesaj($request, $id);
         $attachment = ContactMessageAttachment::where('contact_message_id', $message->id)->findOrFail($attachmentId);
 
-        $disk = Storage::disk('public');
-        if (!$disk->exists($attachment->file_path)) {
+        $files = app(EncryptedFileStorage::class);
+        $icerik = $files->read($attachment->file_path);
+
+        if ($icerik === null) {
             return response()->json(['error' => 'File not found'], 404);
         }
 
-        return $disk->download($attachment->file_path, $attachment->file_name);
+        return response($icerik, 200, [
+            'Content-Type'        => $attachment->mime_type ?: 'application/octet-stream',
+            'Content-Disposition' => \App\Support\DosyaBasligi::uret('inline', $attachment->file_name),
+            'Content-Length'      => (string) strlen($icerik),
+            'Cache-Control'       => 'no-store, private',
+        ]);
     }
 
     /**
@@ -265,14 +293,57 @@ class ContactMessageController extends Controller
             'body'          => $msg->body,
             'is_read'       => $msg->is_read,
             'read_at'       => $msg->read_at?->toISOString(),
-            'attachments'   => $msg->attachments->map(fn($a) => [
+            'attachments'   => $msg->attachments->map(fn ($a) => [
                 'id'        => $a->id,
                 'file_name' => $a->file_name,
-                'file_path' => '/storage/' . $a->file_path,
+                // Eskiden `/storage/<yol>` dönüyordu ve arayüz onu doğrudan
+                // <img src> olarak kullanıyordu — yetkili indirme ucu vardı ama
+                // kimse ondan geçmiyordu. Artık kısa süreli imzalı bağlantı:
+                // imzalı olması şart, çünkü <img src> Authorization gönderemez.
+                'file_path' => self::ekBaglantisi($msg, $a),
                 'mime_type' => $a->mime_type,
                 'file_size' => $a->file_size,
             ]),
             'created_at'    => $msg->created_at?->toISOString(),
         ];
+    }
+
+    /**
+     * GET /contact-messages/{id}/attachment/{attachmentId} — imzalı, süreli.
+     *
+     * Kimlik kontrolü yok; imza taşıyor. Bağlantı, mesajı görmeye YETKİLİ
+     * kullanıcıya dönen yanıtta üretiliyor (`formatMessage`), dolayısıyla
+     * imzanın varlığı yetkinin bir kez doğrulanmış olması demek.
+     */
+    public function attachmentSigned(string $id, string $attachmentId)
+    {
+        $ek = ContactMessageAttachment::where('contact_message_id', $id)->findOrFail($attachmentId);
+
+        $icerik = app(EncryptedFileStorage::class)->read($ek->file_path);
+        abort_if($icerik === null, 404, 'File not found.');
+
+        return response($icerik, 200, [
+            'Content-Type'        => $ek->mime_type ?: 'application/octet-stream',
+            'Content-Disposition' => \App\Support\DosyaBasligi::uret('inline', $ek->file_name),
+            'Content-Length'      => (string) strlen($icerik),
+            'Cache-Control'       => 'no-store, private',
+        ]);
+    }
+
+    /** Ek için 30 dakikalık imzalı bağlantı. */
+    private static function ekBaglantisi(ContactMessage $msg, ContactMessageAttachment $ek): string
+    {
+        // Eski kayıtlar herkese açık diskte duruyor; yolları olduğu gibi
+        // geçiliyor ki geçmiş kutular kırılmasın. Yeni hiçbir ek oraya düşmüyor.
+        if (str_starts_with($ek->file_path, 'contact-messages/')
+            && !Storage::disk('public')->exists($ek->file_path)) {
+            return URL::temporarySignedRoute(
+                'contact-messages.attachment',
+                now()->addMinutes(30),
+                ['id' => $msg->id, 'attachmentId' => $ek->id],
+            );
+        }
+
+        return '/storage/' . $ek->file_path;
     }
 }

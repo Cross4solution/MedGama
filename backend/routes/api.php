@@ -1019,6 +1019,13 @@ Route::prefix('support')->middleware(['auth:sanctum'])->group(function () {
 | Contact Messages — Patient → Clinic/Doctor inquiries (with attachments)
 |--------------------------------------------------------------------------
 */
+// İletişim mesajı eki: private+şifreli diskten, KISA SÜRELİ İMZALI bağlantıyla.
+// Sohbet ekleriyle aynı gerekçe — arayüz eki <img src> ile gösteriyor ve
+// <img> Authorization başlığı gönderemez. Yetki, bağlantı ÜRETİLİRKEN yapılıyor:
+// bağlantı yalnız mesajı görmeye yetkili kullanıcıya dönen yanıtta oluşuyor.
+Route::get('/contact-messages/{id}/attachment/{attachmentId}', [ContactMessageController::class, 'attachmentSigned'])
+    ->name('contact-messages.attachment')->middleware('signed');
+
 Route::prefix('contact-messages')->middleware('auth:sanctum')->group(function () {
     Route::post('/', [ContactMessageController::class, 'store']);
     Route::get('/inbox', [ContactMessageController::class, 'inbox']);

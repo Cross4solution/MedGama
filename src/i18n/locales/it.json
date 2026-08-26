@@ -3243,7 +3243,8 @@
     "delivered": "Il tuo messaggio è stato consegnato.",
     "sendFailed": "Impossibile inviare il messaggio.",
     "maxFilesAllowed": "Massimo {{count}} file consentiti.",
-    "fileTooLarge": "\"{{name}}\" supera il limite di 5 MB."
+    "fileTooLarge": "\"{{name}}\" supera il limite di 5 MB.",
+    "deliveredWithRejected": "Messaggio inviato, ma questi file non sono stati consegnati perché il tipo non è supportato: {{names}}"
   },
   "billing": {
     "statusPaid": "Pagata",

@@ -3190,7 +3190,8 @@
     "delivered": "Mesajınız kliniğe iletildi.",
     "sendFailed": "Mesaj gönderilemedi.",
     "maxFilesAllowed": "En fazla {{count}} dosya ekleyebilirsiniz.",
-    "fileTooLarge": "\"{{name}}\" 5 MB sınırını aşıyor."
+    "fileTooLarge": "\"{{name}}\" 5 MB sınırını aşıyor.",
+    "deliveredWithRejected": "Mesaj iletildi, ancak şu dosyalar desteklenmeyen türde olduğu için gönderilmedi: {{names}}"
   },
   "billing": {
     "statusPaid": "Ödendi",

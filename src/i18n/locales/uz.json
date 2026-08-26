@@ -1124,5 +1124,8 @@
     "editTitle": "Subtitrlarni tahrirlash",
     "empty": "Bu videoda tahrirlanadigan subtitr yoʻq.",
     "jump": "Shu daqiqaga oʻtish"
+  },
+  "message": {
+    "deliveredWithRejected": "Xabar yuborildi, ammo bu fayllar qo'llab-quvvatlanmaydigan turda bo'lgani uchun yuborilmadi: {{names}}"
   }
 }

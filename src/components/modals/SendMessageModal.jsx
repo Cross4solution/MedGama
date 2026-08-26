@@ -66,11 +66,22 @@ export default function SendMessageModal({ open, onClose, targetId, targetName, 
       if (subject.trim()) fd.append('subject', subject.trim());
       files.forEach(f => fd.append('attachments[]', f));
 
-      await contactMessageAPI.send(fd);
+      const yanit = await contactMessageAPI.send(fd);
       setSent(true);
+
+      // Sunucu, tür listesinde olmayan dosyaları almıyor. Eskiden bunu hiç
+      // söylemiyordu: istek 201 dönüyor, ekran "iletildi" diyor, ek gitmemiş
+      // oluyordu. Gönderen raporunu ilettiğini sanıyordu.
+      const elenen = yanit?.rejected_attachments ?? yanit?.data?.rejected_attachments ?? [];
+
       notify({
-        type: 'success',
-        message: t('message.delivered'),
+        type: elenen.length ? 'warning' : 'success',
+        message: elenen.length
+          ? t('message.deliveredWithRejected', {
+              names: elenen.map((e) => e.file_name).join(', '),
+              defaultValue: 'Mesaj iletildi, ancak şu dosyalar desteklenmeyen türde olduğu için gönderilmedi: {{names}}',
+            })
+          : t('message.delivered'),
       });
     } catch (err) {
       const msg = err?.data?.message;

@@ -3283,7 +3283,8 @@
     "delivered": "Mesajınız çatdırıldı.",
     "sendFailed": "Mesaj göndərmək alınmadı.",
     "maxFilesAllowed": "Maksimum {{count}} fayla icazə verilir.",
-    "fileTooLarge": "\"{{name}}\" 5 MB limitini aşır."
+    "fileTooLarge": "\"{{name}}\" 5 MB limitini aşır.",
+    "deliveredWithRejected": "Mesaj göndərildi, lakin bu fayllar dəstəklənməyən növdə olduğu üçün göndərilmədi: {{names}}"
   },
   "billing": {
     "statusPaid": "Ödənilib",
