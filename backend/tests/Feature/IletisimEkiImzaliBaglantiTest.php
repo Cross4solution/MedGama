@@ -137,7 +137,10 @@ class IletisimEkiImzaliBaglantiTest extends TestCase
         [$gonderen, , $mesaj] = $this->ekliMesaj(eskiBicim: true);
         $baglanti = $this->baglanti($gonderen, $mesaj);
 
-        $this->get(preg_replace('/signature=./', 'signature=0', $baglanti, 1))
+        // İmzayı KESİN olarak boz: tek karakteri '0' yapmak, o karakter zaten
+        // '0' ise adresi hiç değiştirmiyor ve ölçüt kendiliğinden kararsız
+        // oluyordu. Sonuna ek yapmak her durumda imzayı geçersiz kılar.
+        $this->get(preg_replace('/(signature=[a-f0-9]+)/', '$1ff', $baglanti, 1))
             ->assertStatus(403);
     }
 

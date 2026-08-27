@@ -37,7 +37,7 @@ class VeritabaniYedegi extends Command
 {
     protected $signature = 'db:yedek
         {--dogrula : Yedeği geçici bir veritabanına geri yükleyip doğrular}
-        {--tut=7 : Kaç günlük yedek saklanacak}';
+        {--tut= : Kaç günlük yedek saklanacak (varsayılan: config/yedek.php)}';
 
     protected $description = 'Veritabanı yedeği alır; --dogrula ile geri yükleme provası yapar';
 
@@ -51,7 +51,9 @@ class VeritabaniYedegi extends Command
             return self::FAILURE;
         }
 
-        $diskAdi = config('yedek.disk', env('YEDEK_DISK', 'local'));
+        // `env()` DEĞİL: `config:cache` sonrası `config/` dışındaki env()
+        // çağrıları null döner ve yedek sessizce yanlış diske giderdi.
+        $diskAdi = config('yedek.disk');
         $disk = Storage::disk($diskAdi);
 
         $dosyaAdi = sprintf('yedek/medagama-%s.sql', now()->format('Y-m-d-His'));
@@ -79,7 +81,7 @@ class VeritabaniYedegi extends Command
             return self::FAILURE;
         }
 
-        $this->eskileriSil($disk, (int) $this->option('tut'));
+        $this->eskileriSil($disk, (int) ($this->option('tut') ?? config('yedek.tut_gun')));
 
         return self::SUCCESS;
     }
