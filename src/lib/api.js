@@ -779,7 +779,7 @@ export const adminAPI = {
     api.get(`/admin/verification-requests/${id}/document`, { responseType: 'blob' }),
   // Review moderation (Doc §10)
   reviews: (params) => api.get('/admin/reviews', { params }),
-  reviewStats: () => api.get('/admin/reviews/stats'),
+  reviewStats: (params) => api.get('/admin/reviews/stats', { params }),
   approveReview: (id) => api.put(`/admin/reviews/${id}/approve`),
   rejectReview: (id, note) => api.put(`/admin/reviews/${id}/reject`, { note }),
   hideReview: (id, note) => api.put(`/admin/reviews/${id}/hide`, { note }),

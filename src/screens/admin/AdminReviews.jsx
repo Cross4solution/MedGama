@@ -311,12 +311,15 @@ export default function AdminReviews() {
     setLoading(false);
   }, [filter, page, search, yorumTuru]);
 
+  // Sayaçlar sekmeye BAĞLI: klinik sekmesindeyken klinik yorumları sayılır.
+  // Daha önce bağımlılık listesi boştu ve uç tür bilmiyordu; klinik
+  // sekmesinde doktor rakamları görünüyordu.
   const fetchStats = useCallback(async () => {
     try {
-      const res = await adminAPI.reviewStats();
+      const res = await adminAPI.reviewStats({ type: yorumTuru });
       setStats(res?.data || res || {});
     } catch {}
-  }, []);
+  }, [yorumTuru]);
 
   useEffect(() => { fetchReviews(); }, [fetchReviews]);
   useEffect(() => { fetchStats(); }, [fetchStats]);

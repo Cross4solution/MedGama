@@ -63,6 +63,16 @@ class ClinicReview extends Model
         return $query->where('moderation_status', 'approved');
     }
 
+    public function scopeRejected($query)
+    {
+        return $query->where('moderation_status', 'rejected');
+    }
+
+    public function scopeHidden($query)
+    {
+        return $query->where('moderation_status', 'hidden');
+    }
+
     // ── Relationships ──
 
     public function clinic()

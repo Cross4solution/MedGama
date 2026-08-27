@@ -514,9 +514,11 @@ class SuperAdminController extends Controller
     /**
      * GET /api/admin/reviews/stats — Review moderation statistics
      */
-    public function reviewStats(): JsonResponse
+    public function reviewStats(Request $request): JsonResponse
     {
-        return response()->json($this->superAdminService->getReviewStats());
+        $tur = $request->query('type') === 'clinic' ? 'clinic' : 'doctor';
+
+        return response()->json($this->superAdminService->getReviewStats($tur));
     }
 
     /**

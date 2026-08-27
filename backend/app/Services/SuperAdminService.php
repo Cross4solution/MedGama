@@ -1091,13 +1091,24 @@ class SuperAdminService
     /**
      * Get review moderation statistics.
      */
-    public function getReviewStats(): array
+    /**
+     * Denetim sayaçları.
+     *
+     * Klinik yorumu denetimi doktor yorumunun birebir karşılığı olarak
+     * eklenmişti ama sayaçlar eklenmemişti: her iki sekmede de DOKTOR
+     * rakamları görünüyordu. Klinik sekmesinde bekleyen bir yorum varken
+     * sayaç "0" diyor, yönetici o sekmeyi hiç açmıyordu — moderasyondan
+     * geçmemiş bir yorum sessizce bekliyor kalıyordu.
+     */
+    public function getReviewStats(string $tur = 'doctor'): array
     {
+        $sorgu = fn () => $tur === 'clinic' ? ClinicReview::query() : DoctorReview::query();
+
         return [
-            'pending'  => DoctorReview::pending()->count(),
-            'approved' => DoctorReview::approved()->count(),
-            'rejected' => DoctorReview::rejected()->count(),
-            'hidden'   => DoctorReview::hidden()->count(),
+            'pending'  => $sorgu()->pending()->count(),
+            'approved' => $sorgu()->approved()->count(),
+            'rejected' => $sorgu()->rejected()->count(),
+            'hidden'   => $sorgu()->hidden()->count(),
         ];
     }
 
