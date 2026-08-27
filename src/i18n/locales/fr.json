@@ -2662,7 +2662,9 @@
     "block": "Bloquer",
     "unblock": "Débloquer",
     "signedInAs": "Vous êtes connecté en tant que",
-    "signInToPanel": "Se connecter au panneau d'administration"
+    "signInToPanel": "Se connecter au panneau d'administration",
+    "readOnlyTitle": "Compte en lecture seule.",
+    "readOnlyText": "Vous pouvez parcourir le panneau ; la création, la modification et la suppression sont désactivées."
   },
   "errors": {
     "notFound_title": "Page non trouvée",

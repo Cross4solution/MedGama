@@ -2662,7 +2662,9 @@
     "block": "Bloquear",
     "unblock": "Desbloquear",
     "signedInAs": "Has iniciado sesión como",
-    "signInToPanel": "Iniciar sesión en el panel"
+    "signInToPanel": "Iniciar sesión en el panel",
+    "readOnlyTitle": "Cuenta de solo lectura.",
+    "readOnlyText": "Puede navegar por el panel; crear, editar y eliminar están deshabilitados."
   },
   "errors": {
     "notFound_title": "Página no encontrada",

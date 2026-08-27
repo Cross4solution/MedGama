@@ -2995,7 +2995,9 @@
     "block": "Block",
     "unblock": "Unblock",
     "signedInAs": "You are signed in as",
-    "signInToPanel": "Sign in to admin panel"
+    "signInToPanel": "Sign in to admin panel",
+    "readOnlyTitle": "View-only account.",
+    "readOnlyText": "You can browse the panel; creating, editing and deleting are disabled."
   },
   "errors": {
     "notFound_title": "Page Not Found",

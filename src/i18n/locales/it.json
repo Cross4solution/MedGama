@@ -2662,7 +2662,9 @@
     "block": "Blocca",
     "unblock": "Sblocca",
     "signedInAs": "Hai effettuato l'accesso come",
-    "signInToPanel": "Accedi al pannello admin"
+    "signInToPanel": "Accedi al pannello admin",
+    "readOnlyTitle": "View-only account.",
+    "readOnlyText": "You can browse the panel; creating, editing and deleting are disabled."
   },
   "errors": {
     "notFound_title": "Pagina non trovata",

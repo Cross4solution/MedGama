@@ -3008,7 +3008,9 @@
     "block": "Engelle",
     "unblock": "Engeli kaldır",
     "signedInAs": "Şu hesapla girdiniz",
-    "signInToPanel": "Yönetim Paneline Giriş"
+    "signInToPanel": "Yönetim Paneline Giriş",
+    "readOnlyTitle": "Görüntüleme hesabı.",
+    "readOnlyText": "Paneli gezebilirsiniz; kayıt ekleme, değiştirme ve silme kapalıdır."
   },
   "errors": {
     "notFound_title": "Sayfa Bulunamadı",

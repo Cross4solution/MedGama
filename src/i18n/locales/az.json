@@ -2702,7 +2702,9 @@
     "block": "Blokla",
     "unblock": "Bloku aç",
     "signedInAs": "Bu hesabla daxil olmusunuz",
-    "signInToPanel": "İdarə panelinə giriş"
+    "signInToPanel": "İdarə panelinə giriş",
+    "readOnlyTitle": "View-only account.",
+    "readOnlyText": "You can browse the panel; creating, editing and deleting are disabled."
   },
   "errors": {
     "notFound_title": "Səhifə tapılmadı",

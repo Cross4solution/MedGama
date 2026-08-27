@@ -385,8 +385,15 @@ const AdminLayout = ({ children }) => {
         </div>
       </NavLink>
 
-      {/* Navigation — flex-1 but no overflow scroll; items fit naturally */}
-      <nav className="flex-1 px-3 pt-3 pb-1 space-y-4 min-h-0">
+      {/*
+        Menü kendi içinde kayıyor.
+        `min-h-0` kutunun içeriğinden kısa olmasına izin veriyor, ama taşan
+        kısım gizlenmediği için menü maddeleri alttaki "Ana Site" bloğunun
+        ÜSTÜNE biniyordu: kısa ekranda iki satır üst üste okunuyordu.
+        Eski yorum "maddeler doğal olarak sığar" diyordu; on üç bölümle ve
+        dizüstü ekranıyla sığmıyor.
+      */}
+      <nav className="flex-1 min-h-0 overflow-y-auto px-3 pt-3 pb-1 space-y-4">
         {NAV_SECTIONS.map((section) => (
           <div key={section.titleKey}>
             <p className="px-3 mb-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t(section.titleKey)}</p>
@@ -520,8 +527,8 @@ const AdminLayout = ({ children }) => {
               <div className="mx-4 lg:mx-6 mb-4 flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
                 <Eye className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-amber-800">
-                  <span className="font-semibold">Görüntüleme hesabı.</span>{' '}
-                  Paneli gezebilirsiniz; kayıt ekleme, değiştirme ve silme kapalıdır.
+                  <span className="font-semibold">{t('admin.readOnlyTitle', 'View-only account.')}</span>{' '}
+                  {t('admin.readOnlyText', 'You can browse the panel; creating, editing and deleting are disabled.')}
                 </p>
               </div>
             )}

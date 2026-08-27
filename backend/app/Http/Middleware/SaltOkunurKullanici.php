@@ -48,9 +48,16 @@ class SaltOkunurKullanici
             }
         }
 
+        // Mesaj isteğin diline göre: panel yabancı bir müşteriye
+        // gösterildiğinde arayüz İngilizceyken hatanın Türkçe çıkması,
+        // hatayı okunamaz kılıyordu.
+        $turkce = app()->getLocale() === 'tr';
+
         return response()->json([
             'success' => false,
-            'message' => 'Bu hesap yalnızca görüntüleme içindir; değişiklik yapamaz.',
+            'message' => $turkce
+                ? 'Bu hesap yalnızca görüntüleme içindir; değişiklik yapamaz.'
+                : 'This account is view-only and cannot make changes.',
             'code'    => 'SALT_OKUNUR_HESAP',
         ], 403);
     }

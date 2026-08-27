@@ -3030,7 +3030,9 @@
     "block": "Sperren",
     "unblock": "Entsperren",
     "signedInAs": "Sie sind angemeldet als",
-    "signInToPanel": "Beim Admin-Panel anmelden"
+    "signInToPanel": "Beim Admin-Panel anmelden",
+    "readOnlyTitle": "Nur-Lese-Konto.",
+    "readOnlyText": "Sie können das Panel durchsuchen; Anlegen, Bearbeiten und Löschen sind deaktiviert."
   },
   "errors": {
     "notFound_title": "Seite nicht gefunden",

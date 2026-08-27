@@ -1090,7 +1090,9 @@
     "reviews": {
       "doctorReviews": "Shifokor sharhlari",
       "clinicReviews": "Klinika sharhlari"
-    }
+    },
+    "readOnlyTitle": "View-only account.",
+    "readOnlyText": "You can browse the panel; creating, editing and deleting are disabled."
   },
   "errors": {
     "notFound_title": "Sahifa topilmadi",
