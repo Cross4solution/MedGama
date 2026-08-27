@@ -95,7 +95,13 @@ return [
                     //
                     // Varsayılan davranış değişmiyor: anahtar kurulmadıkça
                     // eskisi gibi çalışıyor.
-                    if (env('DB_SSL_DISABLED')) {
+                    //
+                    // ÜRETİMDE DİNLENMİYOR. Yerel için konulmuş bir kolaylık,
+                    // yanlış konmuş tek bir ortam değişkeniyle canlı hasta
+                    // verisini şifresiz bir bağlantıya taşıyabilirdi. Anahtar
+                    // üretimde sessizce yok sayılıyor: kolaylık yerinde kalıyor,
+                    // ayak kurşunlama yolu kapanıyor.
+                    if (env('DB_SSL_DISABLED') && env('APP_ENV') !== 'production') {
                         return null;
                     }
 
