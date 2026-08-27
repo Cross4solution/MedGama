@@ -780,6 +780,9 @@ export const adminAPI = {
   // Review moderation (Doc §10)
   reviews: (params) => api.get('/admin/reviews', { params }),
   reviewStats: (params) => api.get('/admin/reviews/stats', { params }),
+  // Tanıtım kipi: panel kendini salt okunur bir hesapla açar. Kip kapalıyken
+  // uç 404 döner ve arayüz normal giriş ekranına düşer.
+  demoYoneticiGirisi: () => api.get('/demo-yonetici-girisi'),
   approveReview: (id) => api.put(`/admin/reviews/${id}/approve`),
   rejectReview: (id, note) => api.put(`/admin/reviews/${id}/reject`, { note }),
   hideReview: (id, note) => api.put(`/admin/reviews/${id}/hide`, { note }),

@@ -55,6 +55,22 @@ services:
       # tanımsız anahtar ucu tümüyle kapatıyor (config/app.php'ye bak).
       - key: ALLOW_DESTRUCTIVE_INIT
         value: false
+      # Yönetim panelinin ŞİFRESİZ açılması — tanıtım için, bilerek istendi.
+      #
+      # Açıkken `/admin` adresine ulaşan HERKES panele girer: hasta kayıtları,
+      # faturalar, kullanıcı listesi. Girdiği oturum SALT OKUNUR olduğu için
+      # hiçbir şeyi değiştiremez, ama GÖRÜR.
+      #
+      # Burada `value:` YAZILMIYOR, bilerek: değer panelden yönetilmeli ki
+      # tanıtım bittiğinde tek tıkla, dağıtım beklemeden kapatılabilsin.
+      # `value: false` yazsaydık panelden açılan kip bir sonraki dağıtımda
+      # kendiliğinden kapanır ve kimse nedenini anlamazdı; `value: true`
+      # yazsaydık panelden kapatmak işe yaramazdı.
+      #
+      # Açmak için panelde DEMO_ADMIN_AUTO_LOGIN=true. Kapatmak için silin.
+      # Değişken tanımsızsa kapalıdır — unutmanın bedeli açık kalmak değil.
+      - key: DEMO_ADMIN_AUTO_LOGIN
+        sync: false
       # Canlı altyazı (Deepgram, ABD). Görüşmenin sesi üçüncü taraf bir bulutta
       # işlenir; KVKK Md. 9 / HIPAA gereği BAA ve açık rıza olmadan açılamaz.
       # Varsayılanı zaten `false` ama üçüncü kez aynı hatayı yapmıyoruz:

@@ -24,6 +24,33 @@ return [
     'login_key' => env('DEMO_LOGIN_KEY', ''),
 
     /*
+     * Yönetim panelinin ŞİFRESİZ açılması.
+     *
+     * Müşteriye paneli göstermek için istendi ve bilerek açıldı. Ne olduğu
+     * konusunda kendimizi kandırmayalım: açıkken `/admin` adresine giren
+     * HERKES — bağlantıyı bulan, tarayıcı geçmişinden görene, arama
+     * motorundan gelene kadar — hasta kayıtlarını, faturaları ve kullanıcı
+     * listesini görür.
+     *
+     * Zararı sınırlayan üç şey:
+     *
+     *   1. Giriş SALT OKUNUR hesapla yapılıyor: hiçbir kayıt silinemez,
+     *      değiştirilemez, eklenemez.
+     *   2. Varsayılan KAPALI ve panelden yönetiliyor: tek değişkenle,
+     *      dağıtım beklemeden kapanır.
+     *   3. Panel arama motorlarına kapalı (`noindex`) çıkıyor.
+     *
+     * Kalıcı bir düzen değil, tanıtım süresince açık kalacak bir kapı.
+     */
+    'yonetici_otomatik_giris' => filter_var(env('DEMO_ADMIN_AUTO_LOGIN', false), FILTER_VALIDATE_BOOLEAN),
+
+    /*
+     * Otomatik girişin kullandığı hesap. Bu adres bu mekanizmaya ayrılmıştır;
+     * gerçek bir yöneticinin adresi yazılırsa o hesap herkese açılır.
+     */
+    'yonetici_hesabi' => env('DEMO_ADMIN_EMAIL', 'demo-yonetici@medagama.test'),
+
+    /*
      * Demo hesaplarının e-postaları.
      *
      * Bu adresler bu mekanizmaya ayrılmıştır: hesap yoksa kendisi oluşturur,

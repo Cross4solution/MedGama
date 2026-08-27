@@ -287,6 +287,7 @@ const AdminLayout = ({ children }) => {
   }
 
   // ── Gate: show login if not authenticated or not an admin ──
+  //
   if (!user || !isAdmin) return <AdminLoginGate />;
 
   // ── NavLink class builder ──

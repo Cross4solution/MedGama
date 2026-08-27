@@ -76,6 +76,16 @@ Route::get('/demo-login/{rol}', \App\Http\Controllers\Api\DemoLoginController::c
     ->middleware('throttle:20,1');
 
 /*
+| Yönetim panelinin şifresiz açılması — tanıtım için, bilerek.
+|
+| `DEMO_ADMIN_AUTO_LOGIN` tanımlı değilse 404. Açıkken verdiği oturum SALT
+| OKUNUR bir hesaba ait; gelen kişi hiçbir kaydı değiştiremez. Ayrıntı ve
+| kapatma yordamı: DemoYoneticiGirisiController.
+*/
+Route::get('/demo-yonetici-girisi', \App\Http\Controllers\Api\DemoYoneticiGirisiController::class)
+    ->middleware('throttle:20,1');
+
+/*
 | Teşhis uçları KALDIRILDI.
 |
 | `/system/mail-status`, `/system/broadcast-status` ve `/system/mail-preview`

@@ -7985,6 +7985,23 @@
                 ]
             }
         },
+        "/api/demo-yonetici-girisi": {
+            "get": {
+                "summary": "api/demo-yonetici-girisi",
+                "tags": [
+                    "demo-yonetici-girisi"
+                ],
+                "security": [],
+                "responses": {
+                    "200": {
+                        "description": "Başarılı"
+                    },
+                    "429": {
+                        "description": "Hız sınırı aşıldı"
+                    }
+                }
+            }
+        },
         "/api/doctor-profile": {
             "get": {
                 "summary": "DoctorProfileController::show",
