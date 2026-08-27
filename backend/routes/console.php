@@ -71,3 +71,20 @@ Schedule::command('queue:prune-batches', ['--hours' => 168])
 Schedule::command('auth:clear-resets')
     ->dailyAt('03:40')
     ->runInBackground();
+
+// ── Veritabanı yedeği ───────────────────────────────────────────────────
+//
+// Yedekleme tarafında hiçbir şey yoktu. Hasta verisi tutan bir sistemde bu,
+// diğer bütün risklerden ağır: kaybedilen veri test edilerek geri gelmiyor.
+//
+// Budamalardan SONRA çalışıyor (03:40 → 04:10) ki yedek, o gece silinmiş
+// kayıtları içermesin — aksi halde "silindi" dediğimiz veri yedekte yaşamaya
+// devam eder ve saklama politikası kâğıt üstünde kalır.
+//
+// Dosyanın sunucu DIŞINA taşınması ayrı bir iştir; komut hedef yerel diskse
+// uyarıyor. Yedeğin aynı makinede durması, makineyi kaybettiren arızada
+// hiçbir işe yaramaz.
+Schedule::command('db:yedek')
+    ->dailyAt('04:10')
+    ->withoutOverlapping()
+    ->runInBackground();
