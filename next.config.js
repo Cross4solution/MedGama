@@ -170,27 +170,15 @@ const nextConfig = {
       },
     ];
 
-    // HSTS AÇIK BİR ANAHTARLA — `NODE_ENV` ile değil.
+    // HSTS BURADA YOK — `vercel.json` gönderiyor.
     //
-    // Tarayıcıya "bu alan adına bir daha asla http ile bağlanma" diyor ve bunu
-    // aylarca hatırlıyor.
+    // İlk sürüm buraya da ekliyordu ve bu yanlıştı: iki `Strict-Transport-
+    // Security` başlığı gidince hangisinin geçerli olduğu belirsizleşiyor
+    // (süreleri ve `preload` durumları farklı). Tek kaynak `vercel.json`.
     //
-    // İlk sürüm `NODE_ENV === 'production'` diye kapılıyordu ve bu YANLIŞTI:
-    // `next start` üretim kipinde çalışıyor, yani yerel sunucu da başlığı
-    // gönderiyordu. Tarayıcılar HSTS'i IP adreslerine uygulamıyor (bu yüzden
-    // 127.0.0.1 kurtuluyor), ama `localhost` üzerinden çalışan biri geliştirme
-    // ortamını kalıcı olarak https'e kilitlerdi — geri alması da zor.
-    //
-    // Ölçüldü: yerel `next start` başlığı gönderiyordu.
-    //
-    // `preload` BİLEREK yok: tarayıcı üreticilerinin listesine girmek geri
-    // dönüşü çok zor bir taahhüt ve alan adı kararı verilmeden yapılmamalı.
-    if (process.env.HSTS_ETKIN === '1') {
-      guvenlikBasliklari.push({
-        key: 'Strict-Transport-Security',
-        value: 'max-age=31536000; includeSubDomains',
-      });
-    }
+    // Buradaki başlıklar Vercel DIŞINDA barındırılırsa devreye giren yedek:
+    // `vercel.json` o zaman hiç uygulanmaz ve site sessizce korumasız kalırdı.
+    // Aynı değerler iki kez gitse de zararsız; çelişen bir değer yok.
 
     return [
       {

@@ -49,24 +49,36 @@ test('telesağlığın kamerası ve mikrofonu KAPATILMAMIŞ', () => {
   assert.match(yorumsuz, /geolocation=\(self\)/, 'konum kapatılmış: "yakınımdakiler" çalışmaz');
 });
 
-test('HSTS yerel ortama sızmıyor', () => {
+test('HSTS tek yerden gönderiliyor', () => {
   /*
-   * HSTS tarayıcıya "bu alan adına bir daha http ile bağlanma" diyor ve
-   * aylarca hatırlıyor. İlk sürüm `NODE_ENV === 'production'` diye kapılıydı,
-   * ama `next start` üretim kipinde çalışıyor — yerel sunucu da başlığı
-   * gönderiyordu. `localhost` üzerinden çalışan biri geliştirme ortamını
-   * kalıcı olarak https'e kilitlerdi.
+   * `vercel.json` HSTS'i zaten gönderiyor ve mevcut bir ölçüt onu koruyor
+   * ("canlıda ölçülmüş"). İlk denemede buraya da eklenmişti; iki
+   * `Strict-Transport-Security` başlığı gidince hangisinin geçerli olduğu
+   * belirsizleşiyor — süreleri ve `preload` durumları farklıydı.
+   *
+   * Aynı hata, güvenlik başlıklarının "hiç yok" sanılmasından doğdu: ölçüm
+   * yerel sunucuya yapılmıştı ve o Vercel'den geçmiyor. Canlı korunuyordu.
    */
-  assert.match(yorumsuz, /HSTS_ETKIN/, 'HSTS açık bir anahtara bağlı değil');
   assert.doesNotMatch(
     yorumsuz,
-    /NODE_ENV === 'production'[\s\S]{0,200}Strict-Transport-Security/,
-    'HSTS NODE_ENV ile kapılı: `next start` yerelde de gönderir',
+    /Strict-Transport-Security/,
+    'HSTS hem next.config.js hem vercel.json tarafından gönderiliyor',
+  );
+
+  const vercel = JSON.parse(readFileSync(path.join(kok, 'vercel.json'), 'utf8'));
+  const hepsi = (vercel.headers || []).flatMap((b) => b.headers.map((h) => h.key));
+
+  assert.ok(
+    hepsi.includes('Strict-Transport-Security'),
+    'HSTS hiçbir yerden gönderilmiyor',
   );
 });
 
-test('HSTS preload listesine girmiyor', () => {
-  // `preload` tarayıcı üreticilerinin listesine kalıcı kayıt demek; geri
-  // dönüşü çok zor ve alan adı kararı verilmeden yapılmamalı.
-  assert.doesNotMatch(yorumsuz, /max-age=[\s\S]{0,60}preload/);
+test('uygulama düzeyi başlıklar Vercel dışı barındırma için duruyor', () => {
+  // `vercel.json` yalnız Vercel'de uygulanıyor. Ön yüz başka bir yerde
+  // barındırılırsa (Docker, kendi sunucu) o dosya hiç okunmaz ve site sessizce
+  // korumasız kalırdı. Bu başlıklar uygulamayla birlikte taşınıyor.
+  assert.match(yorumsuz, /'X-Frame-Options'/);
+  assert.match(yorumsuz, /'X-Content-Type-Options'/);
+  assert.match(yorumsuz, /'Referrer-Policy'/);
 });
