@@ -4,7 +4,7 @@
 
 | | Soru | Şu anki değer |
 |---|---|---|
-| **RPO** | Arıza anında ne kadar veri kaybederiz? | **en fazla 24 saat** |
+| **RPO** | Arıza anında ne kadar veri kaybederiz? | **en fazla 6 saat** |
 | **RTO** | Ne kadar sürede geri döneriz? | **teknik olarak dakikalar**, gerçekte fark etme süresine bağlı |
 
 Bu sayılar hedef değil, **ölçülmüş mevcut durum**. Hedefleri siz belirlersiniz;
@@ -12,20 +12,21 @@ aşağıdaki bölüm bunları iyileştirmenin maliyetini gösteriyor.
 
 ---
 
-## RPO: en fazla 24 saat
+## RPO: en fazla 6 saat
 
-Yedek her gece **04:10**'da alınıyor. Arıza saat 15:00'te olduysa 04:10'dan
-sonraki her şey gider:
+Yedek günde dört kez alınıyor: **04:10, 10:10, 16:10, 22:10**. Arıza saat
+15:00'te olduysa 10:10'dan sonraki her şey gider:
 
 - o gün alınan randevular
 - yazılan mesajlar
 - kesilen faturalar
 - yüklenen belgelerin **veritabanı kayıtları** (dosyalar diskte kalır — bkz. aşağısı)
 
-**Sağlık verisi için 24 saat uzun bir süre.** Bir hastanın o sabah aldığı
-randevu kaybolursa kimse bilmez: hasta gelir, kayıt yoktur.
+Önceden gecede tek yedek vardı ve pencere 24 saatti — o sabah alınan bir
+randevu öğleden sonraki arızada kayboluyordu ve kimse bilmiyordu: hasta gelir,
+kaydı yoktur. Dört yedekle pencere 6 saate indi.
 
-### Kısaltmanın maliyeti
+### Neden dört, daha fazla değil
 
 Ölçüldü — 200.000 randevuluk bir veritabanında:
 
@@ -42,13 +43,16 @@ Yedekler sıkıştırılıyor, yani sıklığı artırmak ucuz:
 | 1 milyon | 22 MB | 0,6 GB |
 | 5 milyon | 111 MB | 3,0 GB |
 
-Disk 10 GB. **Günde dört yedek (RPO 6 saat) rahatça sığıyor.**
+Disk 10 GB. Günde dört yedek rahatça sığıyor; daha da sıklaştırmak mümkün ama
+kazanç azalıyor — asıl zayıflık aşağıda.
 
 > Sıkıştırma olmasaydı 5 milyon randevuda yedi günlük **tek** günlük yedek bile
 > 15,5 GB ederdi ve diske sığmazdı. Arıza sessiz olurdu: disk dolar, yedek
 > yazılamaz, kimse fark etmez — ta ki yedeğe ihtiyaç duyulana kadar.
 
-**Karar sizin:** RPO 24 saat mi kalsın, 6 saate mi insin? Teknik engel yok.
+> Yedek saatleri budama işlerinden (03:00–03:40) SONRA seçildi. Önce alınsaydı
+> o gece silinen kayıtlar yedekte yaşamaya devam eder, "silindi" dediğimiz veri
+> geri gelebilir hâlde kalırdı.
 
 ---
 
@@ -95,10 +99,10 @@ mekanizmaları var.
 
 | | Veritabanı | Dosyalar |
 |---|---|---|
-| Yedek var mı | ✅ günlük, sıkıştırılmış | ❌ yok |
+| Yedek var mı | ✅ günde 4 kez, sıkıştırılmış | ❌ yok |
 | Geri yüklenebilirliği denendi mi | ✅ her `--dogrula` koşusunda | — |
 | Sunucu dışında mı | ❌ aynı makinede | ❌ aynı makinede |
-| RPO | 24 saat | tanımsız |
+| RPO | 6 saat | tanımsız |
 
 **En zayıf halka yedeğin sunucu dışında olmaması.** Makineyi kaybettiren bir
 arızada hem veritabanı hem dosyalar hem de yedekleri birlikte gider — yani

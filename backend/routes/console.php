@@ -84,7 +84,26 @@ Schedule::command('auth:clear-resets')
 // Dosyanın sunucu DIŞINA taşınması ayrı bir iştir; komut hedef yerel diskse
 // uyarıyor. Yedeğin aynı makinede durması, makineyi kaybettiren arızada
 // hiçbir işe yaramaz.
+// Günde DÖRT kez: 04:10, 10:10, 16:10, 22:10.
+//
+// Sıklık kayıp penceresini belirliyor (RPO). Gecede bir yedekle öğlen çıkan bir
+// arıza o sabahki her şeyi götürüyordu — alınan randevular, yazılan mesajlar,
+// kesilen faturalar. Kimse fark etmez: hasta gelir, kaydı yoktur. Dört yedekle
+// pencere 24 saatten 6 saate iniyor.
+//
+// Yer sorunu yok: yedekler sıkıştırılıyor (ölçüldü, 20 kat), 5 milyon randevuda
+// yedi günlük dört yedek 3 GB — disk 10 GB.
+//
+// Saatler AÇIKÇA yazılı, `everySixHours` değil. O, 00:10'da da çalışırdı; oysa
+// budama işleri 03:00-03:40 arasında koşuyor ve yedek onlardan SONRA gelmeli.
+// Önce alınsaydı o gece silinen kayıtlar yedekte yaşamaya devam eder ve
+// "silindi" dediğimiz veri geri gelebilir hâlde kalırdı.
+//
+// NOT: Bu sıklık yalnız YAZILIM arızalarına karşı işe yarıyor — bozuk göç,
+// yanlışlıkla silme, hatalı dağıtım. Yedekler hâlâ verinin durduğu makinede;
+// donanım arızasında veritabanı, dosyalar ve yedekler birlikte gider.
+// `YEDEK_DISK` sunucu dışına bağlanana kadar bu böyle.
 Schedule::command('db:yedek')
-    ->dailyAt('04:10')
+    ->cron('10 4,10,16,22 * * *')
     ->withoutOverlapping()
     ->runInBackground();

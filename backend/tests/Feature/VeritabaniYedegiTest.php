@@ -38,31 +38,76 @@ class VeritabaniYedegiTest extends TestCase
         $this->assertTrue($bulundu, 'yedek alma zamanlanmamış');
     }
 
+    /** Cron ifadesinden çalışma saatlerini (dakika cinsinden) çıkarır. */
+    private function calismaAnlari(string $komut): array
+    {
+        $ifade = collect(app(Schedule::class)->events())
+            ->first(fn ($o) => str_contains((string) $o->command, $komut))?->expression;
+
+        if (!$ifade) {
+            return [];
+        }
+
+        [$dakika, $saat] = explode(' ', $ifade);
+        $anlar = [];
+
+        foreach (explode(',', $saat) as $s) {
+            if (!is_numeric($s)) {
+                continue;
+            }
+
+            foreach (explode(',', $dakika) as $d) {
+                if (is_numeric($d)) {
+                    $anlar[] = ((int) $s) * 60 + (int) $d;
+                }
+            }
+        }
+
+        sort($anlar);
+
+        return $anlar;
+    }
+
     public function test_yedek_budamalardan_sonra_calisiyor(): void
     {
         /*
          * Sıra önemli. Yedek budamalardan ÖNCE alınırsa, o gece silinmesi
          * gereken kayıtlar yedekte yaşamaya devam eder ve "silindi" dediğimiz
-         * veri aslında durur — saklama politikası kâğıt üstünde kalır.
+         * veri geri gelebilir hâlde kalır — saklama politikası kâğıt üstünde
+         * kalırdı.
+         *
+         * Ölçüt İLK yedek anına bakıyor: saatlerden herhangi biri budamadan
+         * önceye kayarsa yakalanmalı.
          */
-        $saat = fn (string $komut) => collect(app(Schedule::class)->events())
-            ->first(fn ($o) => str_contains((string) $o->command, $komut))?->expression;
+        $budama = $this->calismaAnlari('model:prune');
+        $yedek  = $this->calismaAnlari('db:yedek');
 
-        $dakikaya = function (?string $ifade): ?int {
-            if (!$ifade) {
-                return null;
-            }
-            [$dk, $sa] = explode(' ', $ifade);
+        $this->assertNotEmpty($budama, 'budama zamanlanmamış');
+        $this->assertNotEmpty($yedek, 'yedek zamanlanmamış');
 
-            return ((int) $sa) * 60 + (int) $dk;
-        };
+        $this->assertGreaterThan(
+            max($budama),
+            min($yedek),
+            'ilk yedek budamadan önce alınıyor: silinen kayıtlar yedekte kalır',
+        );
+    }
 
-        $budama = $dakikaya($saat('model:prune'));
-        $yedek = $dakikaya($saat('db:yedek'));
-
-        $this->assertNotNull($budama);
-        $this->assertNotNull($yedek);
-        $this->assertGreaterThan($budama, $yedek, 'yedek budamadan önce alınıyor');
+    public function test_yedek_gunde_en_az_dort_kez(): void
+    {
+        /*
+         * Sıklık, kayıp penceresini (RPO) doğrudan belirliyor. Gecede tek
+         * yedekle öğlen çıkan bir arıza o sabahki randevuları, mesajları ve
+         * faturaları götürüyordu — ve kimse fark etmiyordu: hasta gelir,
+         * kaydı yoktur.
+         *
+         * Sessizce günde bire dönmek, hiçbir hata vermeden kayıp penceresini
+         * dörde katlar.
+         */
+        $this->assertGreaterThanOrEqual(
+            4,
+            count($this->calismaAnlari('db:yedek')),
+            'yedek günde dörtten az alınıyor — kayıp penceresi büyüdü',
+        );
     }
 
     public function test_yedek_dosyasi_gercekten_yaziliyor(): void
