@@ -78,9 +78,11 @@ class VeritabaniYedegiTest extends TestCase
         $dosyalar = Storage::disk('local')->files('yedek');
 
         $this->assertNotEmpty($dosyalar, 'yedek dosyası yazılmamış');
+
+        // Dosya sıkıştırılmış; ham içerikte arama yapmak yanıltır.
         $this->assertStringContainsString(
             'CREATE TABLE',
-            Storage::disk('local')->get($dosyalar[0]),
+            (string) @gzdecode(Storage::disk('local')->get($dosyalar[0])),
             'yedek tablo tanımı içermiyor — geri yüklenemez',
         );
     }
@@ -97,6 +99,56 @@ class VeritabaniYedegiTest extends TestCase
         $this->artisan('db:yedek --dogrula')
             ->expectsOutputToContain('Prova başarılı')
             ->assertSuccessful();
+    }
+
+    public function test_yedek_sikistirilmis_yaziliyor(): void
+    {
+        /*
+         * Ölçüldü: ham döküm veritabanının 2,73 KATI (UUID'ler ve tarihler
+         * metin olarak duruyor), sıkıştırılmış hâli 0,13 katı.
+         *
+         * Ham bırakılsaydı 5 milyon randevuda yedi günlük yedek 15,5 GB ederdi
+         * ve diske (10 GB) sığmazdı. Arıza sessiz olurdu: disk dolar, yedek
+         * yazılamaz, kimse fark etmez — ta ki yedeğe ihtiyaç duyulana kadar.
+         */
+        if (!$this->mysqlMi()) {
+            $this->markTestSkipped('Yedek yalnız gerçek sürücüde alınabilir.');
+        }
+
+        Storage::fake('local');
+
+        $this->artisan('db:yedek')->assertSuccessful();
+
+        $dosyalar = Storage::disk('local')->files('yedek');
+        $this->assertNotEmpty($dosyalar);
+        $this->assertStringEndsWith('.sql.gz', $dosyalar[0]);
+
+        $icerik = Storage::disk('local')->get($dosyalar[0]);
+
+        $this->assertNotFalse(@gzdecode($icerik), 'yedek açılamıyor');
+        $this->assertStringContainsString('CREATE TABLE', (string) @gzdecode($icerik));
+    }
+
+    public function test_prova_DISKTEKI_dosyayi_deniyor(): void
+    {
+        /*
+         * Prova ilk hâlinde bellekteki dökümü geri yüklüyordu. O, dosyanın
+         * doğru YAZILDIĞINI hiç sınamıyor: sıkıştırma bozulsa, disk yarım
+         * yazsa ya da depolama katmanı içeriği değiştirse prova yine
+         * "başarılı" derdi.
+         *
+         * Ölçülen şey, ihtiyaç anında açılacak olan dosya olmalı.
+         */
+        $kaynak = (string) file_get_contents(
+            app_path('Console/Commands/VeritabaniYedegi.php'),
+        );
+        $kaynak = preg_replace('#//.*$#m', '', $kaynak);
+
+        $this->assertMatchesRegularExpression(
+            '/\$disk->get\(\$dosyaAdi\)/',
+            $kaynak,
+            'prova diskteki dosyayı okumuyor; yalnız bellektekini deniyor',
+        );
     }
 
     public function test_yerel_diske_yazarken_uyariyor(): void

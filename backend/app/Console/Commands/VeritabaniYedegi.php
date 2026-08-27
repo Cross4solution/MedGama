@@ -56,7 +56,7 @@ class VeritabaniYedegi extends Command
         $diskAdi = config('yedek.disk');
         $disk = Storage::disk($diskAdi);
 
-        $dosyaAdi = sprintf('yedek/medagama-%s.sql', now()->format('Y-m-d-His'));
+        $dosyaAdi = sprintf('yedek/medagama-%s.sql.gz', now()->format('Y-m-d-His'));
 
         $this->info('Yedek alınıyor…');
 
@@ -66,10 +66,21 @@ class VeritabaniYedegi extends Command
             return self::FAILURE;
         }
 
-        $disk->put($dosyaAdi, $dokum);
+        // SIKIŞTIRILARAK yazılıyor.
+        //
+        // Ölçüldü: ham döküm veritabanının 2,73 KATI (UUID'ler ve tarihler
+        // metin olarak duruyor), sıkıştırılmış hâli 0,13 katı — yirmi kat fark.
+        //
+        // Ham bırakılsaydı 5 milyon randevuda yedi günlük yedek 15,5 GB ederdi
+        // ve diske (10 GB) sığmazdı. Arıza sessiz olurdu: disk dolar, yedek
+        // yazılamaz, kimse fark etmez — ta ki yedeğe ihtiyaç duyulana kadar.
+        $sikistirilmis = gzencode($dokum, 6);
 
-        $boyutMb = round(strlen($dokum) / 1048576, 2);
-        $this->info("Yazıldı: {$dosyaAdi} ({$boyutMb} MB, disk: {$diskAdi})");
+        $disk->put($dosyaAdi, $sikistirilmis);
+
+        $hamMb = round(strlen($dokum) / 1048576, 2);
+        $boyutMb = round(strlen($sikistirilmis) / 1048576, 2);
+        $this->info("Yazıldı: {$dosyaAdi} ({$boyutMb} MB, ham {$hamMb} MB, disk: {$diskAdi})");
 
         if ($diskAdi === 'local' || $diskAdi === 'public') {
             $this->warn('UYARI: yedek AYNI MAKİNEDE duruyor.');
@@ -77,8 +88,25 @@ class VeritabaniYedegi extends Command
             $this->warn('Sunucu dışına taşımak için YEDEK_DISK ayarlanmalı.');
         }
 
-        if ($this->option('dogrula') && !$this->geriYuklemeProvasi($dokum)) {
-            return self::FAILURE;
+        // Prova DİSKTEN OKUNAN dosyayla yapılıyor, bellekteki dökümle değil.
+        //
+        // İlk hâli bellekteki değişkeni geri yüklüyordu. O, dosyanın doğru
+        // yazıldığını hiç sınamıyor: sıkıştırma bozulsa, disk yarım yazsa ya da
+        // depolama katmanı içeriği değiştirse prova yine "başarılı" derdi.
+        // Ölçülen şey, ihtiyaç anında AÇILACAK OLAN dosya olmalı.
+        if ($this->option('dogrula')) {
+            $diskten = $disk->get($dosyaAdi);
+            $cozulmus = $diskten === null ? null : @gzdecode($diskten);
+
+            if ($cozulmus === false || $cozulmus === null) {
+                $this->error('Yazılan yedek dosyası açılamıyor — yedek kullanılamaz.');
+
+                return self::FAILURE;
+            }
+
+            if (!$this->geriYuklemeProvasi($cozulmus)) {
+                return self::FAILURE;
+            }
         }
 
         $this->eskileriSil($disk, (int) ($this->option('tut') ?? config('yedek.tut_gun')));
