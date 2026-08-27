@@ -51,6 +51,10 @@ return Application::configure(basePath: dirname(__DIR__))
             ],
             append: [
                 \App\Http\Middleware\SetLocale::class,
+                // Salt okunur işaretli hesaplar yazma yapamaz. Uçlara tek tek
+                // bağlanmıyor: öyle olsaydı yarın eklenen bir uç korumasız
+                // kalır ve kimse fark etmezdi.
+                \App\Http\Middleware\SaltOkunurKullanici::class,
                 // `per_page` üst sınırı. Uçlara tek tek yazılmıyor: unutulan
                 // bir uç sessizce açık kalır ve yeni uçlar da korunmalı.
                 \App\Http\Middleware\SayfaBoyutunuSinirla::class,

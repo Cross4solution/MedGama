@@ -71,6 +71,7 @@ class User extends Authenticatable
             'password_reset_expires_at' => 'datetime',
             'is_verified'              => 'boolean',
             'is_active'                => 'boolean',
+            'salt_okunur'              => 'boolean',
             'date_of_birth'            => 'date',
             'guardian_consent_at'      => 'datetime',
             'health_data_consent_at'   => 'datetime',

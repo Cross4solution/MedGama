@@ -33,7 +33,8 @@ class YoneticiOlustur extends Command
 {
     protected $signature = 'yonetici:olustur
                             {eposta : Yöneticinin e-posta adresi}
-                            {--ad= : Görünen ad (varsayılan: e-postanın baş kısmı)}';
+                            {--ad= : Görünen ad (varsayılan: e-postanın baş kısmı)}
+                            {--salt-okunur : Yalnız görüntüleyebilen hesap (tanıtım için)}';
 
     protected $description = 'Süper yönetici hesabı açar veya var olanın şifresini yeniler';
 
@@ -100,11 +101,17 @@ class YoneticiOlustur extends Command
             'role_id'           => 'superAdmin',
             'email_verified_at' => $mevcut->email_verified_at ?? now(),
             'is_active'         => true,
+            // Tanıtım hesabı: girer, gezer, hiçbir şeyi değiştiremez.
+            'salt_okunur'       => (bool) $this->option('salt-okunur'),
         ])->save();
 
         $this->info($mevcut
             ? "Şifre yenilendi: {$kullanici->email}"
             : "Süper yönetici açıldı: {$kullanici->email}");
+
+        if ($kullanici->salt_okunur) {
+            $this->warn('Bu hesap SALT OKUNUR: hiçbir kaydı değiştiremez.');
+        }
         $this->line('Panel: <alan-adı>/tr/admin');
 
         return self::SUCCESS;

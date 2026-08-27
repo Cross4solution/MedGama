@@ -95,6 +95,10 @@ class UserResource extends JsonResource
         $data['user_level'] = (int) ($this->user_level ?? 1);
         $data['has_crm_subscription'] = $this->resource->hasCrmSubscription();
 
+        // Salt okunur tanıtım hesabı. Ön yüz bunu bilmezse kullanıcı
+        // düğmelere basar ve her seferinde anlamsız bir hata alır.
+        $data['salt_okunur'] = (bool) ($this->salt_okunur ?? false);
+
         // For doctors, include onboarding status + verification details
         if ($this->role_id === 'doctor') {
             $profile = $this->relationLoaded('doctorProfile')

@@ -512,6 +512,18 @@ const AdminLayout = ({ children }) => {
               <div className="w-6 h-6 border-2 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
             </div>
           }>
+            {/* Tanıtım hesabı uyarısı. Bunu göstermezsek müşteri düğmelere
+                basar, her seferinde bir hata görür ve panelin bozuk olduğunu
+                sanır — oysa hesap bilerek yalnızca görüntüleme yetkisinde. */}
+            {user?.salt_okunur && (
+              <div className="mx-4 lg:mx-6 mb-4 flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                <Eye className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-amber-800">
+                  <span className="font-semibold">Görüntüleme hesabı.</span>{' '}
+                  Paneli gezebilirsiniz; kayıt ekleme, değiştirme ve silme kapalıdır.
+                </p>
+              </div>
+            )}
             <AnnouncementBanner />
             <Outlet>{children}</Outlet>
           </Suspense>
