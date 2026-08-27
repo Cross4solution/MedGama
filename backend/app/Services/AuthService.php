@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\AuditLog;
 use App\Models\User;
 use App\Models\MedStreamPost;
 use App\Models\MedStreamComment;
@@ -606,6 +607,29 @@ class AuthService
         });
 
         \Log::info('GDPR: Account deleted (soft)', ['user_id' => $user->id]);
+
+        // Silme DENETİM KAYDINA da yazılıyor.
+        //
+        // Saklama politikası (docs/Mevzuat_Uyum_Saklama_Suresi.pdf, madde 4)
+        // "süre boyunca ve silme anında işlem denetim kaydına yazılır" diyor.
+        // Uygulama günlüğü bunu karşılamıyor: günlükler döner, aranabilir
+        // değildir ve denetimde kanıt olarak sunulamaz. Denetim kaydı kalıcı
+        // ve sorgulanabilir.
+        //
+        // Hangi kayıtların SİLİNMEDİĞİ de yazılıyor — tıbbi kayıt ve fatura
+        // yasal saklama yüzünden duruyor, ve bir denetimde "neden hâlâ
+        // duruyor" sorusunun cevabı bu satır.
+        AuditLog::log(
+            action: 'gdpr.account_deleted',
+            resourceType: 'User',
+            resourceId: $user->id,
+            newValues: [
+                'anonymised'        => true,
+                'retained_records'  => ['appointments', 'patient_records', 'patient_documents', 'invoices', 'consents'],
+                'retention_basis'   => 'legal_obligation',
+            ],
+            description: 'Account deleted on request; records under legal retention kept.',
+        );
     }
 
     /**
