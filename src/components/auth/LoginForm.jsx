@@ -156,13 +156,13 @@ const LoginForm = ({
           {errors.password && <p className="text-red-500 text-xs sm:text-sm mt-1 text-center">{errors.password}</p>}
         </div>
         <div className="flex items-center justify-between w-full">
-          <label className="flex items-center space-x-2">
+          <label className="flex items-center space-x-2 py-1.5 cursor-pointer">
             <input
               type="checkbox"
               name="rememberMe"
               checked={!!formData.rememberMe}
               onChange={handleInputChange}
-              className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
             <span className="text-xs sm:text-sm text-gray-600">{t('auth.rememberMe')}</span>
           </label>

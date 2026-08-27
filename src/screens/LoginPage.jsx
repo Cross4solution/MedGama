@@ -479,11 +479,11 @@ const LoginPage = ({ role = 'patient' }) => {
           )}
         </div>
         <div className="flex items-center justify-between text-xs">
-          <label className="inline-flex items-center gap-1.5 text-gray-500">
-            <input type="checkbox" name="rememberMe" checked={!!formData.rememberMe} onChange={handleInputChange} className={`rounded border-gray-300 ${config.checkboxColor} w-3.5 h-3.5`} />
+          <label className="inline-flex items-center gap-1.5 py-1.5 text-gray-500 cursor-pointer">
+            <input type="checkbox" name="rememberMe" checked={!!formData.rememberMe} onChange={handleInputChange} className={`rounded border-gray-300 ${config.checkboxColor} w-4 h-4`} />
             {t('auth.rememberMe')}
           </label>
-          <a href="/forgot-password" className={`${config.linkColor} font-medium`}>{t('auth.forgotPassword')}</a>
+          <a href="/forgot-password" className={`${config.linkColor} font-medium py-1.5`}>{t('auth.forgotPassword')}</a>
         </div>
         <button type="submit" disabled={submitting}
           className={`w-full py-2.5 sm:py-3 px-4 rounded-xl focus:ring-4 ${config.btnFocus} transition-all duration-200 font-semibold text-sm sm:text-base shadow-sm hover:shadow-md flex items-center justify-center gap-2 ${submitting ? 'opacity-60 cursor-not-allowed' : ''} ${config.btnBg} text-white`}>

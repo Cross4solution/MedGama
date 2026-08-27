@@ -319,7 +319,7 @@ const RegisterForm = ({
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? t('auth.hidePassword', 'Parolayı gizle') : t('auth.showPassword', 'Parolayı göster')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600"
             >
               {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
             </button>
@@ -351,7 +351,7 @@ const RegisterForm = ({
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               aria-label={showConfirmPassword ? t('auth.hidePassword', 'Parolayı gizle') : t('auth.showPassword', 'Parolayı göster')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600"
             >
               {showConfirmPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
             </button>

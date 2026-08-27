@@ -316,7 +316,7 @@ const Header = () => {
           })()}
 
           {/* Logoya daha da yakın menü */}
-          <nav className="hidden md:flex items-center space-x-6 ml-auto mr-20">
+          <nav className="hidden md:flex items-center space-x-6 ml-auto mr-4 lg:mr-20">
             <Link to="/for-clinics" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
               {t('header.forClinics')}
             </Link>

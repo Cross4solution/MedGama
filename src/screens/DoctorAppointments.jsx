@@ -161,7 +161,7 @@ export default function DoctorAppointments() {
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-2 flex-shrink-0 ml-auto">
+                <div className="flex flex-col items-end gap-2 ml-auto w-full sm:w-auto sm:flex-shrink-0">
                   {statusBadge(a.status)}
                   <div className="flex flex-wrap items-center justify-end gap-2">
                     {canJoin(a) && (

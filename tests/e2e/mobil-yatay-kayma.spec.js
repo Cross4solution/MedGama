@@ -42,13 +42,19 @@ const SAYFALAR = [
   { yol: '/login',          oturum: null },
 ];
 
+// 375 px yaygın telefon; 320 px hem eski küçük telefonlar hem de WCAG
+// 1.4.10'un istediği yeniden akma genişliği (metni büyüten kullanıcı
+// efektif olarak buraya iner).
+const GENISLIKLER = [375, 320];
+
 for (const { yol, oturum } of SAYFALAR) {
-  test.describe(`${yol}${oturum ? ` (${oturum})` : ''}`, () => {
+  for (const genislikPx of GENISLIKLER) {
+  test.describe(`${yol}${oturum ? ` (${oturum})` : ''} @${genislikPx}px`, () => {
     // Cihaz tanımının tamamı yayılamıyor: içindeki `defaultBrowserType`
     // describe içinde yeni bir işçi zorluyor ve Playwright reddediyor.
     // Ölçüm için gereken alanlar bunlar.
     test.use({
-      viewport: TELEFON.viewport,
+      viewport: { width: genislikPx, height: TELEFON.viewport.height },
       userAgent: TELEFON.userAgent,
       deviceScaleFactor: TELEFON.deviceScaleFactor,
       isMobile: TELEFON.isMobile,
@@ -120,12 +126,24 @@ for (const { yol, oturum } of SAYFALAR) {
         // varken taşan içerik kırpılıyor. Kayma 0 çıkıyor, ama düğme ekranın
         // dışında ve tıklanamaz durumda. Hekim randevu ekranında tam olarak
         // bu oluyordu: "Takvime Ekle" 435 px'te, ekran 375 px.
+        // Yatay kaydırılabilir şerit (sekme/süzgeç kaydırması) İÇİNDEKİ
+        // düğme ekranı aşabilir — kullanıcı şeridi kaydırıp ulaşır. Kırpan
+        // (`hidden`) kapsayıcı ise ulaşılamaz kılar, o yüzden sayılır.
+        const kaydirilabilirIcinde = (e) => {
+          for (let a = e.parentElement; a && a !== document.body; a = a.parentElement) {
+            const o = getComputedStyle(a).overflowX;
+            if (o === 'auto' || o === 'scroll') return true;
+          }
+          return false;
+        };
+
         const ulasilamayan = [];
         for (const e of document.querySelectorAll('button, a[href], [role="button"]')) {
           const r = e.getBoundingClientRect();
           const bicem = getComputedStyle(e);
           if (r.width === 0 || bicem.display === 'none' || bicem.visibility === 'hidden') continue;
           if (r.left >= genislik || r.right <= genislik + 2) continue;
+          if (kaydirilabilirIcinde(e)) continue;
           ulasilamayan.push(`"${(e.textContent || e.getAttribute('aria-label') || '').trim().slice(0, 24)}" sağ=${Math.round(r.right)}`);
         }
 
@@ -150,4 +168,5 @@ for (const { yol, oturum } of SAYFALAR) {
       ).toEqual([]);
     });
   });
+  }
 }
