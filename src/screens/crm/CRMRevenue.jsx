@@ -175,13 +175,31 @@ const CRMRevenue = () => {
   const totalPages = Math.ceil(invoiceTotal / perPage);
 
   // ── Build export payload from current data ──
+  /**
+   * Birden çok para birimi varsa etikete o birimi ekler.
+   *
+   * Ekran "Toplam Gelir — 3.000 ₺" yazıyordu. Hem lira hem euro ile fatura
+   * kesen bir klinikte bu rakam TOPLAM DEĞİL: ayrıca euro faturalar var ve
+   * onlar bu sayıya dahil değil. Seçici sayfada duruyor ama değiştirince
+   * aynı paranın başka birimini değil, BAŞKA BİR GELİRİ göstereceğini hiçbir
+   * şey söylemiyordu.
+   *
+   * Veri ve hesap doğruydu; yanıltan kelimeydi. Tek para birimi kullanan
+   * kliniklerde hiçbir şey değişmiyor — orada gizlenen bir şey yok.
+   */
+  const pbEtiketi = (metin) => (
+    currencies.length > 1
+      ? `${metin} (${CURRENCY_SYMBOLS[currency] || currency})`
+      : metin
+  );
+
   const buildExportData = () => {
     const sym = CURRENCY_SYMBOLS[currency] || currency;
     const summaryCards = [
-      { label: t('crm.revenue.totalRevenue', 'Total Revenue'), value: `${sym}${Number(stats?.total_revenue || 0).toLocaleString()}` },
-      { label: t('crm.revenue.thisMonth', 'This Month'), value: `${sym}${Number(stats?.monthly_revenue || 0).toLocaleString()}` },
-      { label: t('crm.revenue.pending', 'Pending'), value: fmt(stats?.pending_amount || 0, currency) },
-      { label: t('crm.revenue.receivable', 'Receivable'), value: fmt(stats?.receivable_amount || 0, currency) },
+      { label: pbEtiketi(t('crm.revenue.totalRevenue', 'Total Revenue')), value: `${sym}${Number(stats?.total_revenue || 0).toLocaleString()}` },
+      { label: pbEtiketi(t('crm.revenue.thisMonth', 'This Month')), value: `${sym}${Number(stats?.monthly_revenue || 0).toLocaleString()}` },
+      { label: pbEtiketi(t('crm.revenue.pending', 'Pending')), value: fmt(stats?.pending_amount || 0, currency) },
+      { label: pbEtiketi(t('crm.revenue.receivable', 'Receivable')), value: fmt(stats?.receivable_amount || 0, currency) },
     ];
 
     const tables = [];
@@ -387,10 +405,10 @@ const CRMRevenue = () => {
       {/* ─── KPI Cards ─── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
-          { label: t('crm.revenue.totalRevenue', 'Total Revenue'), value: fmtK(stats?.total_revenue || 0, currency), icon: DollarSign, bg: 'bg-emerald-50', iconColor: 'text-emerald-600', border: 'border-emerald-100' },
-          { label: t('crm.revenue.monthlyRev', 'This Month'), value: fmtK(stats?.monthly_revenue || 0, currency), icon: TrendingUp, bg: 'bg-blue-50', iconColor: 'text-blue-600', border: 'border-blue-100' },
-          { label: t('common.pending', 'Pending'), value: fmt(stats?.pending_amount || 0, currency), icon: Receipt, bg: 'bg-amber-50', iconColor: 'text-amber-600', border: 'border-amber-100' },
-          { label: t('crm.revenue.receivable', 'Receivable'), value: fmt(stats?.receivable_amount || 0, currency), icon: Banknote, bg: 'bg-red-50', iconColor: 'text-red-600', border: 'border-red-100' },
+          { label: pbEtiketi(t('crm.revenue.totalRevenue', 'Total Revenue')), value: fmtK(stats?.total_revenue || 0, currency), icon: DollarSign, bg: 'bg-emerald-50', iconColor: 'text-emerald-600', border: 'border-emerald-100' },
+          { label: pbEtiketi(t('crm.revenue.monthlyRev', 'This Month')), value: fmtK(stats?.monthly_revenue || 0, currency), icon: TrendingUp, bg: 'bg-blue-50', iconColor: 'text-blue-600', border: 'border-blue-100' },
+          { label: pbEtiketi(t('common.pending', 'Pending')), value: fmt(stats?.pending_amount || 0, currency), icon: Receipt, bg: 'bg-amber-50', iconColor: 'text-amber-600', border: 'border-amber-100' },
+          { label: pbEtiketi(t('crm.revenue.receivable', 'Receivable')), value: fmt(stats?.receivable_amount || 0, currency), icon: Banknote, bg: 'bg-red-50', iconColor: 'text-red-600', border: 'border-red-100' },
         ].map((s) => (
           <div key={s.label} className={`bg-white rounded-2xl border ${s.border} p-4 sm:p-5 hover:shadow-md transition-shadow`}>
             <div className="flex items-start justify-between mb-3">
