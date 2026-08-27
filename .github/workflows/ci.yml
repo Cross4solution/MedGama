@@ -109,6 +109,13 @@ jobs:
           DB_PASSWORD: secret
         run: php artisan migrate:fresh --drop-views --drop-types --force
 
+      # Belgelendirme rota tablosundan üretiliyor; testler onun gerçek uçlarla
+      # eşleştiğini sınıyor. Üretilmeden koşarlarsa dosya bulunamaz.
+      - name: Generate API documentation
+        env:
+          DB_CONNECTION: pgsql
+        run: php artisan api:belge-uret
+
       - name: Run tests
         env:
           DB_CONNECTION: pgsql

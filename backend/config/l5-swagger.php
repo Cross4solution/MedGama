@@ -229,10 +229,19 @@ return [
         ],
 
         /*
-         * Set this to `true` in development mode so that docs would be regenerated on each request
-         * Set this to `false` to disable swagger generation on production
+         * KAPALI — çalışma anında yeniden üretim belgeyi BOZUYOR.
+         *
+         * Açıkken L5-Swagger her `/docs` isteğinde anotasyonlardan yeniden
+         * üretip `api-docs.json`'un üzerine yazıyor. Anotasyonlar 376 ucun
+         * yalnız 50'sini kapsıyor, yani `php artisan api:belge-uret` ile
+         * üretilen tam belge ilk istekte siliniyordu. Ölçüldü: dosya 293
+         * yoldan 50 yola düştü ve arayüz %13'lük bir belge gösterdi.
+         *
+         * Belge artık komutla üretiliyor: rota tabanı + elle yazılmış
+         * anotasyonlar onun üstüne. Çalışma anında yeniden üretmek, o
+         * birleşimi bozmaktan başka bir şey yapmıyor.
          */
-        'generate_always' => env('L5_SWAGGER_GENERATE_ALWAYS', true),
+        'generate_always' => env('L5_SWAGGER_GENERATE_ALWAYS', false),
 
         /*
          * Set this to `true` to generate a copy of documentation in yaml format
