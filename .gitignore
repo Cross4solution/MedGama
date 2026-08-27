@@ -48,3 +48,6 @@ next-env.d.ts
 # `.env.canli.yedek` CANLI GIZLI ANAHTARLARI tasiyor: asla islenmemeli.
 .env.*yedek
 .env.e2e
+
+# Geçici ölçüm betikleri (mobil/erişilebilirlik taramaları)
+zz-*.mjs
