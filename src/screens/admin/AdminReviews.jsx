@@ -440,7 +440,7 @@ export default function AdminReviews() {
           Klinik yorumlarının denetimi hiç yoktu; ekran yalnız hekim
           yorumlarını listeliyor ve "hasta değerlendirmelerini yönetin"
           diyordu. İki tür ayrı tablolarda duruyor, o yüzden ayrı liste. */}
-      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
+      <div className="flex flex-wrap gap-1 bg-gray-100 rounded-xl p-1 w-fit max-w-full">
         {[
           ['doctor', t('admin.reviews.doctorReviews', 'Hekim yorumları')],
           ['clinic', t('admin.reviews.clinicReviews', 'Klinik yorumları')],
@@ -459,7 +459,7 @@ export default function AdminReviews() {
 
       {/* Filters + Search */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
+        <div className="flex flex-wrap gap-1 bg-gray-100 rounded-xl p-1">
           {FILTERS.map(f => (
             <button
               key={f.key}

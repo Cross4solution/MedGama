@@ -520,7 +520,7 @@ export default function AdminCatalog() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
+      <div className="flex flex-wrap gap-1 bg-gray-100 rounded-xl p-1 w-fit max-w-full">
         {TABS.map(tab => (
           <button
             key={tab.key}

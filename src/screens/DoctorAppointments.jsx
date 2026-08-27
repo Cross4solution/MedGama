@@ -141,7 +141,13 @@ export default function DoctorAppointments() {
         ) : (
           <div className="space-y-3">
             {list.map((a) => (
-              <div key={a.id} className="bg-white rounded-2xl border border-gray-200 p-4 flex items-center gap-4">
+              // Satır ve eylem düğmeleri SARMALANIYOR. Sarmalanmadığı
+              // sürece dar telefonda sağdaki sütun kartın dışına itiliyordu:
+              // durum rozeti 60 px taşıyor, "Onayla" ve "Reddet" düğmeleri
+              // ekran dışında kalıyordu. Gövdede `overflow-x: hidden` olduğu
+              // için sayfa yana da kaymıyor — yani hekim telefondan randevu
+              // onaylayamıyor ve bunun görsel bir işareti yok.
+              <div key={a.id} className="bg-white rounded-2xl border border-gray-200 p-4 flex flex-wrap items-center gap-4">
                 <img src={resolveStorageUrl(a.patient?.avatar)} alt="" loading="lazy"
                   className="w-12 h-12 rounded-full object-cover flex-shrink-0"
                   onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
@@ -155,9 +161,9 @@ export default function DoctorAppointments() {
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                <div className="flex flex-col items-end gap-2 flex-shrink-0 ml-auto">
                   {statusBadge(a.status)}
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center justify-end gap-2">
                     {canJoin(a) && (
                       <button onClick={() => navigate(`/telehealth/call/${a.id}`)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700">

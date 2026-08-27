@@ -862,7 +862,7 @@
       "startExamination": "Start Examination",
       "callDone": "call completed",
       "callNotDone": "call not completed",
-      "invoicePaid": "ödendi",
+      "invoicePaid": "paid",
       "statTotal": "Toplam randevu",
       "statCompleted": "Tamamlanan",
       "statUpcoming": "Upcoming",
@@ -964,12 +964,12 @@
       "conversation": "Conversation",
       "loadError": "Conversations could not be loaded.",
       "startFailed": "The conversation could not be started",
-      "sendError": "Mesaj gönderilemedi.",
+      "sendError": "Message could not be sent.",
       "searchPatient": "Hasta ara...",
       "ownPatientsOnly": "Only your own patients with an appointment are listed.",
       "noPatientMatch": "No matching patient.",
       "noPatients": "You do not have any patients yet.",
-      "noMessages": "Henüz mesaj yok"
+      "noMessages": "No messages yet"
     },
     "revenue": {
       "title": "Revenue & Finance",
@@ -1092,7 +1092,7 @@
       "serviceItems": "Service Items",
       "taxRate": "Tax Rate",
       "createInvoiceError": "The invoice could not be created.",
-      "recordPaymentError": "Ödeme kaydedilemedi.",
+      "recordPaymentError": "Payment could not be recorded.",
       "todayRevenue": "Today's Revenue"
     },
     "prescriptions": {
@@ -1116,7 +1116,7 @@
       "goToExamination": "Muayeneye git",
       "infoTitle": "Prescriptions are created from an examination",
       "infoBody": "Open an examination record to write a new prescription. Prescriptions from your past examinations are listed below.",
-      "empty": "Henüz reçete yok"
+      "empty": "No prescriptions yet"
     },
     "reports": {
       "title": "Reports & Analytics",
@@ -1155,13 +1155,13 @@
       "optional": "optional",
       "searchDocuments": "Search documents...",
       "upload": "Upload",
-      "fileTooLarge": "Dosya çok büyük (maks. 20MB).",
+      "fileTooLarge": "File is too large (max. 20MB).",
       "fileTypeNotAllowed": "File type not allowed. Upload a PDF, JPEG, PNG, WebP, Word, Excel or DICOM file.",
-      "selectFile": "Lütfen bir dosya seçin.",
+      "selectFile": "Please select a file.",
       "titleRequired": "A title is required.",
       "uploadFailed": "The upload failed.",
       "confirmDelete": "Are you sure you want to delete this document?",
-      "empty": "Henüz doküman yok",
+      "empty": "No documents yet",
       "documentTitle": "Title"
     },
     "integrations": {
@@ -1492,7 +1492,7 @@
       "conditionsRequired": "Please add at least one condition or symptom you treat.",
       "treatedConditionsHeading": "Conditions I Treat",
       "treatedConditionsSubtitle": "Add the conditions you treat so patients can find you by their symptoms (e.g. headache, herniated disc). Required.",
-      "noConditionsYet": "Henüz eklenmedi",
+      "noConditionsYet": "None added yet",
       "addConditionPlaceholder": "Type a condition and press Enter",
       "hoursNote": "Operating hours are synced with your booking widget. Patients can only book appointments during open hours.",
       "coordsHelper": "Enter coordinates to display your location on the map. You can find them on openstreetmap.org.",
@@ -1659,9 +1659,9 @@
     "verification": {
       "docUploaded": "Document uploaded successfully. Under review."
     },
-    "upgradeTitle": "CRM Paketine Geçin",
+    "upgradeTitle": "Upgrade to the CRM plan",
     "upgradeDesc": "Activate the CRM package for appointment management, patient tracking, revenue reports and more.",
-    "upgradeBtn": "CRM\\'e Geç →",
+    "upgradeBtn": "Go to CRM →",
     "medstream": {
       "sortRecent": "Most Recent"
     },
@@ -2418,7 +2418,7 @@
     "welcomeHint": "Patients can now find you and book appointments. You can update your profile anytime from your dashboard.",
     "goToDashboard": "Go to Dashboard",
     "fileTooLarge": "File must be under 10 MB.",
-    "saveFailed": "Kaydedilemedi. Lütfen tekrar deneyin.",
+    "saveFailed": "Could not save. Please try again.",
     "avatarFormatError": "Profile photo must be JPG, PNG or WebP format.",
     "avatarSizeError": "Profile photo must be under 2 MB."
   },
@@ -2444,7 +2444,7 @@
     "nameRequired": "Please enter the clinic name.",
     "accreditations": "Sertifikalar & Akreditasyonlar",
     "accreditationsHint": "Select the professional certifications your clinic holds. They build patient trust.",
-    "certificates": "Sertifikalar (görselli)",
+    "certificates": "Certificates (with images)",
     "certificatesHint": "Add the certificate name, the year and, if you like, an image of the document.",
     "treatmentsTitle": "Sunulan Tedaviler",
     "treatmentsSubtitle": "Select the treatments your clinic offers — patients find you by treatment.",
@@ -4129,13 +4129,13 @@
   },
   "browse": {
     "treatmentsSubtitle": "Find clinics and hospitals by treatment type and specialty.",
-    "searchTreatments": "Tedavi ara (ör. implant, katarakt, tüp bebek)...",
+    "searchTreatments": "Search treatments (e.g. implant, cataract, IVF)...",
     "allSpecialties": "All Specialties",
     "treatments": "Tedaviler",
     "noTagsYet": "No treatment list has been added for this specialty yet.",
-    "clinicsForTreatment": "\"{{name}}\" için klinikler",
+    "clinicsForTreatment": "Clinics for \"{{name}}\"",
     "clinicsInSpecialty": "{{name}} klinikleri",
-    "allClinics": "Tüm klinikler",
+    "allClinics": "All clinics",
     "noTreatments": "No treatments found",
     "tryDifferent": "Try a different search term.",
     "clinicsSubtitle": "Discover top-rated clinics and hospitals across all specialties.",
@@ -4247,23 +4247,23 @@
   },
   "invoices": {
     "status": {
-      "paid": "Ödendi",
+      "paid": "Paid",
       "partial": "Partially paid",
-      "pending": "Ödeme bekliyor",
+      "pending": "Pending payment",
       "overdue": "Overdue",
       "cancelled": "Cancelled"
     },
-    "loadFailed": "Faturalar yüklenemedi.",
+    "loadFailed": "Invoices could not be loaded.",
     "downloadFailed": "Fatura indirilemedi, tekrar deneyin.",
     "title": "My Invoices",
     "empty": "You do not have any invoices yet.",
-    "issueDate": "Düzenlenme",
-    "dueDate": "Son ödeme",
+    "issueDate": "Issued",
+    "dueDate": "Due date",
     "doctor": "Doktor",
     "discount": "Discount",
     "tax": "Vergi",
     "total": "Toplam",
-    "paid": "Ödenen",
+    "paid": "Paid amount",
     "payAtClinic": "Payments are collected by the clinic. Please contact your clinic to pay.",
     "downloadPdf": "PDF indir"
   },

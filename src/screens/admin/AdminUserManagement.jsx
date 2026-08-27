@@ -480,7 +480,7 @@ export default function AdminUserManagement() {
 
       {/* Tabs (Doctor / Patient / Clinic segmentation) */}
       <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-        <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
+        <div className="flex flex-wrap gap-1 bg-gray-100 rounded-xl p-1">
           {TABS.map(tab => {
             const TabIcon = tab.icon;
             return (

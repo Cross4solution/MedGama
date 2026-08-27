@@ -34,6 +34,7 @@
   },
   "scripts": {
     "dev": "next dev",
+    "dev:yerel": "NEXT_PUBLIC_API_ORIGIN=http://127.0.0.1:8001 next dev",
     "build": "next build",
     "start": "next start",
     "test:e2e": "playwright test",

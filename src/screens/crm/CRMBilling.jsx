@@ -554,19 +554,62 @@ const CRMBilling = () => {
                   defaultValue={search} onChange={e => handleSearch(e.target.value)}
                   className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full" />
               </div>
-              <div className="flex items-center gap-2">
+              {/*
+                Satır sarmalanıyor (`flex-wrap`): sarmalanmadığı sürece son
+                seçenek dar telefonda kartın `overflow-hidden` kenarının
+                dışında kalıyor ve TIKLANAMIYOR — 375 px'de "cancelled" 389'da
+                bitiyor, kart 359'da kesiyor. Yani klinik telefondan iptal
+                edilmiş faturaları hiç süzemiyordu.
+
+                Etiketler `capitalize` ile ham durum değerini gösteriyordu
+                ("pending", "cancelled"); çeviriler `invoices.status` altında
+                zaten duruyordu, kullanılmıyordu.
+              */}
+              <div className="flex flex-wrap items-center gap-2">
                 {['', 'pending', 'partial', 'paid', 'cancelled'].map(s => (
                   <button key={s} onClick={() => { setStatusFilter(s); setPage(1); }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-colors ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                       statusFilter === s ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                     }`}>
-                    {s || t('common.all')}
+                    {s ? t(`invoices.status.${s}`, s) : t('common.all')}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Table */}
+            {/*
+              Durum ekranları (yükleniyor / bağlantı hatası / kayıt yok)
+              tablonun DIŞINDA. İçerideyken `min-w-[800px]` tablonun ortasına
+              hizalanıyorlardı: 375 px'lik telefonda "İlk faturanızı
+              oluşturun" düğmesi 491 px'te kalıyor, yani ekranın dışında.
+              Kullanıcı ilk faturasını telefondan oluşturamıyordu ve bunun
+              görünür bir işareti yoktu — tablo yatay kaydığı için sayfa
+              normal duruyor.
+            */}
+            {loading ? (
+              <div className="text-center py-16">
+                <Loader2 className="w-6 h-6 animate-spin text-teal-500 mx-auto" />
+              </div>
+            ) : baglantiHatasi ? (
+              <div className="text-center py-16 px-5">
+                <WifiOff className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                <p className="text-sm font-semibold text-gray-700">{t('common.loadFailedTitle')}</p>
+                <p className="text-xs text-gray-500 mt-1 mb-3">{t('common.loadFailedHint')}</p>
+                <button
+                  type="button"
+                  onClick={() => fetchInvoices()}
+                  className="px-4 py-2 rounded-xl bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700"
+                >
+                  {t('common.retry')}
+                </button>
+              </div>
+            ) : invoices.length === 0 ? (
+              <div className="text-center py-16 px-5">
+                <Receipt className="w-10 h-10 text-gray-200 mx-auto mb-2" />
+                <p className="text-sm text-gray-400">{t('common.noResults')}</p>
+                <button onClick={() => setShowCreate(true)} className="mt-3 text-sm text-teal-600 hover:text-teal-700 font-medium">{t('crm.billing.createFirstInvoice', 'Create your first invoice')}</button>
+              </div>
+            ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[800px]">
                 <thead>
@@ -581,28 +624,7 @@ const CRMBilling = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {loading ? (
-                    <tr><td colSpan={7} className="text-center py-16"><Loader2 className="w-6 h-6 animate-spin text-teal-500 mx-auto" /></td></tr>
-                  ) : baglantiHatasi ? (
-                    <tr><td colSpan={7} className="text-center py-16">
-                      <WifiOff className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-                      <p className="text-sm font-semibold text-gray-700">{t('common.loadFailedTitle')}</p>
-                      <p className="text-xs text-gray-500 mt-1 mb-3">{t('common.loadFailedHint')}</p>
-                      <button
-                        type="button"
-                        onClick={() => fetchInvoices()}
-                        className="px-4 py-2 rounded-xl bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700"
-                      >
-                        {t('common.retry')}
-                      </button>
-                    </td></tr>
-                  ) : invoices.length === 0 ? (
-                    <tr><td colSpan={7} className="text-center py-16">
-                      <Receipt className="w-10 h-10 text-gray-200 mx-auto mb-2" />
-                      <p className="text-sm text-gray-400">{t('common.noResults')}</p>
-                      <button onClick={() => setShowCreate(true)} className="mt-3 text-sm text-teal-600 hover:text-teal-700 font-medium">{t('crm.billing.createFirstInvoice', 'Create your first invoice')}</button>
-                    </td></tr>
-                  ) : invoices.map(inv => (
+                  {invoices.map(inv => (
                     <tr key={inv.id} className="hover:bg-gray-50/50 transition-colors group">
                       <td className="px-5 py-3.5">
                         <span className="text-sm font-mono font-semibold text-teal-600">{inv.invoice_number}</span>
@@ -641,6 +663,7 @@ const CRMBilling = () => {
                 </tbody>
               </table>
             </div>
+            )}
 
             {/* Pagination */}
             {pagination.last_page > 1 && (
