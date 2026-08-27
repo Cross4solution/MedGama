@@ -45,10 +45,13 @@ class BillingService
             });
         }
         if (!empty($filters['date_from'])) {
-            $query->whereDate('issue_date', '>=', $filters['date_from']);
+            // `whereDate` DEĞİL: sütun zaten `date` tipinde, sarmalamak
+            // `CAST(issue_date AS DATE)` üretiyor ve indeksi kullanılamaz
+            // hâle getiriyor.
+            $query->where('issue_date', '>=', $filters['date_from']);
         }
         if (!empty($filters['date_to'])) {
-            $query->whereDate('issue_date', '<=', $filters['date_to']);
+            $query->where('issue_date', '<=', $filters['date_to']);
         }
 
         // Sort
@@ -646,7 +649,10 @@ HTML;
         // düşüyordu ve bu yüzden hiç test edilememişti. Haftalıkla aynı
         // yaklaşım: toplama güne göre (her sürücüde aynı), ay toplamı PHP'de.
         $gunler = (clone $query)
-            ->whereYear('paid_at', $year)
+            // `whereYear` yerine ARALIK: yıl işlevi sütunu sarmalıyor ve
+            // indeksi devre dışı bırakıyor. Aralık aynı satırları seçiyor.
+            ->where('paid_at', '>=', Carbon::create($year, 1, 1)->startOfDay())
+            ->where('paid_at', '<', Carbon::create($year + 1, 1, 1)->startOfDay())
             ->select(DB::raw('DATE(paid_at) as date'), DB::raw('SUM(grand_total) as total'))
             ->groupBy(DB::raw('DATE(paid_at)'))
             ->get();
