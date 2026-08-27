@@ -8,6 +8,35 @@ services:
     plan: starter
     healthCheckPath: /api/health
 
+    # ── KALICI DİSK ──────────────────────────────────────────────────────
+    #
+    # Bu tanım yokken servisin dosya sistemi GEÇİCİYDİ: Render her dağıtımda
+    # ve her yeniden başlatmada kapsayıcıyı sıfırdan kuruyor. `local` diske
+    # yazılan her şey o anda yok oluyordu —
+    #
+    #   • hasta tıbbi belgeleri
+    #   • sohbet ve iletişim mesajı ekleri
+    #   • hekim diploma ve lisans belgeleri
+    #
+    # Veritabanı satırları kalıyor, dosyalar gidiyordu: sistem belgenin var
+    # olduğunu söylemeye devam ediyor, açmaya çalışınca bulunamıyor. Hasta
+    # belgesini yeniden yükleyemez; hekim diplomasını yeniden göndermek
+    # zorunda kalır.
+    #
+    # ── Bu GEÇİCİ bir çözüm ──────────────────────────────────────────────
+    #
+    # Asıl hedef S3 (`PHI_DISK=s3`); `.env.example` onu zaten öngörüyor ve
+    # dosya deposunun sunucudan ayrı olması yedekleme için de şart. Disk o
+    # gelene kadar veri kaybını durduruyor.
+    #
+    # Bedeli: diski olan bir servis yatay ölçeklenemez ve dağıtımlar kesintisiz
+    # olmaz. Tek örnekli `starter` planında zaten öyleydi, yani bugün bir şey
+    # kaybettirmiyor.
+    disk:
+      name: medagama-dosyalar
+      mountPath: /var/www/html/storage/app
+      sizeGB: 10
+
     preDeployCommand: "php artisan migrate --force"
 
     envVars:

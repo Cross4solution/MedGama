@@ -21,7 +21,16 @@ class EncryptedFileStorage
     /** Şifreli içeriğin başındaki işaret. */
     private const MARKER = "MGENC1\n";
 
-    private const DISK = 'local';
+    /**
+     * Disk YAPILANDIRMADAN geliyor, koda gömülü değil.
+     *
+     * Önceden `'local'` sabitti. S3'e geçilse bile hasta belgeleri yerel
+     * diske yazılmaya devam ederdi — depolama satın alınır, sorun sürerdi.
+     */
+    private static function disk(): string
+    {
+        return (string) config('filesystems.phi_disk', 'local');
+    }
 
     /** Yüklenen dosyayı şifreleyip kaydeder, göreli yolu döner. */
     public function storeUploaded(UploadedFile $file, string $directory): string
@@ -34,7 +43,7 @@ class EncryptedFileStorage
             throw new \RuntimeException('Uploaded file could not be read.');
         }
 
-        Storage::disk(self::DISK)->put($path, self::MARKER . Crypt::encryptString($plain));
+        Storage::disk(self::disk())->put($path, self::MARKER . Crypt::encryptString($plain));
 
         return $path;
     }
@@ -42,7 +51,7 @@ class EncryptedFileStorage
     /** Ham içeriği (ör. GD ile üretilmiş görsel) şifreleyip verilen yola yazar. */
     public function putContents(string $path, string $contents): string
     {
-        Storage::disk(self::DISK)->put($path, self::MARKER . Crypt::encryptString($contents));
+        Storage::disk(self::disk())->put($path, self::MARKER . Crypt::encryptString($contents));
 
         return $path;
     }
@@ -53,7 +62,7 @@ class EncryptedFileStorage
      */
     public function read(string $path): ?string
     {
-        $disk = Storage::disk(self::DISK);
+        $disk = Storage::disk(self::disk());
         $raw = null;
 
         if ($disk->exists($path)) {
@@ -80,13 +89,13 @@ class EncryptedFileStorage
 
     public function exists(string $path): bool
     {
-        return Storage::disk(self::DISK)->exists($path)
+        return Storage::disk(self::disk())->exists($path)
             || Storage::disk('public')->exists($path);
     }
 
     public function delete(string $path): void
     {
-        Storage::disk(self::DISK)->delete($path);
+        Storage::disk(self::disk())->delete($path);
     }
 
     /** Çözülmüş içeriği indirme yanıtı olarak döner. */

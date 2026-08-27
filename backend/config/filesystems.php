@@ -28,6 +28,23 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Hasta verisi taşıyan dosyaların diski
+    |--------------------------------------------------------------------------
+    |
+    | Hasta belgeleri, sohbet ekleri ve hekim diplomaları buraya yazılıyor.
+    | `EncryptedFileStorage` bu diski koda GÖMÜLÜ tutuyordu (`const DISK =
+    | 'local'`); S3'e geçilse bile hasta belgeleri yerel diske yazmaya devam
+    | ederdi — yani depolama satın alınır, sorun sürerdi.
+    |
+    | Render'da kalıcı disk yoksa `local` GEÇİCİ demektir: her dağıtımda
+    | kapsayıcı sıfırdan kurulur ve bu dosyalar yok olur.
+    |
+    */
+
+    'phi_disk' => env('PHI_DISK', env('FILESYSTEM_DISK', 'local')),
+
     'disks' => [
 
         'local' => [
