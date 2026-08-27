@@ -160,10 +160,10 @@ class ContactMessageController extends Controller
             $query->unread();
         }
         if ($search = $request->query('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('subject', Sorgu::benzer(), "%{$search}%")
-                  ->orWhere('body', Sorgu::benzer(), "%{$search}%");
-            });
+            // Gövde ŞİFRELİ: alt dize eşleşmesi orada çalışmaz. Sorguda
+            // bırakmak sessizce "hiç eşleşme yok" demek olurdu — aramanın
+            // bozulduğu değil, sonucun boş olduğu sanılırdı.
+            $query->where('subject', Sorgu::benzer(), "%{$search}%");
         }
 
         $messages = $query->orderByDesc('created_at')->paginate($perPage);

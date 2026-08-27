@@ -26,6 +26,22 @@ class ContactMessage extends Model
     protected function casts(): array
     {
         return [
+            // Hastanın yazdığı metin ŞİFRELİ saklanıyor.
+            //
+            // İletişim kutusuna "üç gündür göğsümde ağrı var" yazıldığında o
+            // cümle sağlık verisi oluyor — KVKK md. 6 anlamında özel nitelikli.
+            // Ekler zaten şifreli diskte duruyordu; tahlili şifreleyip onu
+            // anlatan cümleyi düz bırakmak tutarsızdı.
+            //
+            // Bedeli: gelen kutusunda mesaj İÇİNDE kelime araması artık
+            // yapılamıyor (şifreli sütunda alt dize eşleşmez). Arama konu
+            // başlığı ve gönderen üzerinden sürüyor. Sohbet mesajlarında aynı
+            // ödünç zaten verilmişti.
+            //
+            // `subject` bilerek düz: `varchar(255)` ve şifreli değer taşardı —
+            // sütun genişliği kaynaklı bir hata canlıda tam bu şekilde 500
+            // vermişti (SifreliSutunGenisligiTest).
+            'body'     => 'encrypted',
             'is_read'  => 'boolean',
             'read_at'  => 'datetime',
         ];

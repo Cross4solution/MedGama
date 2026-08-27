@@ -581,10 +581,17 @@ class AuthService
                     }
                 });
 
-            ContactMessage::where('sender_id', $user->id)->update([
-                'subject' => 'Silinmiş mesaj',
-                'body'    => '',
-            ]);
+            // Model üzerinden: `body` artık `encrypted` cast'li ve sorgu
+            // kurucusuyla yazmak şifrelemeyi ATLAR — satır bir daha okunamaz
+            // hâle gelir (aynı tuzağa sohbet mesajlarında düşülmüştü).
+            ContactMessage::where('sender_id', $user->id)
+                ->chunkById(200, function ($iletiler) {
+                    foreach ($iletiler as $ileti) {
+                        $ileti->subject = 'Silinmiş mesaj';
+                        $ileti->body = '';
+                        $ileti->save();
+                    }
+                });
 
             // Değerlendirmeler MedStream gönderileriyle aynı muameleyi görüyor:
             // ikisi de kullanıcının yayımladığı içerik.
