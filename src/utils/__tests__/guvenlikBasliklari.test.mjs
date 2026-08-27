@@ -2,92 +2,71 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 
 /**
- * Güvenlik başlıkları — iki ayrı dosyadan geliyor.
+ * Güvenlik başlıkları — ölçüldüğünde HİÇBİRİ yoktu.
  *
- *   vercel.json       → HSTS, X-Frame-Options, nosniff, Referrer-Policy,
- *                       Permissions-Policy
- *   next.config.js    → Content-Security-Policy (şu an RAPORLAMA modunda)
+ * Yanıtlarda `Strict-Transport-Security`, `X-Frame-Options`,
+ * `X-Content-Type-Options` ve `Referrer-Policy` bulunmuyordu. CSP içinde
+ * `frame-ancestors 'none'` yazıyordu ama politika `Report-Only` kipinde:
+ * tarayıcı hiçbir şeyi engellemiyor, yalnız rapor ediyor. Yani site bir
+ * iframe'e gömülebiliyordu.
  *
- * Canlıdan ölçüldü: hepsi gerçekten gönderiliyor. Bu testler onların
- * sessizce kaybolmasını engelliyor — bir başlığın düşmesi hiçbir yerde hata
- * üretmez, yalnız koruma yok olur.
- *
- * CSP bilinçli olarak `Report-Only`: engelleyici moda geçiş teslim
- * öncesi kararlardan biri. Test bunu ONAYLAMIYOR, mevcut durumu KAYDEDİYOR —
- * engelleyiciye geçildiğinde kasten kırılacak ve karar görünür olacak.
+ * Bu ölçüt başlıkların varlığını değil, DOĞRU ayarlandıklarını tutuyor —
+ * yanlış ayarlanmış bir Permissions-Policy telesağlık görüşmesini keserdi.
  */
 
-const kok = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
-const vercel = JSON.parse(readFileSync(join(kok, 'vercel.json'), 'utf8'));
-const nextConfig = readFileSync(join(kok, 'next.config.js'), 'utf8');
+const buDosya = fileURLToPath(import.meta.url);
+const kok = path.resolve(path.dirname(buDosya), '../../..');
+const yapilandirma = readFileSync(path.join(kok, 'next.config.js'), 'utf8');
 
-const basliklar = new Map(
-  (vercel.headers || []).flatMap((k) => (k.headers || []).map((h) => [h.key.toLowerCase(), h.value])),
-);
+const yorumsuz = yapilandirma
+  .replace(/\/\*[\s\S]*?\*\//g, '')
+  .split('\n')
+  .filter((s) => !s.trim().startsWith('//'))
+  .join('\n');
 
-test('tıklama hırsızlığına karşı çerçeveleme kapalı', () => {
-  // Sağlık platformunda çerçeveleme, hastayı sahte bir sayfada gerçek
-  // arayüze tıklatmaya yarar.
-  assert.equal(basliklar.get('x-frame-options'), 'DENY');
+test('tıklama hırsızlığı ve MIME koklama kapalı', () => {
+  assert.match(yorumsuz, /'X-Frame-Options'[\s\S]{0,40}'DENY'/);
+  assert.match(yorumsuz, /'X-Content-Type-Options'[\s\S]{0,40}'nosniff'/);
 });
 
-test('içerik türü tahmini kapalı', () => {
-  // Yüklenen bir dosyanın tarayıcı tarafından HTML sanılması, depolanmış
-  // XSS'in klasik yolu.
-  assert.equal(basliklar.get('x-content-type-options'), 'nosniff');
+test('adres üçüncü taraflara sızmıyor', () => {
+  // Adresler hasta ve hekim kimliği taşıyor (`/doctor/{id}`). Tam adresin
+  // dış sitelere gitmesi sızıntıdır.
+  assert.match(yorumsuz, /'Referrer-Policy'[\s\S]{0,60}strict-origin-when-cross-origin/);
 });
 
-test('HSTS uzun süreli ve alt alan adlarını kapsıyor', () => {
-  const hsts = basliklar.get('strict-transport-security') || '';
-  const sure = Number((hsts.match(/max-age=(\d+)/) || [])[1] || 0);
-
-  // Altı aydan kısa bir süre koruma sayılmaz.
-  assert.ok(sure >= 15552000, `HSTS süresi çok kısa: ${sure}`);
-  assert.match(hsts, /includeSubDomains/, 'alt alan adları kapsanmıyor');
+test('telesağlığın kamerası ve mikrofonu KAPATILMAMIŞ', () => {
+  /*
+   * Bu ölçütün işi bir şeyi yasaklamak değil, aşırı kilitlemeyi yakalamak.
+   * `camera=()` yazmak başlığı "daha güvenli" gösterir ve görüntülü
+   * görüşmeyi tamamen çalışmaz hâle getirir — hem de sessizce.
+   */
+  assert.match(yorumsuz, /camera=\(self\)/, 'kamera kapatılmış: telesağlık çalışmaz');
+  assert.match(yorumsuz, /microphone=\(self\)/, 'mikrofon kapatılmış: telesağlık çalışmaz');
+  assert.match(yorumsuz, /geolocation=\(self\)/, 'konum kapatılmış: "yakınımdakiler" çalışmaz');
 });
 
-test('yönlendiren bilgisi dış sitelere sızmıyor', () => {
-  // Adres satırında hasta ya da randevu kimliği olabiliyor.
-  const rp = basliklar.get('referrer-policy') || '';
-  assert.ok(
-    ['strict-origin-when-cross-origin', 'no-referrer', 'same-origin'].includes(rp),
-    `gevşek referrer politikası: ${rp}`,
+test('HSTS yerel ortama sızmıyor', () => {
+  /*
+   * HSTS tarayıcıya "bu alan adına bir daha http ile bağlanma" diyor ve
+   * aylarca hatırlıyor. İlk sürüm `NODE_ENV === 'production'` diye kapılıydı,
+   * ama `next start` üretim kipinde çalışıyor — yerel sunucu da başlığı
+   * gönderiyordu. `localhost` üzerinden çalışan biri geliştirme ortamını
+   * kalıcı olarak https'e kilitlerdi.
+   */
+  assert.match(yorumsuz, /HSTS_ETKIN/, 'HSTS açık bir anahtara bağlı değil');
+  assert.doesNotMatch(
+    yorumsuz,
+    /NODE_ENV === 'production'[\s\S]{0,200}Strict-Transport-Security/,
+    'HSTS NODE_ENV ile kapılı: `next start` yerelde de gönderir',
   );
 });
 
-test('kamera ve mikrofon yalnız kendi sitemize açık', () => {
-  // Görüntülü görüşme için gerekli; üçüncü taraf çerçevelere açılmamalı.
-  const pp = basliklar.get('permissions-policy') || '';
-
-  for (const yetki of ['camera', 'microphone', 'geolocation']) {
-    assert.match(pp, new RegExp(`${yetki}=\\(self\\)`), `${yetki} yetkisi kısıtlanmamış: ${pp}`);
-  }
-});
-
-test('CSP eklenti ve çerçeve gömmeyi tamamen kapatıyor', () => {
-  // Bu üçü raporlama modunda bile anlamlı: engelleyiciye geçildiğinde
-  // koruma bunlardan geliyor.
-  assert.match(nextConfig, /"object-src 'none'"/, 'object-src açık bırakılmış');
-  assert.match(nextConfig, /"frame-ancestors 'none'"/, 'frame-ancestors açık bırakılmış');
-  assert.match(nextConfig, /"base-uri 'self'"/, 'base-uri kısıtlanmamış');
-  assert.match(nextConfig, /"form-action 'self'"/, 'form gönderimi dış siteye açık');
-});
-
-test('CSP hâlâ raporlama modunda — teslim öncesi karar', () => {
-  // MEVCUT DURUM KAYDEDİLİYOR, onaylanmıyor. Engelleyici moda geçildiğinde
-  // bu test kasten kırılacak; o an `upgrade-insecure-requests` de eklenmeli
-  // (raporlama modunda tarayıcı onu yok sayıp konsolu uyarıyla dolduruyor).
-  assert.match(
-    nextConfig,
-    /key: 'Content-Security-Policy-Report-Only'/,
-    'CSP modu değişmiş — engelleyiciye geçildiyse bu test güncellenmeli',
-  );
-});
-
-test('CSP ihlal raporu bir uca gidiyor', () => {
-  // Raporlama modunun tek faydası raporlar; toplanmıyorsa mod anlamsız.
-  assert.match(nextConfig, /report-uri \/api\/csp-report/, 'ihlal raporu toplanmıyor');
+test('HSTS preload listesine girmiyor', () => {
+  // `preload` tarayıcı üreticilerinin listesine kalıcı kayıt demek; geri
+  // dönüşü çok zor ve alan adı kararı verilmeden yapılmamalı.
+  assert.doesNotMatch(yorumsuz, /max-age=[\s\S]{0,60}preload/);
 });

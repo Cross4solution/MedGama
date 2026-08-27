@@ -133,10 +133,72 @@ const nextConfig = {
       'report-uri /api/csp-report',
     ].join('; ');
 
+    // ── Diğer güvenlik başlıkları ────────────────────────────────────────
+    //
+    // Ölçüldüğünde yanıtlarda BUNLARIN HİÇBİRİ yoktu. CSP içinde
+    // `frame-ancestors 'none'` yazıyor ama izleme modunda engellemiyor,
+    // yalnız rapor ediyor — yani site bir iframe'e gömülebiliyordu.
+    const guvenlikBasliklari = [
+      // Tıklama hırsızlığı. CSP engelleyici moda geçtiğinde `frame-ancestors`
+      // bunu devralacak; o güne kadar tek koruma bu.
+      { key: 'X-Frame-Options', value: 'DENY' },
+
+      // Tarayıcının içeriğin türünü "tahmin etmesini" kapatır. Tahmin,
+      // yüklenen bir dosyanın betik olarak çalıştırılmasına yol açabiliyor.
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+
+      // Adresler hasta ve hekim kimliği taşıyor (`/doctor/{id}`,
+      // `/patient/appointments`). Tam adresin üçüncü taraflara gitmesi
+      // sızıntıdır; dış sitelere yalnız alan adı gidiyor.
+      { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+
+      // Kamera, mikrofon ve konum AÇIK BIRAKILIYOR — telesağlık görüşmesi ve
+      // "yakınımdakiler" bunlara ihtiyaç duyuyor. Kapatmak çalışan özellikleri
+      // kırardı. Kullanılmayanlar kapatılıyor.
+      {
+        key: 'Permissions-Policy',
+        value: [
+          'camera=(self)',
+          'microphone=(self)',
+          'geolocation=(self)',
+          'payment=()',
+          'usb=()',
+          'magnetometer=()',
+          'accelerometer=()',
+          'gyroscope=()',
+        ].join(', '),
+      },
+    ];
+
+    // HSTS AÇIK BİR ANAHTARLA — `NODE_ENV` ile değil.
+    //
+    // Tarayıcıya "bu alan adına bir daha asla http ile bağlanma" diyor ve bunu
+    // aylarca hatırlıyor.
+    //
+    // İlk sürüm `NODE_ENV === 'production'` diye kapılıyordu ve bu YANLIŞTI:
+    // `next start` üretim kipinde çalışıyor, yani yerel sunucu da başlığı
+    // gönderiyordu. Tarayıcılar HSTS'i IP adreslerine uygulamıyor (bu yüzden
+    // 127.0.0.1 kurtuluyor), ama `localhost` üzerinden çalışan biri geliştirme
+    // ortamını kalıcı olarak https'e kilitlerdi — geri alması da zor.
+    //
+    // Ölçüldü: yerel `next start` başlığı gönderiyordu.
+    //
+    // `preload` BİLEREK yok: tarayıcı üreticilerinin listesine girmek geri
+    // dönüşü çok zor bir taahhüt ve alan adı kararı verilmeden yapılmamalı.
+    if (process.env.HSTS_ETKIN === '1') {
+      guvenlikBasliklari.push({
+        key: 'Strict-Transport-Security',
+        value: 'max-age=31536000; includeSubDomains',
+      });
+    }
+
     return [
       {
         source: '/:path*',
-        headers: [{ key: 'Content-Security-Policy-Report-Only', value: politika }],
+        headers: [
+          { key: 'Content-Security-Policy-Report-Only', value: politika },
+          ...guvenlikBasliklari,
+        ],
       },
     ];
   },
