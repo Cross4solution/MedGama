@@ -213,19 +213,19 @@ const CRMReports = () => {
     ],
   });
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     setExporting(true); setExportOpen(false);
     try {
       const { summaryCards, tables } = buildExportData();
-      exportPDF({ title: 'Raporlar & Analitik', subtitle: `Dönem: ${period} — ${new Date().toLocaleDateString('tr-TR')}`, summary: summaryCards, tables, filename: `raporlar-${period}-${new Date().toISOString().slice(0, 10)}.pdf` });
+      await exportPDF({ title: 'Raporlar & Analitik', subtitle: `Dönem: ${period} — ${new Date().toLocaleDateString('tr-TR')}`, summary: summaryCards, tables, filename: `raporlar-${period}-${new Date().toISOString().slice(0, 10)}.pdf` });
     } catch (err) { console.error('PDF Export error:', err); } finally { setExporting(false); }
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     setExporting(true); setExportOpen(false);
     try {
       const { summaryCards, tables } = buildExportData();
-      exportExcel({ title: 'Raporlar & Analitik', summary: summaryCards, tables, filename: `raporlar-${period}-${new Date().toISOString().slice(0, 10)}.xlsx` });
+      await exportExcel({ title: 'Raporlar & Analitik', summary: summaryCards, tables, filename: `raporlar-${period}-${new Date().toISOString().slice(0, 10)}.xlsx` });
     } catch (err) { console.error('Excel Export error:', err); } finally { setExporting(false); }
   };
 

@@ -250,12 +250,12 @@ const CRMRevenue = () => {
     return { summaryCards, tables };
   };
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     setExporting(true);
     setExportOpen(false);
     try {
       const { summaryCards, tables } = buildExportData();
-      exportPDF({
+      await exportPDF({
         title: t('crm.revenue.reportTitle', 'Revenue & Finance Report'),
         subtitle: `Currency: ${currency} — Period: ${period} — ${new Date().toLocaleDateString()}`,
         summary: summaryCards,
@@ -269,12 +269,12 @@ const CRMRevenue = () => {
     }
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     setExporting(true);
     setExportOpen(false);
     try {
       const { summaryCards, tables } = buildExportData();
-      exportExcel({
+      await exportExcel({
         title: 'Revenue & Finance',
         summary: summaryCards,
         tables,

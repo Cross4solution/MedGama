@@ -1,6 +1,3 @@
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-import * as XLSX from 'xlsx';
 
 // ── Brand colors ──
 const TEAL = [10, 110, 111]; // #0A6E6F
@@ -56,7 +53,23 @@ export function sayfaAdi(baslik, kullanilanlar = new Set()) {
  * @param {Array<{title: string, headers: string[], rows: string[][]}>} opts.tables - Data tables
  * @param {string} [opts.filename] - Download filename
  */
-export const exportPDF = ({ title, subtitle, summary = [], tables = [], filename }) => {
+export const exportPDF = async ({ title, subtitle, summary = [], tables = [], filename }) => {
+  // Kütüphane ancak burada iniyor; sayfa açılışında değil.
+  //
+  // ADLANDIRILMIŞ dışa aktarma kullanılıyor: `jspdf` paketinin varsayılan
+  // dışa aktarımı kurucu DEĞİL, bir nesne. Statik `import jsPDF from 'jspdf'`
+  // yazımında paketleyici bu farkı örtüyordu; dinamik içe aktarmada örtmüyor
+  // ve `new jsPDF(...)` "is not a constructor" ile patlıyor. Ölçülerek
+  // bulundu, tahmin edilmedi.
+  const { jsPDF } = await import('jspdf');
+
+  // `jspdf-autotable` prototipi kendiliğinden yamalamıyor (ölçüldü:
+  // `doc.autoTable` tanımsız kalıyor). Paket `applyPlugin` sunuyor; onu
+  // açıkça çağırıyoruz. Statik içe aktarmada yan etki olarak oluyordu,
+  // dinamikte olmuyor.
+  const otoTablo = await import('jspdf-autotable');
+  if (typeof otoTablo.applyPlugin === 'function') otoTablo.applyPlugin(jsPDF);
+
   const doc = new jsPDF('p', 'mm', 'a4');
   const pageW = doc.internal.pageSize.getWidth();
   let y = 15;
@@ -155,7 +168,9 @@ export const exportPDF = ({ title, subtitle, summary = [], tables = [], filename
  * @param {Array<{title: string, headers: string[], rows: (string|number)[][]}>} opts.tables - Data tables
  * @param {string} [opts.filename] - Download filename
  */
-export const exportExcel = ({ title, summary = [], tables = [], filename }) => {
+export const exportExcel = async ({ title, summary = [], tables = [], filename }) => {
+  const XLSX = await import('xlsx');
+
   const wb = XLSX.utils.book_new();
 
   // ── Summary sheet ──
