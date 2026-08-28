@@ -31,15 +31,25 @@ test.beforeAll(() => {
   expect(TELEFON.viewport.width).toBeLessThan(400);
 });
 
+// Listedeki her sayfa bir zamanlar KIRIKTI ve ölçülüp düzeltildi. Kalan 64
+// rota ayrıca tarandı ve temiz çıktı; onlar buraya alınmadı, çünkü hiç
+// kırılmamış bir sayfayı sürekli sınamak koşu süresini uzatır ve karşılığında
+// bir şey öğretmez. Yeni bir taşma bulunursa sayfası buraya eklenir.
 const SAYFALAR = [
-  { yol: '/admin/reviews',  oturum: 'yonetici' },
-  { yol: '/admin/users',    oturum: 'yonetici' },
-  { yol: '/admin/catalog',  oturum: 'yonetici' },
-  { yol: '/crm/billing',    oturum: 'klinik' },
-  { yol: '/crm/appointments', oturum: 'klinik' },
-  { yol: '/doctor/appointments', oturum: 'demoDoktor' },
-  { yol: '/medstream',      oturum: null },
-  { yol: '/login',          oturum: null },
+  { yol: '/admin/reviews',    oturum: 'yonetici' },   // süzgeç satırı, 310px
+  { yol: '/admin/users',      oturum: 'yonetici' },   // sekme satırı, 113px
+  { yol: '/admin/catalog',    oturum: 'yonetici' },   // sekme satırı, 5px
+  { yol: '/admin/moderation', oturum: 'yonetici' },   // süzgeç satırı, 160px
+  { yol: '/admin/verification', oturum: 'yonetici' }, // süzgeç satırı, 320px'te 5px
+  { yol: '/admin/audit-logs', oturum: 'yonetici' },   // tarih aralığı, 320px'te 8px
+  { yol: '/crm/billing',      oturum: 'klinik' },     // durum süzgeci kırpılıyordu
+  { yol: '/crm/appointments', oturum: 'klinik' },     // takvim araç çubuğu, 320px'te 3px
+  { yol: '/crm/revenue',      oturum: 'klinik' },     // dönem seçici, 320px'te 54px
+  { yol: '/doctor/appointments', oturum: 'demoDoktor' }, // eylem sütunu ekran dışıydı
+  { yol: '/doctor/billing',   oturum: 'doktor' },     // başlık ve süzgeç çubuğu
+  { yol: '/settings',         oturum: 'hasta' },      // takvim bağlantısı + "Kopyala"
+  { yol: '/medstream',        oturum: null },
+  { yol: '/login',            oturum: null },
 ];
 
 // 375 px yaygın telefon; 320 px hem eski küçük telefonlar hem de WCAG
@@ -63,6 +73,11 @@ for (const { yol, oturum } of SAYFALAR) {
     });
 
     test('telefonda yana kaymıyor', async ({ page }) => {
+      // Geliştirme sunucusu bir rotayı ilk kez derlerken dakikalar
+      // alabiliyor ve varsayılan 90 sn'lik sınır ölçüm yapılmadan doluyor —
+      // düzen hatası olmadığı hâlde test kırmızıya dönüyordu.
+      test.setTimeout(300_000);
+
       // Yönetici oturumu ortam değişkeni gerektiriyor; verilmediğinde
       // paketin geri kalanı gibi bu da atlanır (bkz. genis-tarama.spec.js).
       //

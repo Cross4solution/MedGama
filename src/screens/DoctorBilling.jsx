@@ -473,7 +473,7 @@ export default function DoctorBilling() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
 
         {/* ── Header ── */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
               <FileText className="w-6 h-6 text-teal-600" />
@@ -531,8 +531,12 @@ export default function DoctorBilling() {
 
         {/* ── Filter Bar ── */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm mb-4">
-          <div className="flex items-center gap-2 p-3">
-            <div className="flex-1 relative">
+          {/* Süzgeç çubuğu sarmalanıyor: arama + durum seçici + "Filtrele"
+              320 px'e tek satırda sığmıyor ve düğme 332 px'te, ekranın
+              dışında kalıyordu. Arama alanına `min-w-0` gerekiyor, yoksa
+              `flex-1` olmasına rağmen doğal genişliğinin altına inmiyor. */}
+          <div className="flex flex-wrap items-center gap-2 p-3">
+            <div className="flex-1 min-w-0 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 value={filterSearch}

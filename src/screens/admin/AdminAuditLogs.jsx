@@ -377,7 +377,7 @@ export default function AdminAuditLogs() {
           </div>
 
           {/* Date range — always visible */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
               className="px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none w-36" />
             <span className="text-gray-400 text-xs">—</span>

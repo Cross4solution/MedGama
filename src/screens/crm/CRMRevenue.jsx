@@ -367,7 +367,7 @@ const CRMRevenue = () => {
             </select>
           </div>
           {/* Period Selector */}
-          <div className="flex bg-gray-100 rounded-lg p-0.5">
+          <div className="flex flex-wrap bg-gray-100 rounded-lg p-0.5">
             {[
               { key: 'daily', label: t('crm.revenue.daily', 'Daily') },
               { key: 'weekly', label: t('crm.revenue.week', 'Week') },

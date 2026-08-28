@@ -462,7 +462,7 @@ export default function AdminVerification() {
       {tab === 'requests' && (
         <>
           <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
+            <div className="flex flex-wrap gap-1 bg-gray-100 rounded-xl p-1">
               {['all', 'pending', 'approved', 'rejected'].map(f => (
                 <button key={f} onClick={() => setReqFilter(f)} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all capitalize ${reqFilter === f ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
                   {t(`admin.verification.filter.${f}`)}
@@ -528,7 +528,7 @@ export default function AdminVerification() {
       {tab === 'doctors' && (
         <>
           <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
+            <div className="flex flex-wrap gap-1 bg-gray-100 rounded-xl p-1">
               {[{ key: 'all', label: t('common.all') }, { key: 'pending', label: t('common.pending') }, { key: 'verified', label: t('admin.verification.verified') }].map(f => (
                 <button key={f.key} onClick={() => setDocFilter(f.key)} className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${docFilter === f.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
                   {f.label}

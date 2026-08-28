@@ -60,7 +60,11 @@ export default function CalendarSyncCard() {
                 readOnly
                 value={data.url}
                 onFocus={(e) => e.target.select()}
-                className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-600 bg-gray-50 font-mono truncate"
+                /* `min-w-0` olmadan girdi kendi doğal genişliğinin altına
+                   inmiyor (input'un varsayılan `size` genişliği var) ve
+                   yanındaki "Kopyala" düğmesini ekran dışına itiyordu:
+                   320 px'lik ekranda düğme 328 px'te kalıyordu. */
+                className="flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-600 bg-gray-50 font-mono truncate"
               />
               <button onClick={copy} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:border-teal-300 hover:text-teal-700">
                 {copied ? <Check className="w-3.5 h-3.5 text-teal-600" /> : <Copy className="w-3.5 h-3.5" />}
