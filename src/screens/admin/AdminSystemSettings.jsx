@@ -362,7 +362,7 @@ export default function AdminSystemSettings() {
             <div>
               <label className="text-xs font-medium text-gray-600 mb-1.5 block">{t('admin.settings.proMonthlyPrice')}</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">$</span>
+                <span className="absolute start-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">$</span>
                 <input
                   type="number"
                   step="0.01"
@@ -377,7 +377,7 @@ export default function AdminSystemSettings() {
             <div>
               <label className="text-xs font-medium text-gray-600 mb-1.5 block">{t('admin.settings.proAnnualPrice')}</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">$</span>
+                <span className="absolute start-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">$</span>
                 <input
                   type="number"
                   step="0.01"
@@ -427,7 +427,7 @@ export default function AdminSystemSettings() {
                   className="w-32 pl-3 pr-8 py-2 border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 outline-none transition-all"
                   placeholder="0"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">%</span>
+                <span className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">%</span>
               </div>
             </div>
             <button

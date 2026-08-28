@@ -217,7 +217,7 @@ export default function DateOfBirthPicker({ value = '', onChange, className = ''
 
       {/* Dropdown calendar */}
       {open && (
-        <div className="absolute z-50 mt-1.5 left-0 w-72 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 animate-in fade-in slide-in-from-top-1">
+        <div className="absolute z-50 mt-1.5 start-0 w-72 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 animate-in fade-in slide-in-from-top-1">
           {/* Header */}
           <div className="flex items-center justify-between mb-2">
             <button type="button" onClick={prevMonth} className="w-7 h-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500">

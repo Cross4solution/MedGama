@@ -92,7 +92,7 @@ function PatientSearchDropdown({ value, onChange }) {
   return (
     <div ref={wrapperRef} className="relative">
       <div className="relative">
-        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+        <User className="absolute start-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
         <input
           value={query}
           onChange={e => handleSearch(e.target.value)}
@@ -101,7 +101,7 @@ function PatientSearchDropdown({ value, onChange }) {
           className="w-full pl-8 pr-8 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40 focus:border-teal-400"
         />
         {(query || selected) && (
-          <button type="button" onClick={handleClear} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+          <button type="button" onClick={handleClear} className="absolute end-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
             <X className="w-3.5 h-3.5" />
           </button>
         )}
@@ -537,12 +537,12 @@ export default function DoctorBilling() {
               `flex-1` olmasına rağmen doğal genişliğinin altına inmiyor. */}
           <div className="flex flex-wrap items-center gap-2 p-3">
             <div className="flex-1 min-w-0 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 value={filterSearch}
                 onChange={e => setFilterSearch(e.target.value)}
                 placeholder={t('billing.searchInvoicePlaceholder')}
-                className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40 focus:border-teal-400"
+                className="w-full ps-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40 focus:border-teal-400"
               />
             </div>
             <select

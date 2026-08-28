@@ -304,13 +304,13 @@ export default function SearchResults() {
           <div className="bg-white rounded-2xl shadow-xl p-2 flex flex-col md:flex-row gap-2">
             {/* Text input */}
             <div className="flex-1 relative">
-              <Stethoscope className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Stethoscope className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 value={heroQ}
                 onChange={e => setHeroQ(e.target.value)}
                 placeholder={t('search.specialtyOrDoctorPlaceholder')}
                 aria-label={t('search.specialtyOrDoctor')}
-                className="w-full pl-10 pr-3 py-3 rounded-xl text-sm border border-gray-100 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none transition-all"
+                className="w-full ps-10 pr-3 py-3 rounded-xl text-sm border border-gray-100 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none transition-all"
               />
             </div>
             {/* Specialty select */}
@@ -328,12 +328,12 @@ export default function SearchResults() {
             {/* City select */}
             <div className="md:w-44">
               <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                <MapPin className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                 <select
                   aria-label={t('search.city')}
                   value={heroCity}
                   onChange={e => setHeroCity(e.target.value)}
-                  className="w-full border border-gray-100 rounded-xl pl-9 pr-3 py-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none bg-white appearance-none"
+                  className="w-full border border-gray-100 rounded-xl ps-9 pr-3 py-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none bg-white appearance-none"
                 >
                   <option value="">{t('search.allCities')}</option>
                   {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}

@@ -161,14 +161,14 @@ export default function ForgotPasswordPage() {
             <div className="mb-5">
               <label className="block text-xs font-medium text-gray-600 mb-1.5">{t('forgotPasswordPage.emailAddress', "Email address")}</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Mail className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); setError(''); }}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendCode()}
                   placeholder={t('forgotPasswordPage.youExampleCom', "you@example.com")}
-                  className="w-full h-11 pl-10 pr-4 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/25 focus:border-teal-400 transition-all outline-none"
+                  className="w-full h-11 ps-10 pr-4 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/25 focus:border-teal-400 transition-all outline-none"
                   autoFocus
                 />
               </div>
@@ -262,20 +262,20 @@ export default function ForgotPasswordPage() {
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1.5">{t('forgotPasswordPage.newPassword', "New password")}</label>
                 <div className="relative">
-                  <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <KeyRound className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => { setPassword(e.target.value); setError(''); }}
                     placeholder={t('forgotPasswordPage.min6Characters', "Min. 6 characters")}
-                    className="w-full h-11 pl-10 pr-10 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/25 focus:border-teal-400 transition-all outline-none"
+                    className="w-full h-11 ps-10 pe-10 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/25 focus:border-teal-400 transition-all outline-none"
                     autoFocus
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? t('auth.hidePassword', 'Parolayı gizle') : t('auth.showPassword', 'Parolayı göster')}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600"
+                    className="absolute end-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -285,14 +285,14 @@ export default function ForgotPasswordPage() {
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1.5">{t('forgotPasswordPage.confirmPassword', "Confirm password")}</label>
                 <div className="relative">
-                  <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <KeyRound className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={confirmPassword}
                     onChange={(e) => { setConfirmPassword(e.target.value); setError(''); }}
                     onKeyDown={(e) => e.key === 'Enter' && handleResetPassword()}
                     placeholder={t('forgotPasswordPage.repeatYourPassword', "Repeat your password")}
-                    className="w-full h-11 pl-10 pr-4 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/25 focus:border-teal-400 transition-all outline-none"
+                    className="w-full h-11 ps-10 pr-4 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/25 focus:border-teal-400 transition-all outline-none"
                   />
                 </div>
               </div>

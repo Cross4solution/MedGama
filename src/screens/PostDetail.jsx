@@ -676,10 +676,10 @@ export default function PostDetail() {
           {/* Navigation arrows */}
           {mediaList.length > 1 && (
             <>
-              <button type="button" onClick={goPrev} className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white/80 hover:text-white flex items-center justify-center transition-all" aria-label={t('postDetail.previous', "Previous")}>
+              <button type="button" onClick={goPrev} className="absolute start-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white/80 hover:text-white flex items-center justify-center transition-all" aria-label={t('postDetail.previous', "Previous")}>
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <button type="button" onClick={goNext} className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white/80 hover:text-white flex items-center justify-center transition-all" aria-label={t('postDetail.next', "Next")}>
+              <button type="button" onClick={goNext} className="absolute end-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white/80 hover:text-white flex items-center justify-center transition-all" aria-label={t('postDetail.next', "Next")}>
                 <ChevronRight className="w-5 h-5" />
               </button>
             </>

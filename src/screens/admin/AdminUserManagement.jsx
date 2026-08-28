@@ -514,13 +514,13 @@ export default function AdminUserManagement() {
 
       {/* Search */}
       <div className="relative max-w-lg">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <input
           type="text"
           placeholder={t('adminUserManagement.searchByNameEmailOr', "Search by name, email or phone...")}
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all"
+          className="w-full ps-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all"
         />
       </div>
 
@@ -591,7 +591,7 @@ export default function AdminUserManagement() {
                           <ChevronDown className="w-3 h-3 opacity-50" />
                         </button>
                         {roleDropdown === u.id && (
-                          <div className="absolute z-20 mt-1 left-4 bg-white border border-gray-200 rounded-lg shadow-lg w-44 py-1">
+                          <div className="absolute z-20 mt-1 start-4 bg-white border border-gray-200 rounded-lg shadow-lg w-44 py-1">
                             {ROLES.map(r => (
                               <button
                                 key={r.key}

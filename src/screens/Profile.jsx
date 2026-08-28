@@ -753,12 +753,12 @@ export default function Profile() {
                         type={showOldPwd ? 'text' : 'password'}
                         value={oldPwd}
                         onChange={(e)=>setOldPwd(e.target.value)}
-                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pr-10 text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
+                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pe-10 text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
                       />
                       <button
                         type="button"
                         onClick={()=>setShowOldPwd(s=>!s)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                        className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                         aria-label={showOldPwd ? 'Hide password' : 'Show password'}
                       >
                         {showOldPwd ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -772,12 +772,12 @@ export default function Profile() {
                         type={showNewPwd ? 'text' : 'password'}
                         value={newPwd}
                         onChange={(e)=>setNewPwd(e.target.value)}
-                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pr-10 text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
+                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pe-10 text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
                       />
                       <button
                         type="button"
                         onClick={()=>setShowNewPwd(s=>!s)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                        className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                         aria-label={showNewPwd ? 'Hide password' : 'Show password'}
                       >
                         {showNewPwd ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -791,12 +791,12 @@ export default function Profile() {
                         type={showNewPwd2 ? 'text' : 'password'}
                         value={newPwd2}
                         onChange={(e)=>setNewPwd2(e.target.value)}
-                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pr-10 text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
+                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pe-10 text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
                       />
                       <button
                         type="button"
                         onClick={()=>setShowNewPwd2(s=>!s)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                        className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                         aria-label={showNewPwd2 ? 'Hide password' : 'Show password'}
                       >
                         {showNewPwd2 ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}

@@ -58,7 +58,7 @@ export default function DoctorFaqSection({ doctorId }) {
             </button>
             {openId === faq.id && (
               <div className="px-5 pb-4 pt-0 bg-gray-50/30 border-t border-gray-100">
-                <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap pl-11">{faq.answer}</p>
+                <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap ps-11">{faq.answer}</p>
               </div>
             )}
           </div>

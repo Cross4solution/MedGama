@@ -587,7 +587,7 @@ const CRMLayout = ({ children }) => {
                 )}
 
                 {notifOpen && (
-                  <div className="absolute right-0 mt-2 w-[400px] bg-white rounded-2xl shadow-2xl border border-gray-200/60 z-50 overflow-hidden animate-fadeIn">
+                  <div className="absolute end-0 mt-2 w-[400px] bg-white rounded-2xl shadow-2xl border border-gray-200/60 z-50 overflow-hidden animate-fadeIn">
                     {/* Header */}
                     <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
                       <div className="flex items-center gap-2.5">
@@ -715,7 +715,7 @@ const CRMLayout = ({ children }) => {
                 {profileOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200/60 py-2 z-50">
+                    <div className="absolute end-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200/60 py-2 z-50">
                       <div className="px-4 py-2 border-b border-gray-100">
                         <p className="text-sm font-semibold text-gray-900">{user?.name || 'Dr. Demo'}</p>
                         <p className="text-xs text-gray-500">{user?.email || 'doctor@medagama.com'}</p>

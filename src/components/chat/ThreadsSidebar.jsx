@@ -34,13 +34,13 @@ export default function ThreadsSidebar({
         <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
           <h2 className="text-sm font-bold text-gray-900 mb-2.5">{t('threadsSidebar.messages', "Messages")}</h2>
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search className="w-3.5 h-3.5 absolute start-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
               placeholder={t('threadsSidebar.searchConversations', "Search conversations...")}
-              className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-sm bg-white hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none placeholder:text-gray-400"
+              className="w-full ps-9 pr-3 py-2 border border-gray-200 rounded-xl text-sm bg-white hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none placeholder:text-gray-400"
             />
           </div>
         </div>

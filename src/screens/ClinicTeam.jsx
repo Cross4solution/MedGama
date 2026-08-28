@@ -142,9 +142,9 @@ export default function ClinicTeam() {
 
         {/* Search */}
         <div className="relative mb-6">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute start-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input value={search} onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-white rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
+            className="w-full ps-10 pr-4 py-2.5 bg-white rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
             placeholder={t('clinicTeam.searchPlaceholder', 'Search by name or email...')} />
         </div>
 
@@ -326,7 +326,7 @@ function DoctorCard({ doc, t, onDeactivate, onReactivate, onEdit }) {
           <MoreVertical className="w-4 h-4" />
         </button>
         {menuOpen && (
-          <div className="absolute right-0 top-8 bg-white rounded-xl shadow-lg border border-gray-200 py-1 w-36 z-10">
+          <div className="absolute end-0 top-8 bg-white rounded-xl shadow-lg border border-gray-200 py-1 w-36 z-10">
             {!inactive ? (
               <button onClick={() => { onDeactivate(); setMenuOpen(false); }}
                 className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-600 hover:bg-red-50 transition-colors">

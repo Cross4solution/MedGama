@@ -28,7 +28,7 @@ const ForgotPasswordForm = ({
           {t('common.email')}
         </label>
         <div className="relative">
-          <Mail className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
+          <Mail className="absolute start-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
           <input
             type="email"
             name="email"

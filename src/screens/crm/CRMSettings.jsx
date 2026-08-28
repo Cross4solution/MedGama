@@ -1450,9 +1450,9 @@ const CRMSettings = ({ standalone = false }) => {
                         value={eskiSifre}
                         onChange={(e) => setEskiSifre(e.target.value)}
                         autoComplete="current-password"
-                        className="w-full sm:w-96 h-10 px-3 pr-10 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        className="w-full sm:w-96 h-10 px-3 pe-10 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                       />
-                      <button type="button" aria-label={showPassword ? t('auth.hidePassword', 'Parolayı gizle') : t('auth.showPassword', 'Parolayı göster')} onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                      <button type="button" aria-label={showPassword ? t('auth.hidePassword', 'Parolayı gizle') : t('auth.showPassword', 'Parolayı göster')} onClick={() => setShowPassword(!showPassword)} className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                         {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                       </button>
                     </div>

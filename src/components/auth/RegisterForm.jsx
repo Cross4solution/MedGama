@@ -163,7 +163,7 @@ const RegisterForm = ({
             {t('auth.firstName')}
           </label>
           <div className="relative">
-            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <User className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
               name="firstName"
@@ -172,7 +172,7 @@ const RegisterForm = ({
               aria-describedby={(errors.firstName || localErrors.firstName) ? 'kayit-firstName-hata' : undefined}
               value={fd.firstName ?? ''}
               onChange={handleInputChange}
-              className={`w-full h-11 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
+              className={`w-full h-11 ps-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
                 (errors.firstName || localErrors.firstName) ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('auth.firstNamePlaceholder')}
@@ -187,7 +187,7 @@ const RegisterForm = ({
             {t('auth.lastName')}
           </label>
           <div className="relative">
-            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <User className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
               name="lastName"
@@ -196,7 +196,7 @@ const RegisterForm = ({
               aria-describedby={(errors.lastName || localErrors.lastName) ? 'kayit-lastName-hata' : undefined}
               value={fd.lastName ?? ''}
               onChange={handleInputChange}
-              className={`w-full h-11 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
+              className={`w-full h-11 ps-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
                 (errors.lastName || localErrors.lastName) ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('auth.lastNamePlaceholder')}
@@ -213,7 +213,7 @@ const RegisterForm = ({
             {t('auth.username', 'Kullanıcı adı')}
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold">@</span>
+            <span className="absolute start-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold">@</span>
             <input
               type="text"
               name="username"
@@ -250,7 +250,7 @@ const RegisterForm = ({
             {t('auth.clinicName') || 'Clinic Name'}
           </label>
           <div className="relative">
-            <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Building2 className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
               name="clinicName"
@@ -259,7 +259,7 @@ const RegisterForm = ({
               aria-describedby={(errors.clinicName || localErrors.clinicName) ? 'kayit-clinicName-hata' : undefined}
               value={fd.clinicName ?? ''}
               onChange={handleInputChange}
-              className={`w-full h-11 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
+              className={`w-full h-11 ps-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
                 (errors.clinicName || localErrors.clinicName) ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('auth.clinicNamePlaceholder')}
@@ -277,7 +277,7 @@ const RegisterForm = ({
             {t('auth.emailAddress')}
           </label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Mail className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="email"
               name="email"
@@ -286,7 +286,7 @@ const RegisterForm = ({
               aria-describedby={(errors.email || localErrors.email) ? 'kayit-email-hata' : undefined}
               value={fd.email ?? ''}
               onChange={handleInputChange}
-              className={`w-full h-11 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
+              className={`w-full h-11 ps-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
                 (errors.email || localErrors.email) ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('registerForm.nameExampleCom', "name@example.com")}
@@ -301,7 +301,7 @@ const RegisterForm = ({
             {t('common.password')}
           </label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Lock className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type={showPassword ? 'text' : 'password'}
               name="password"
@@ -310,7 +310,7 @@ const RegisterForm = ({
               aria-describedby={errors.password ? 'kayit-password-hata' : undefined}
               value={fd.password ?? ''}
               onChange={handleInputChange}
-              className={`w-full h-11 pl-9 pr-10 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
+              className={`w-full h-11 ps-9 pe-10 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('auth.passwordPlaceholder')}
@@ -319,7 +319,7 @@ const RegisterForm = ({
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? t('auth.hidePassword', 'Parolayı gizle') : t('auth.showPassword', 'Parolayı göster')}
-              className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600"
+              className="absolute end-1 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600"
             >
               {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
             </button>
@@ -333,7 +333,7 @@ const RegisterForm = ({
             {t('auth.confirmPassword')}
           </label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Lock className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type={showConfirmPassword ? 'text' : 'password'}
               name="confirmPassword"
@@ -342,7 +342,7 @@ const RegisterForm = ({
               aria-describedby={errors.confirmPassword ? 'kayit-confirmPassword-hata' : undefined}
               value={fd.confirmPassword ?? ''}
               onChange={handleInputChange}
-              className={`w-full h-11 pl-9 pr-10 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
+              className={`w-full h-11 ps-9 pe-10 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-start text-sm ${
                 errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('auth.confirmPasswordPlaceholder')}
@@ -351,7 +351,7 @@ const RegisterForm = ({
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               aria-label={showConfirmPassword ? t('auth.hidePassword', 'Parolayı gizle') : t('auth.showPassword', 'Parolayı göster')}
-              className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600"
+              className="absolute end-1 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600"
             >
               {showConfirmPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
             </button>
@@ -394,7 +394,7 @@ const RegisterForm = ({
               {t('crm.patients.country')}
             </label>
             <div className="relative">
-              <MapPin className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-20" />
+              <MapPin className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-20" />
               <CountryCombobox
                   options={allCountries}
                   value={fd.country ?? ''}
@@ -402,7 +402,7 @@ const RegisterForm = ({
                     handleInputChange({ target: { name: 'country', value: val } });
                   }}
                   placeholder={t('auth.selectCountryPlaceholder')}
-                  triggerClassName="w-full h-11 border border-gray-300 rounded-xl pl-10 pr-3 text-sm bg-white text-start flex items-center gap-2 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
+                  triggerClassName="w-full h-11 border border-gray-300 rounded-xl ps-10 pr-3 text-sm bg-white text-start flex items-center gap-2 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
                   getFlagUrl={(name) => {
                     try {
                       const code = getFlagCode(name);
@@ -451,14 +451,14 @@ const RegisterForm = ({
                   {t('auth.guardianConsentNotice')}
                 </p>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Mail className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
                     type="email"
                     name="guardianEmail"
                     id="kayit-guardianEmail"
                     value={fd.guardianEmail ?? ''}
                     onChange={handleInputChange}
-                    className={`w-full h-11 pl-9 pr-3 border rounded-xl text-sm bg-white focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-colors ${errors.guardianEmail ? 'border-red-500' : 'border-amber-300'}`}
+                    className={`w-full h-11 ps-9 pr-3 border rounded-xl text-sm bg-white focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-colors ${errors.guardianEmail ? 'border-red-500' : 'border-amber-300'}`}
                     placeholder={t('auth.guardianEmailPlaceholder')}
                     required
                   />

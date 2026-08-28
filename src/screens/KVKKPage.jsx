@@ -131,7 +131,7 @@ export default function KVKKPage() {
                     {t(section.titleKey, section.titleFallback)}
                   </h2>
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed pl-11">
+                <p className="text-sm text-gray-600 leading-relaxed ps-11">
                   {t(section.contentKey, section.contentFallback)}
                 </p>
               </section>

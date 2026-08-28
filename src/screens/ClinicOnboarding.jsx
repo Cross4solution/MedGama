@@ -316,9 +316,9 @@ export default function ClinicOnboarding() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('clinicOnboarding.phone', 'Phone')}</label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Phone className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input value={phone} onChange={e => setPhone(e.target.value)}
-                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
+                      className="w-full ps-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
                       placeholder="+90 555 123 4567" />
                   </div>
                 </div>
@@ -369,9 +369,9 @@ export default function ClinicOnboarding() {
 
               {/* Search */}
               <div className="relative mb-4">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input value={specSearch} onChange={e => setSpecSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
+                  className="w-full ps-9 pr-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
                   placeholder={t('clinicOnboarding.searchSpecialties', 'Search specialties...')} />
               </div>
 

@@ -353,7 +353,7 @@ const Header = () => {
                       <svg className="w-3.5 h-3.5 ml-1 inline-block text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd"/></svg>
                     </button>
                     {loginOpen && (
-                      <div role="menu" className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                      <div role="menu" className="absolute end-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
                         {/* Header */}
                         <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-teal-50">
                           <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-[0.08em]">{t('nav.signIn')}</p>
@@ -430,7 +430,7 @@ const Header = () => {
 
                     {/* Notification Dropdown */}
                     {notifOpen && (
-                      <div className="absolute right-0 mt-2 w-96 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                      <div className="absolute end-0 mt-2 w-96 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 overflow-hidden">
                         {/* Header */}
                         <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white">
                           <div>
@@ -541,7 +541,7 @@ const Header = () => {
                       <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
                     </button>
                     {profileOpen && (
-                      <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden">
+                      <div className="absolute end-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden">
                         {/* User info header */}
                         <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
                           <p className="text-sm font-bold text-gray-900 truncate">{user.name}</p>

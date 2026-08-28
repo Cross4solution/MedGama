@@ -108,7 +108,7 @@ export default function GlobalSearch() {
     <div ref={wrapperRef} className="relative mx-auto w-full max-w-lg sm:max-w-xl md:max-w-2xl">
       {/* Search icon */}
       <svg
-        className="pointer-events-none absolute z-10 left-4 top-1/2 -translate-y-1/2 text-teal-600 opacity-60 w-5 h-5"
+        className="pointer-events-none absolute z-10 start-4 top-1/2 -translate-y-1/2 text-teal-600 opacity-60 w-5 h-5"
         viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
       >
         <circle cx="11" cy="11" r="8" />
@@ -124,12 +124,12 @@ export default function GlobalSearch() {
         placeholder={t('search.clinicsOrDoctorsPlaceholder')}
         aria-label={t('search.clinicsOrDoctorsPlaceholder')}
         autoComplete="off"
-        className="w-full border border-gray-100 rounded-full pl-11 pr-11 py-3.5 text-base bg-white/95 backdrop-blur shadow-[0_6px_20px_-5px_rgba(28,106,131,0.35),0_2px_6px_-2px_rgba(2,6,23,0.2)] hover:shadow-[0_10px_30px_-10px_rgba(28,106,131,0.45),0_4px_12px_-3px_rgba(2,6,23,0.25)] focus:shadow-[0_12px_36px_-12px_rgba(28,106,131,0.55),0_6px_16px_-4px_rgba(2,6,23,0.3)] focus:outline-none focus:ring-4 focus:ring-teal-500/20 focus:border-transparent transition-all duration-200"
+        className="w-full border border-gray-100 rounded-full ps-11 pe-11 py-3.5 text-base bg-white/95 backdrop-blur shadow-[0_6px_20px_-5px_rgba(28,106,131,0.35),0_2px_6px_-2px_rgba(2,6,23,0.2)] hover:shadow-[0_10px_30px_-10px_rgba(28,106,131,0.45),0_4px_12px_-3px_rgba(2,6,23,0.25)] focus:shadow-[0_12px_36px_-12px_rgba(28,106,131,0.55),0_6px_16px_-4px_rgba(2,6,23,0.3)] focus:outline-none focus:ring-4 focus:ring-teal-500/20 focus:border-transparent transition-all duration-200"
       />
 
       {/* Loading spinner or clear button */}
       {query && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+        <div className="absolute end-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
           {loading && <Loader2 className="w-4 h-4 text-teal-500 animate-spin" />}
           <button
             type="button"

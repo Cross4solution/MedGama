@@ -208,17 +208,17 @@ export default function BrowseTreatments() {
 
         {/* Treatment search (across specialties) */}
         <div className="relative mb-4">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute start-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('browse.searchTreatments', 'Tedavi ara (ör. implant, katarakt, tüp bebek)...')}
             aria-label={t('browse.searchTreatments', 'Tedavi ara (ör. implant, katarakt, tüp bebek)...')}
-            className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
+            className="w-full ps-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
           />
           {tagResults.length > 0 && (
-            <div className="absolute z-20 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-72 overflow-y-auto">
+            <div className="absolute z-20 start-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-72 overflow-y-auto">
               {tagResults.map(r => (
                 <button key={r.id} type="button" onClick={() => pickTagFromSearch(r)}
                   className="w-full text-start px-4 py-2.5 hover:bg-teal-50 flex items-center justify-between gap-2 border-b border-gray-50 last:border-0">

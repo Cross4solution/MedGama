@@ -66,7 +66,7 @@ export default function LanguageSwitcher({ compact = false }) {
         <ChevronDown className="w-3 h-3 text-gray-400" />
       </button>
       {open && (
-        <div role="menu" className="absolute right-0 mt-1 w-44 bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-1">
+        <div role="menu" className="absolute end-0 mt-1 w-44 bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-1">
           {ROUTED.map((l) => (
             <button
               key={l.code}

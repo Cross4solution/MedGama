@@ -360,18 +360,18 @@ export default function OnboardingWizard() {
               <div>
                 <label className={labelCls}>{t('auth.firstName')} <span className="text-red-500">*</span></label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <User className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input value={firstName} onChange={e => { setFirstName(e.target.value); setErrors(er => ({ ...er, firstName: undefined })); }}
-                    placeholder={t('auth.firstName')} className={`${errors.firstName ? inputErrCls : inputCls} pl-9`} />
+                    placeholder={t('auth.firstName')} className={`${errors.firstName ? inputErrCls : inputCls} ps-9`} />
                 </div>
                 {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
               </div>
               <div>
                 <label className={labelCls}>{t('auth.lastName')} <span className="text-red-500">*</span></label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <User className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input value={lastName} onChange={e => { setLastName(e.target.value); setErrors(er => ({ ...er, lastName: undefined })); }}
-                    placeholder={t('auth.lastName')} className={`${errors.lastName ? inputErrCls : inputCls} pl-9`} />
+                    placeholder={t('auth.lastName')} className={`${errors.lastName ? inputErrCls : inputCls} ps-9`} />
                 </div>
                 {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
               </div>
@@ -382,9 +382,9 @@ export default function OnboardingWizard() {
               <div>
                 <label className={labelCls}>{t('auth.clinicName')} <span className="text-red-500">*</span></label>
                 <div className="relative">
-                  <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Building2 className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input value={clinicName} onChange={e => { setClinicName(e.target.value); setErrors(er => ({ ...er, clinicName: undefined })); }}
-                    placeholder={t('auth.clinicName')} className={`${errors.clinicName ? inputErrCls : inputCls} pl-9`} />
+                    placeholder={t('auth.clinicName')} className={`${errors.clinicName ? inputErrCls : inputCls} ps-9`} />
                 </div>
                 {errors.clinicName && <p className="text-red-500 text-xs mt-1">{errors.clinicName}</p>}
               </div>

@@ -683,13 +683,13 @@ export default function TelehealthAppointmentPage() {
                   </h3>
                   <p className="text-xs text-gray-400 mb-3">{t('appointment.findDoctorDesc', 'Doktor adı, uzmanlık veya klinik yazın')}</p>
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     <input
                       type="text"
                       value={doctorQuery}
                       onChange={(e) => setDoctorQuery(e.target.value)}
                       placeholder={t('appointment.findDoctorPlaceholder', 'ör. Dr. Ayşe, Göz, Medicana...')}
-                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
+                      className="w-full ps-10 pr-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
                     />
                   </div>
                   {searchMode && <p className="text-[11px] text-gray-400 mt-2">{t('appointment.orPickSpecialty', 'veya aşağıdan uzmanlık seçin')}</p>}
@@ -706,16 +706,16 @@ export default function TelehealthAppointmentPage() {
                   {/* Search — always visible once specialties loaded */}
                   {!loadingSpecialties && !specialtiesError && specialties.length > 0 && (
                     <div className="relative mb-4">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                      <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                       <input
                         type="text"
                         value={specialtySearch}
                         onChange={e => setSpecialtySearch(e.target.value)}
                         placeholder={t('appointment.searchSpecialty', 'Search specialty...')}
-                        className="w-full pl-9 pr-9 py-2.5 text-sm rounded-xl border border-gray-200 bg-gray-50/60 text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
+                        className="w-full ps-9 pe-9 py-2.5 text-sm rounded-xl border border-gray-200 bg-gray-50/60 text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
                       />
                       {specialtySearch && (
-                        <button onClick={() => setSpecialtySearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <button onClick={() => setSpecialtySearch('')} className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
                           <X className="w-3.5 h-3.5" />
                         </button>
                       )}
@@ -1068,13 +1068,13 @@ export default function TelehealthAppointmentPage() {
                       <div>
                         <label className="block text-xs font-semibold text-gray-600 mb-1.5">{isDoctor ? 'Patient Name' : 'Full Name'} *</label>
                         <div className="relative">
-                          <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <User className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                           <input
                             type="text"
                             placeholder={isDoctor ? "Patient's full name" : 'Your full name'}
                             value={patientInfo.fullName}
                             onChange={(e) => setPatientInfo({ ...patientInfo, fullName: e.target.value })}
-                            className="w-full h-11 pl-10 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                            className="w-full h-11 ps-10 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                             required
                           />
                         </div>
@@ -1082,13 +1082,13 @@ export default function TelehealthAppointmentPage() {
                       <div>
                         <label className="block text-xs font-semibold text-gray-600 mb-1.5">{isDoctor ? 'Patient Email' : 'Email'} *</label>
                         <div className="relative">
-                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <Mail className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                           <input
                             type="email"
                             placeholder={isDoctor ? "patient@email.com" : 'example@email.com'}
                             value={patientInfo.email}
                             onChange={(e) => setPatientInfo({ ...patientInfo, email: e.target.value })}
-                            className="w-full h-11 pl-10 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                            className="w-full h-11 ps-10 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                             required
                           />
                         </div>
@@ -1107,7 +1107,7 @@ export default function TelehealthAppointmentPage() {
                       <div>
                         <label className="block text-xs font-semibold text-gray-600 mb-1.5">{isDoctor ? 'Patient Date of Birth' : 'Date of Birth'}</label>
                         <div className="relative">
-                          <Calendar className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <Calendar className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                           <input
                             type="text"
                             placeholder={t('telehealthAppointmentPage.ddMmYyyy', "dd.mm.yyyy")}
@@ -1124,7 +1124,7 @@ export default function TelehealthAppointmentPage() {
                               setPatientInfo({ ...patientInfo, birthDate: v });
                             }}
                             maxLength={10}
-                            className="w-full h-11 pl-10 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all bg-white"
+                            className="w-full h-11 ps-10 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all bg-white"
                           />
                         </div>
                       </div>

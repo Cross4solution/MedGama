@@ -114,13 +114,13 @@ const LoginForm = ({
             {t('common.email')}
           </label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+            <Mail className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full pl-8 sm:pl-10 pr-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-start text-sm sm:text-base ${
+              className={`w-full pl-8 sm:ps-10 pr-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-start text-sm sm:text-base ${
                 errors.email ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('loginForm.nameExampleCom', "name@example.com")}
@@ -133,13 +133,13 @@ const LoginForm = ({
             {t('common.password')}
           </label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+            <Lock className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
             <input
               type={showPassword ? 'text' : 'password'}
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              className={`w-full pl-8 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-start text-sm sm:text-base ${
+              className={`w-full pl-8 sm:ps-10 pe-10 sm:pe-12 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-start text-sm sm:text-base ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('auth.passwordPlaceholder')}
@@ -148,7 +148,7 @@ const LoginForm = ({
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? t('auth.hidePassword', 'Parolayı gizle') : t('auth.showPassword', 'Parolayı göster')}
-              className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute end-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
               {showPassword ? <Eye className="w-4 h-4 sm:w-5 sm:h-5" /> : <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />}
             </button>

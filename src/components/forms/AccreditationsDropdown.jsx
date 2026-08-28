@@ -86,7 +86,7 @@ export default function AccreditationsDropdown({ selected = [], onChange, disabl
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-teal-500 rounded-xl shadow-lg z-50">
+        <div className="absolute top-full start-0 right-0 mt-2 bg-white border-2 border-teal-500 rounded-xl shadow-lg z-50">
           {/* Search Input */}
           <div className="p-3 border-b border-gray-100">
             <input

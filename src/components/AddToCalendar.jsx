@@ -38,7 +38,7 @@ export default function AddToCalendar({ appointment, className = '' }) {
         <ChevronDown className="w-3 h-3" />
       </button>
       {open && (
-        <div className="absolute z-30 mt-1 right-0 w-44 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+        <div className="absolute z-30 mt-1 end-0 w-44 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
           <a href={google} target="_blank" rel="noreferrer" className={item} onClick={() => setOpen(false)}>Google Calendar</a>
           <a href={outlook} target="_blank" rel="noreferrer" className={item} onClick={() => setOpen(false)}>Outlook</a>
           <a href={ics} download="randevu.ics" className={item} onClick={() => setOpen(false)}>{t('calendar.appleOther', 'Apple / .ics')}</a>

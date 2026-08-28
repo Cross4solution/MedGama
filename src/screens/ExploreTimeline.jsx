@@ -673,14 +673,14 @@ export default function ExploreTimeline() {
               {focused && (
                 <div className="flex items-center gap-2 mb-4">
                   <div className="relative flex-1">
-                    <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <Search className="w-4 h-4 text-gray-400 absolute start-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="search"
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder={t('medstream.searchInTimeline')}
                       aria-label={t('medstream.searchInTimeline')}
-                      className="w-full h-9 pl-9 pr-3 rounded-full border border-gray-200 bg-gray-50/60 text-[13px] placeholder:text-gray-400 focus:bg-white focus:border-teal-400 focus:ring-2 focus:ring-teal-500/15 outline-none transition-all"
+                      className="w-full h-9 ps-9 pr-3 rounded-full border border-gray-200 bg-gray-50/60 text-[13px] placeholder:text-gray-400 focus:bg-white focus:border-teal-400 focus:ring-2 focus:ring-teal-500/15 outline-none transition-all"
                     />
                   </div>
                   <SelectCombobox

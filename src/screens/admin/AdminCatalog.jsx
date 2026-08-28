@@ -88,7 +88,7 @@ function MultiLangInput({ value, onChange, label }) {
       <div className="grid grid-cols-2 gap-2 mb-1">
         {LANGS.slice(0, 2).map(lang => (
           <div key={lang.code} className="relative">
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2"><LangFlag lang={lang} size={16} /></span>
+            <span className="absolute start-2.5 top-1/2 -translate-y-1/2"><LangFlag lang={lang} size={16} /></span>
             <input
               type="text"
               placeholder={`${lang.label} *`}
@@ -103,7 +103,7 @@ function MultiLangInput({ value, onChange, label }) {
         <div className="grid grid-cols-2 gap-2 mt-1">
           {LANGS.slice(2).map(lang => (
             <div key={lang.code} className="relative">
-              <span className="absolute left-2.5 top-1/2 -translate-y-1/2"><LangFlag lang={lang} size={14} /></span>
+              <span className="absolute start-2.5 top-1/2 -translate-y-1/2"><LangFlag lang={lang} size={14} /></span>
               <input
                 type="text"
                 placeholder={lang.label}
@@ -538,16 +538,16 @@ export default function AdminCatalog() {
       {/* Search + Language selector */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
             placeholder={activeTab === 'treatments' ? t('admin.catalog.searchTreatmentsPlaceholder') : t('admin.catalog.searchPlaceholder', { tab: t(`admin.catalog.tabName.${activeTab}`) })}
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-8 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all"
+            className="w-full ps-9 pr-8 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all"
           />
           {search && (
-            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <button onClick={() => setSearch('')} className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
               <XCircle className="w-4 h-4" />
             </button>
           )}

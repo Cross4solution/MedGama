@@ -119,8 +119,8 @@ const AddSalespersonModal = ({ isOpen, onClose, onCreated }) => {
             <ModalLabel icon={Lock}>{t('crm.salespeople.password', 'Password')} <span className="text-gray-400 font-normal">({t('crm.salespeople.passwordAutoHint', 'auto-generated if left empty')})</span></ModalLabel>
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <ModalInput type={showPass ? 'text' : 'password'} value={form.password} onChange={(e) => setForm(f => ({ ...f, password: e.target.value }))} placeholder={t('crm.salespeople.min6chars', 'Min 6 characters')} className="pr-10" />
-                <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                <ModalInput type={showPass ? 'text' : 'password'} value={form.password} onChange={(e) => setForm(f => ({ ...f, password: e.target.value }))} placeholder={t('crm.salespeople.min6chars', 'Min 6 characters')} className="pe-10" />
+                <button type="button" onClick={() => setShowPass(!showPass)} className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                   {showPass ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                 </button>
               </div>

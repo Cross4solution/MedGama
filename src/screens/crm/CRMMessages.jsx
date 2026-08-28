@@ -287,13 +287,13 @@ const CRMMessages = () => {
 
             <div className="px-5 py-3 border-b border-gray-100">
               <div className="relative">
-                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-gray-400 absolute start-3 top-1/2 -translate-y-1/2" />
                 <input
                   autoFocus
                   value={hastaArama}
                   onChange={(e) => setHastaArama(e.target.value)}
                   placeholder={t('crm.messages.searchPatient', 'Hasta ara...')}
-                  className="w-full h-10 pl-9 pr-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full h-10 ps-9 pr-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
               {/* Yalnızca kendi hastaları: liste randevulardan türetiliyor. */}

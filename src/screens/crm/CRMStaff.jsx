@@ -151,12 +151,12 @@ const AddDoctorModal = ({ isOpen, onClose, onCreated, clinicId }) => {
                   value={form.password}
                   onChange={(e) => setForm(f => ({ ...f, password: e.target.value }))}
                   placeholder={t('cRMStaff.min6Characters', "Min 6 characters")}
-                  className="pr-10"
+                  className="pe-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   {showPass ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                 </button>
@@ -361,12 +361,12 @@ const CRMStaff = () => {
 
       {/* Search */}
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full h-10 pl-10 pr-4 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 bg-white"
+          className="w-full h-10 ps-10 pr-4 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 bg-white"
           placeholder={t('crm.staff.searchPlaceholder', 'Search by name, email or specialty...')}
         />
       </div>

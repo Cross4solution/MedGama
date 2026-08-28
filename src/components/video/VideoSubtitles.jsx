@@ -168,7 +168,7 @@ export default function VideoSubtitles({ videoRef, postId, mediaIndex = 0 }) {
       </button>
 
       {menuAcik && (
-        <div className="absolute right-0 mt-1 min-w-[11rem] rounded-xl border border-white/10 bg-black/85 backdrop-blur-md p-1 shadow-xl">
+        <div className="absolute end-0 mt-1 min-w-[11rem] rounded-xl border border-white/10 bg-black/85 backdrop-blur-md p-1 shadow-xl">
           <button
             type="button"
             onClick={() => { altYaziyiKapat(); setMenuAcik(false); }}

@@ -31,13 +31,13 @@ export default function PricesTab({ services, selectedService, setSelectedServic
       {/* Search — narrow down treatments (helps when there are many) */}
       {services.length > 4 && (
         <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t('clinicDetail.treatmentSearchPlaceholder', 'Tedavi veya işlem ara...')}
-            className="w-full pl-10 pr-3 py-2 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
+            className="w-full ps-10 pr-3 py-2 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
           />
         </div>
       )}

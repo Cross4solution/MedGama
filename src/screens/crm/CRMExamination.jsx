@@ -1110,16 +1110,16 @@ const CRMExamination = () => {
                   <div key={v.key} className="relative">
                     <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1 tracking-wide">{v.label}</label>
                     <div className="relative">
-                      <v.icon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                      <v.icon className="absolute start-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                       <input
                         type="number"
                         step="any"
                         value={vitals[v.key]}
                         onChange={(e) => setVitals({ ...vitals, [v.key]: e.target.value })}
                         placeholder={v.placeholder}
-                        className={`w-full h-10 pl-9 pr-12 border rounded-xl text-sm font-medium ${v.color} bg-white transition-all`}
+                        className={`w-full h-10 ps-9 pe-12 border rounded-xl text-sm font-medium ${v.color} bg-white transition-all`}
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-medium">{v.unit}</span>
+                      <span className="absolute end-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-medium">{v.unit}</span>
                     </div>
                   </div>
                 ))}

@@ -93,7 +93,7 @@ export default function SelectCombobox({
     <div className="relative group" ref={ref}>
       {/* Left icon */}
       {leftIcon ? (
-        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10">
+        <div className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10">
           {leftIcon}
         </div>
       ) : null}
@@ -105,7 +105,7 @@ export default function SelectCombobox({
         className={
           triggerClassName && triggerClassName.length > 0
             ? triggerClassName
-            : `w-full ${leftIcon ? 'pl-10' : 'pl-3'} pr-10 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-base md:text-sm font-medium appearance-none cursor-pointer bg-white hover:bg-gray-50 hover:border-gray-400 text-start`
+            : `w-full ${leftIcon ? 'ps-10' : 'pl-3'} pe-10 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-base md:text-sm font-medium appearance-none cursor-pointer bg-white hover:bg-gray-50 hover:border-gray-400 text-start`
         }
         onClick={() => setOpen((o) => !o)}
       >
@@ -114,7 +114,7 @@ export default function SelectCombobox({
 
       {/* Right arrow */}
       {!hideChevron && (
-        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+        <div className="absolute end-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
           <svg className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
           </svg>

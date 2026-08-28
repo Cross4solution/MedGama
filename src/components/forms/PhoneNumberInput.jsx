@@ -209,11 +209,11 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
 
   return (
     <div className="relative" ref={phoneWrapRef}>
-      <PhoneIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+      <PhoneIcon className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
       <button
         type="button"
         onClick={() => setShowPhoneCodes((s)=>!s)}
-        className="absolute left-9 top-1/2 -translate-y-1/2 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-none w-7 h-7 flex items-center justify-center focus:outline-none focus:ring-0 select-none"
+        className="absolute start-9 top-1/2 -translate-y-1/2 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-none w-7 h-7 flex items-center justify-center focus:outline-none focus:ring-0 select-none"
         aria-label={t('phoneInput.chooseCountryCode')}
       >
         {(phoneMeta[phoneCode]?.iso || isoFor(phoneMeta[phoneCode]?.name)) && (

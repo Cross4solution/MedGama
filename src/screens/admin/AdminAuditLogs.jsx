@@ -361,16 +361,16 @@ export default function AdminAuditLogs() {
         {/* Search + Date Range inline */}
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
               placeholder={t('admin.auditLogs.searchPlaceholder', 'Search action, description, resource...')}
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-9 pr-8 py-2 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all"
+              className="w-full ps-9 pr-8 py-2 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all"
             />
             {search && (
-              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+              <button onClick={() => setSearch('')} className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                 <XCircle className="w-4 h-4" />
               </button>
             )}
@@ -424,12 +424,12 @@ export default function AdminAuditLogs() {
           <div ref={userSearchRef} className="relative">
             <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1 block">{t('adminAuditLogs.user', "User")}</label>
             <div className="relative">
-              <User className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+              <User className="absolute start-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
               <input type="text" value={userQuery} onChange={e => handleUserSearch(e.target.value)}
                 placeholder={t('adminAuditLogs.nameOrEmail', "Name or email...")}
                 className="pl-8 pr-7 py-1.5 border border-gray-200 rounded-lg text-xs focus:ring-2 focus:ring-purple-500/20 outline-none min-w-[180px]" />
               {selectedUserId && (
-                <button onClick={clearUser} className="absolute right-2 top-1/2 -translate-y-1/2">
+                <button onClick={clearUser} className="absolute end-2 top-1/2 -translate-y-1/2">
                   <X className="w-3 h-3 text-gray-400 hover:text-red-500" />
                 </button>
               )}

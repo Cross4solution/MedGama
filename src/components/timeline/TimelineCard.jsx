@@ -964,7 +964,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                   <MoreHorizontal className="w-5 h-5" />
                 </button>
                 {showMoreMenu && (
-                  <div className="absolute right-0 top-8 z-20 w-44 bg-white border rounded-lg shadow-md py-1 text-sm" onClick={(e)=>e.stopPropagation()}>
+                  <div className="absolute end-0 top-8 z-20 w-44 bg-white border rounded-lg shadow-md py-1 text-sm" onClick={(e)=>e.stopPropagation()}>
                     {authUser?.id && (item?.author_id === authUser.id || item?.actor?.id === authUser.id) && (
                       <button
                         type="button"
@@ -1098,7 +1098,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                 <div className="relative flex-1">
                   <input
                     placeholder={(disabledActions || isGuest || isUnverifiedDoctor) ? (isUnverifiedDoctor ? t('medstream.commentsDisabledPending') : t('medstream.signInToComment')) : t('medstream.addComment')}
-                    className={`w-full border border-gray-300 rounded-full pl-3 ${commentText.trim() ? 'pr-[4.5rem]' : 'pr-9'} py-1.5 text-[13px] transition-all ${(disabledActions || isGuest || isUnverifiedDoctor) ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-transparent hover:border-gray-400 focus:ring-1 focus:ring-gray-400 focus:border-gray-400'}`}
+                    className={`w-full border border-gray-300 rounded-full pl-3 ${commentText.trim() ? 'pr-[4.5rem]' : 'pe-9'} py-1.5 text-[13px] transition-all ${(disabledActions || isGuest || isUnverifiedDoctor) ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-transparent hover:border-gray-400 focus:ring-1 focus:ring-gray-400 focus:border-gray-400'}`}
                     disabled={disabledActions || isGuest || isUnverifiedDoctor}
                     onFocus={() => { if (isGuest) showSuccessToast(loginRequiredMsg); }}
                     value={commentText}
@@ -1128,7 +1128,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                       }
                     }}
                   />
-                  <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+                  <div className="absolute end-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
                     <button
                       type="button"
                       aria-label={disabledActions ? t('medstream.loginToAddEmoji') : t('medstream.addEmoji')}

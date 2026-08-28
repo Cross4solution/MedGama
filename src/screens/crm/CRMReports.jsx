@@ -254,7 +254,7 @@ const CRMReports = () => {
               <span className="hidden sm:inline">{t('common.export', 'Dışa aktar')}</span>
             </button>
             {exportOpen && (
-              <div className="absolute right-0 mt-1.5 w-48 bg-white rounded-xl shadow-xl border border-gray-200/60 z-30 overflow-hidden">
+              <div className="absolute end-0 mt-1.5 w-48 bg-white rounded-xl shadow-xl border border-gray-200/60 z-30 overflow-hidden">
                 <button onClick={handleExportPDF} className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                   <FileText className="w-4 h-4 text-red-500" /><span className="font-medium">{t('cRMReports.pdfOlarak', "PDF olarak")}</span>
                 </button>

@@ -169,7 +169,7 @@ export default function MapboxSearchInput({
 
       {/* Input container */}
       <div className="relative">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+        <div className="absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none">
           {loading ? (
             <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
           ) : (
@@ -189,7 +189,7 @@ export default function MapboxSearchInput({
             }
           }}
           placeholder={placeholder || t('forms.searchAddress', 'Adres arayın...')}
-          className={`w-full h-11 pl-10 pr-10 border rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
+          className={`w-full h-11 ps-10 pe-10 border rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
             error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-white'
           }`}
         />
@@ -197,7 +197,7 @@ export default function MapboxSearchInput({
         {query && (
           <button
             onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
