@@ -105,7 +105,7 @@ export default function Footer() {
               KVKK · GDPR · HIPAA
             </span>
           </div>
-          <div className="flex items-center gap-4 text-xs text-white/50">
+          <div className="flex items-center gap-4 text-xs text-white/50 [&>a]:min-h-6 [&>a]:py-1 [&>a]:inline-flex [&>a]:items-center">
             <a href="/privacy-policy" className="hover:text-white transition-colors">{t('footer.privacyShort')}</a>
             <span className="text-white/30">·</span>
             <a href="/terms-of-service" className="hover:text-white transition-colors">{t('footer.termsShort')}</a>

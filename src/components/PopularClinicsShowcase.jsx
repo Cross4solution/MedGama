@@ -152,7 +152,7 @@ export default function PopularClinicsShowcase({
         {/* Top: Popular Treatments */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-normal tracking-[-0.025em] text-[#061b31]">{title}</h2>
-          <Link to={viewAllHref} className="text-xs font-semibold text-[#0d9488] hover:text-[#0f766e] transition-colors">{t('home.viewAll')} →</Link>
+          <Link to={viewAllHref} className="min-h-6 py-1 text-xs font-semibold text-[#0d9488] hover:text-[#0f766e] transition-colors">{t('home.viewAll')} →</Link>
         </div>
         <div className="relative mb-10">
           <ScrollArrow direction="left" onClick={() => scrollByAmount(scrollRefTop, -1)} />
@@ -180,7 +180,7 @@ export default function PopularClinicsShowcase({
         {/* Bottom: Popular Clinics */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-normal tracking-[-0.025em] text-[#061b31]">{midTitle}</h2>
-          <Link to={viewAllClinicsHref} className="text-xs font-semibold text-[#0d9488] hover:text-[#0f766e] transition-colors">{t('home.viewAll')} →</Link>
+          <Link to={viewAllClinicsHref} className="min-h-6 py-1 text-xs font-semibold text-[#0d9488] hover:text-[#0f766e] transition-colors">{t('home.viewAll')} →</Link>
         </div>
         <div className="relative">
           <ScrollArrow direction="left" onClick={() => scrollByAmount(scrollRefBottom, -1)} />

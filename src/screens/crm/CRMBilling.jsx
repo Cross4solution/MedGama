@@ -607,7 +607,7 @@ const CRMBilling = () => {
               <div className="text-center py-16 px-5">
                 <Receipt className="w-10 h-10 text-gray-200 mx-auto mb-2" />
                 <p className="text-sm text-gray-400">{t('common.noResults')}</p>
-                <button onClick={() => setShowCreate(true)} className="mt-3 text-sm text-teal-600 hover:text-teal-700 font-medium">{t('crm.billing.createFirstInvoice', 'Create your first invoice')}</button>
+                <button onClick={() => setShowCreate(true)} className="min-h-6 py-1 mt-3 text-sm text-teal-600 hover:text-teal-700 font-medium">{t('crm.billing.createFirstInvoice', 'Create your first invoice')}</button>
               </div>
             ) : (
             <div className="overflow-x-auto">

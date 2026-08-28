@@ -61,7 +61,7 @@ export default function CertificationsEditor({ value = [], onChange }) {
         </div>
       ))}
       <button type="button" onClick={add} className="inline-flex items-center gap-1.5 text-sm text-teal-600 font-medium hover:text-teal-700">
-        <Plus className="w-4 h-4" /> {t('crm.settings.addCertification', 'Sertifika ekle')}
+        <Plus className="min-h-6 py-1 w-4 h-4" /> {t('crm.settings.addCertification', 'Sertifika ekle')}
       </button>
     </div>
   );

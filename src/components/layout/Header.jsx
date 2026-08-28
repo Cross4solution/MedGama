@@ -612,7 +612,7 @@ const Header = () => {
                 <button
                   onClick={toggleMenu}
                   aria-label={isMenuOpen ? t('header.closeProfileMenu') : t('header.openProfileMenu')}
-                  className="p-0.5 rounded-full border border-gray-200 overflow-hidden"
+                  className="flex-shrink-0 p-1 rounded-full border border-gray-200 overflow-hidden"
                   title={user.name}
                 >
                   <Image

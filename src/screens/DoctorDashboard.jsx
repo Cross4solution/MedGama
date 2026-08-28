@@ -309,7 +309,7 @@ const DoctorDashboard = () => {
                 to="/doctor/billing"
                 className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1"
               >
-                {t('doctorDashboard.viewAll', 'View All')} <ChevronRight className="w-3.5 h-3.5" />
+                {t('doctorDashboard.viewAll', 'View All')} <ChevronRight className="min-h-6 py-1 w-3.5 h-3.5" />
               </Link>
             </div>
             <div className="grid grid-cols-3 gap-3">

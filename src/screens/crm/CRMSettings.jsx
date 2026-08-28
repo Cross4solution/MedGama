@@ -638,7 +638,7 @@ const CRMSettings = ({ standalone = false }) => {
                         {(profile.firstName || '?')[0]}{(profile.lastName || '?')[0]}
                       </div>
                       <div>
-                        <button className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1"><Camera className="w-3.5 h-3.5" /> {t('crm.settings.changePhoto', 'Change Photo')}</button>
+                        <button className="min-h-6 py-1 text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1"><Camera className="w-3.5 h-3.5" /> {t('crm.settings.changePhoto', 'Change Photo')}</button>
                         <p className="text-[10px] text-gray-400 mt-0.5">{t('crm.settings.photoHint', 'JPG, PNG. Max 5MB')}</p>
                       </div>
                     </div>
@@ -772,7 +772,7 @@ const CRMSettings = ({ standalone = false }) => {
                     <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.servicesHeading', 'Services')}</h2>
                     <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.servicesSubtitle', 'Services you offer to patients')}</p>
                   </div>
-                  <button type="button" onClick={() => setDoctorServices(s => [...s, { name: '', description: '' }])} className="text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t('common.add', 'Add')}</button>
+                  <button type="button" onClick={() => setDoctorServices(s => [...s, { name: '', description: '' }])} className="min-h-6 py-1 text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t('common.add', 'Add')}</button>
                 </div>
                 <div className="px-6 py-4 space-y-2">
                   {doctorServices.length === 0 && <p className="text-xs text-gray-400 italic">{t('crm.settings.noServicesYet', 'No services added yet')}</p>}
@@ -793,7 +793,7 @@ const CRMSettings = ({ standalone = false }) => {
                     <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.pricingHeading', 'Pricing')}</h2>
                     <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.pricingSubtitle', 'Price ranges for your services')}</p>
                   </div>
-                  <button type="button" onClick={() => setDoctorPrices(p => [...p, { label: '', min: '', max: '', currency: '₺' }])} className="text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t('common.add', 'Add')}</button>
+                  <button type="button" onClick={() => setDoctorPrices(p => [...p, { label: '', min: '', max: '', currency: '₺' }])} className="min-h-6 py-1 text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t('common.add', 'Add')}</button>
                 </div>
                 <div className="px-6 py-4 space-y-2">
                   {doctorPrices.length === 0 && <p className="text-xs text-gray-400 italic">{t('crm.settings.noPricesYet', 'No prices added yet')}</p>}
@@ -815,7 +815,7 @@ const CRMSettings = ({ standalone = false }) => {
                     <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.educationHeading', 'Education')}</h2>
                     <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.educationSubtitle', 'Your academic background')}</p>
                   </div>
-                  <button type="button" onClick={() => setDoctorEducation(e => [...e, { degree: '', school: '', year: '' }])} className="text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t('common.add', 'Add')}</button>
+                  <button type="button" onClick={() => setDoctorEducation(e => [...e, { degree: '', school: '', year: '' }])} className="min-h-6 py-1 text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t('common.add', 'Add')}</button>
                 </div>
                 <div className="px-6 py-4 space-y-2">
                   {doctorEducation.length === 0 && <p className="text-xs text-gray-400 italic">{t('crm.settings.noEducationYet', 'No education added yet')}</p>}
@@ -1032,7 +1032,7 @@ const CRMSettings = ({ standalone = false }) => {
                   <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.servicesTitle', 'Services & Pricing')}</h2>
                   <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.servicesDesc', 'Manage your services with estimated duration and pricing')}</p>
                 </div>
-                <button type="button" onClick={addService} className="text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t('crm.settings.addService', 'Add Service')}</button>
+                <button type="button" onClick={addService} className="min-h-6 py-1 text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t('crm.settings.addService', 'Add Service')}</button>
               </div>
               <div className="px-6 py-5 space-y-3">
                 {enhancedServices.length === 0 && (

@@ -631,7 +631,7 @@ const CRMDashboard = () => {
           <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/30">
             <div className="flex items-center justify-between">
               <Link to="/crm/appointments" className="min-h-6 py-1 inline-flex items-center gap-1 text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">
-                {t('crm.dashboard.viewAll')} <ChevronRight className="w-3.5 h-3.5" />
+                {t('crm.dashboard.viewAll')} <ChevronRight className="min-h-6 py-1 w-3.5 h-3.5" />
               </Link>
               {!isFreeTier && totalPages > 1 && (
                 <div className="flex items-center gap-2">
