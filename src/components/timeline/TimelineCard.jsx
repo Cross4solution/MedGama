@@ -63,6 +63,11 @@ function AvatarImg({ src, alt, className, fallback = DEFAULT_AVATAR }) {
       srcSet={optimize ? `${iyilestir(imgSrc, 64)} 64w, ${iyilestir(imgSrc, 128)} 128w` : undefined}
       sizes={optimize ? '48px' : undefined}
       alt={alt}
+      // Avatarlar kare; 1:1 oranı bildirmek görsel gelmeden yer ayırıyor ve
+      // akışın zıplamasını durduruyor. Gerçek boyutu `className` belirliyor,
+      // bu değerler yalnız oranı veriyor.
+      width={48}
+      height={48}
       loading="lazy"
       className={className}
       onError={() => {

@@ -49,9 +49,22 @@ function DoctorCard({ doctor, t, navigate }) {
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-lg hover:border-gray-200 transition-all group">
       <div className="flex gap-4">
+        {/*
+          Liste kartı: ekranda onlarca kopyası var. `loading="lazy"` olmadan
+          hepsi sayfa açılır açılmaz iniyordu — ölçüldü: /search'te 19
+          görselin 18'i, kullanıcı hiç aşağı kaydırmasa bile.
+
+          `width`/`height` de şart: boyut bilinmeden yer ayrılmıyor, görsel
+          gelince kart zıplıyor ve kullanıcı yanlış karta basabiliyor.
+          Değerler `w-16 h-16` (64 px) ile aynı.
+        */}
         <img
           src={resolveStorageUrl(doctor.avatar)}
           alt={doctor.fullname}
+          width={64}
+          height={64}
+          loading="lazy"
+          decoding="async"
           className="w-16 h-16 rounded-xl object-cover border border-gray-100 flex-shrink-0"
           onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }}
         />
