@@ -331,7 +331,7 @@ const CRMSmartCalendar = () => {
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button onClick={manualRefresh} className="inline-flex items-center gap-1.5 px-3 py-2 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-all">
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             {t('common.refresh', 'Refresh')}
@@ -437,9 +437,9 @@ const CRMSmartCalendar = () => {
             </button>
             <button onClick={goNext} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500 transition-colors"><ChevronRight className="w-4 h-4" /></button>
           </div>
-          <div className="flex items-center gap-2 text-xs text-gray-400">
-            <AlertCircle className="w-3.5 h-3.5" />
-            {t('crm.calendar.dragHint', 'Drag & drop to reschedule appointments')}
+          <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400 min-w-0">
+            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+            <span className="min-w-0">{t('crm.calendar.dragHint', 'Drag & drop to reschedule appointments')}</span>
           </div>
         </div>
 

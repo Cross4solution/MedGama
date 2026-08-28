@@ -247,7 +247,7 @@ const CRMMessages = () => {
   return (
     <div className="h-[calc(100vh-10rem)] flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.messages.title')}</h1>
         </div>

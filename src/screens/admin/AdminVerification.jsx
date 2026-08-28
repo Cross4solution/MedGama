@@ -449,7 +449,7 @@ export default function AdminVerification() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
+      <div className="flex flex-wrap gap-1 bg-gray-100 rounded-xl p-1 w-fit max-w-full">
         <button onClick={() => setTab('requests')} className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${tab === 'requests' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
           {t('admin.verification.tabRequests')} {stats.pending > 0 && <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">{stats.pending}</span>}
         </button>

@@ -1079,7 +1079,7 @@ const CRMAppointments = () => {
                 className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full" />
             </div>
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-              className="text-xs border border-gray-200 rounded-lg px-2.5 py-2 bg-white text-gray-600 focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+              className="max-w-full text-xs border border-gray-200 rounded-lg px-2.5 py-2 bg-white text-gray-600 focus:ring-2 focus:ring-teal-500 focus:border-transparent">
               <option value="all">{t('crm.appointments.allStatus')}</option>
               <option value="pending">{t('crm.appointments.statusPending')}</option>
               <option value="confirmed">{t('crm.appointments.statusConfirmed')}</option>

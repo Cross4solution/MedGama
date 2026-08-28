@@ -657,7 +657,7 @@ export default function AdminReviews() {
           <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0">
             <Shield className="w-5 h-5 text-purple-600" />
           </div>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-purple-900 flex items-center gap-1.5">
               <Lock className="w-3.5 h-3.5" />
               {t('admin.reviews.auditTitle')}

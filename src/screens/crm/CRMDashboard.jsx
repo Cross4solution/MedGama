@@ -418,7 +418,7 @@ const CRMDashboard = () => {
 
       {/* Clinic Verification Banner */}
       {clinicNeedsVerification && (
-        <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${
+        <div className={`flex flex-wrap items-center gap-3 px-4 py-3 rounded-xl border ${
           clinicVerificationStatus === 'pending_review'
             ? 'bg-blue-50 border-blue-200'
             : clinicVerificationStatus === 'rejected'
