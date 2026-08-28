@@ -389,7 +389,11 @@ export default function AdminModeration() {
 
       {/* Filters + Search */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
+        {/* Süzgeç satırı sarmalanıyor: sarmalanmazsa 375 px'lik telefonda
+            sayfa 160 px yana kayıyor ve "Gizlendi" süzgeci 445 px'te,
+            ekranın dışında kalıyordu. Aynı kalıp /admin/reviews,
+            /admin/users ve /admin/catalog'da da vardı. */}
+        <div className="flex flex-wrap gap-1 bg-gray-100 rounded-xl p-1">
           {FILTERS.map(f => (
             <button
               key={f.key}
