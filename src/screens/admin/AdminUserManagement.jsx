@@ -455,7 +455,7 @@ export default function AdminUserManagement() {
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-7 gap-3">
           {[
             { label: t('admin.stat.total', 'Total'), value: stats.total, icon: Users, color: 'text-gray-600', bg: 'bg-gray-50' },
             { label: t('admin.nav.doctors'), value: stats.doctors, icon: Stethoscope, color: 'text-teal-600', bg: 'bg-teal-50' },
