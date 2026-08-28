@@ -405,7 +405,7 @@ const MedicalArchive = () => {
         <div className="fixed inset-0 z-[100]">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowUploadModal(false)} />
           <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div ref={yuklemeKokRef} role="dialog" aria-modal="true" className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div ref={yuklemeKokRef} role="dialog" aria-modal="true" className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative overflow-hidden max-h-full overflow-y-auto" onClick={e => e.stopPropagation()}>
               <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-teal-50/80 to-white flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-lg bg-teal-100 flex items-center justify-center">

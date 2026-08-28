@@ -294,7 +294,7 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
                     value={item.description}
                     onChange={e => updateItem(idx, 'description', e.target.value)}
                     placeholder={t('billing.descriptionPlaceholder')}
-                    className="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40"
+                    className="min-w-0 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40"
                   />
                   <input
                     type="number"
