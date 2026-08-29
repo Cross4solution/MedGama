@@ -596,11 +596,17 @@ const Header = () => {
             {/* Mobile trigger */}
             {!hydrated ? null : user ? (
               <div className="flex items-center gap-1 md:hidden">
-                {/* Mobile notification bell */}
+                {/* Mobile notification bell
+                    Düğme `notifOpen`'ı değiştiriyordu ama açılır panel YALNIZ
+                    masaüstü bloğunda çiziliyor (üstelik o da sadece /crm ve
+                    /admin yollarında): telefonda zile dokunmak hiçbir şey
+                    yapmıyordu. Telefonda panel yerine doğrudan bildirim
+                    sayfasına gidiliyor. */}
                 <button
-                  onClick={() => setNotifOpen(p => !p)}
+                  onClick={() => { setNotifOpen(false); navigate('/notifications'); }}
                   className="relative p-1.5 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
                   title={t('notifications.title')}
+                  aria-label={t('notifications.title')}
                 >
                   <Bell className="w-4.5 h-4.5" />
                   {unreadCount > 0 && (

@@ -92,9 +92,14 @@ function TimelineControls({
       </div>
 
       {/* Mobile controls */}
-      <div className="mt-4 md:hidden flex items-center gap-3">
+      {/* Geçiş düğmesi "ortalanmış" görünüyordu ama değildi: solda hiç şerit
+          yokken sağda konum düğmesi yer kaplıyordu, yani `flex-1` şeridin
+          ortası satırın ortası DEĞİLDİ. Eşit şerit koymak da yetmedi —
+          şeritler içeriklerine göre büyüdüğü için 320px'te 18px kayık
+          kalıyordu. Düğme artık satırın gerçek ortasına sabitleniyor. */}
+      <div className="mt-4 md:hidden relative flex items-center justify-end min-h-[44px]">
         {/* Centered toggle */}
-        <div className="flex-1 flex justify-center">
+        <div className="absolute start-1/2 -translate-x-1/2 rtl:translate-x-1/2 flex justify-center">
           <div className="inline-flex rounded-xl bg-white border border-gray-200 p-1 gap-1 shadow-sm">
             <button
               type="button"
