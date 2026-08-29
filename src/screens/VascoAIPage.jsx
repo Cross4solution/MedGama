@@ -7,13 +7,11 @@ import { vascoAPI } from '../lib/api';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 // SEO meta + canonical app/[locale]/vasco-ai/page.jsx generateMetadata ile sunucuda üretiliyor.
 
-const EXAMPLES = [
-  'Dişimde şiddetli ağrı var',
-  'Cildimde kaşıntılı döküntüler çıktı',
-  'Göğsümde baskı ve çarpıntı',
-  'Sürekli baş ağrım ve baş dönmem var',
-  'Gözlerim bulanık görüyor',
-];
+// Örnek şikâyetler sabit TÜRKÇE yazılmıştı: arayüz İngilizceyken bile
+// Türkçe cümleler çıkıyordu. Bunlar hastanın yazacağı metnin örneği, yani
+// kullandığı dilde olmaları şart — yabancı bir hasta Türkçe bir cümleye
+// tıklayıp ne sorduğunu bilemez.
+const ORNEK_ANAHTARLARI = ['vasco.ornek1', 'vasco.ornek2', 'vasco.ornek3', 'vasco.ornek4', 'vasco.ornek5'];
 
 function VascoAssistant() {
   const { t, i18n } = useTranslation();
@@ -111,7 +109,7 @@ function VascoAssistant() {
         {/* Quick examples */}
         {!result && !loading && (
           <div className="mt-3 flex flex-wrap gap-2">
-            {EXAMPLES.map((ex) => (
+            {ORNEK_ANAHTARLARI.map((anahtar) => t(anahtar)).map((ex) => (
               <button key={ex} type="button" onClick={() => ask(ex)}
                 className="px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200 text-xs text-gray-600 hover:border-teal-300 hover:text-teal-700 transition-colors">
                 {ex}

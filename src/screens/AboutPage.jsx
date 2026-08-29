@@ -79,8 +79,18 @@ export default function AboutPage() {
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-12 pb-8 text-center">
           {/* Negatif (beyaz) logo — koyu teal hero üstünde temiz görünsün */}
           <img src="/images/logo/logo.svg" alt="Medagama" className="h-12 sm:h-14 w-auto object-contain mx-auto brightness-0 invert opacity-95" />
-          <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-white tracking-tight">{t('nav.about', 'Hakkımızda')}</h1>
-          <p className="mt-3 max-w-2xl mx-auto text-[15px] text-teal-50/90 leading-relaxed">
+          {/*
+            Başlık görsel olarak kaldırıldı: logo zaten markayı söylüyor,
+            altındaki cümle de sayfanın ne olduğunu anlatıyor — "Hakkımızda"
+            arada fazlalık duruyordu.
+
+            Ama etiketin kendisi SİLİNMEDİ. Sayfanın h1'i olmazsa belge
+            başlık düzeni kırılır: arama motorları sayfanın konusunu
+            kaybeder, ekran okuyucu kullanıcısı da başlıklar arasında
+            gezerken sayfanın adını hiç duymaz.
+          */}
+          <h1 className="sr-only">{t('nav.about', 'Hakkımızda')}</h1>
+          <p className="mt-4 max-w-2xl mx-auto text-[15px] text-teal-50/90 leading-relaxed">
             {t('aboutPage.heroDesc', 'Hastaları uzman doktorlar ve onaylı klinik/hastanelerle aynı dijital platformda buluşturan, dil ve lokasyon bağımsız sağlık ve sağlık turizmi pazar yeri.')}
           </p>
         </div>
