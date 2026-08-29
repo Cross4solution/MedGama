@@ -14,7 +14,7 @@ const ROUTED = LANGUAGES.filter((l) => LOCALES.includes(l.code));
 export default function LanguageSwitcher({ compact = false }) {
   const pathname = usePathname() || '/';
   const router = useRouter();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 

@@ -9,20 +9,23 @@ import ProTeaser from '../../components/crm/ProTeaser';
 import { patientDocumentAPI } from '../../lib/api';
 import useModalDavranisi from '../../hooks/useModalDavranisi';
 
-// Backend enum (PatientDocument::$allowedCategories) → TR label
+// Backend enum (PatientDocument::$allowedCategories) → çeviri anahtarı
+//
+// Dizi MODÜL düzeyinde: `t` buraya erişemez, o yüzden metin değil ANAHTAR
+// tutuluyor ve çeviri kullanım anında yapılıyor.
 const CATEGORIES = [
-  { value: 'lab_result', label: 'Laboratuvar' },
-  { value: 'radiology', label: t('ortak.belgeGoruntuleme') },
-  { value: 'epicrisis', label: 'Epikriz' },
-  { value: 'prescription', label: t('ortak.belgeRecete') },
-  { value: 'pathology', label: 'Patoloji' },
-  { value: 'surgery', label: 'Ameliyat' },
-  { value: 'vaccination', label: 'Aşı' },
-  { value: 'allergy', label: 'Alerji' },
-  { value: 'insurance', label: 'Sigorta' },
-  { value: 'other', label: t('ortak.belgeDiger') },
+  { value: 'lab_result', labelKey: 'ortak.belgeLab' },
+  { value: 'radiology', labelKey: 'ortak.belgeGoruntuleme' },
+  { value: 'epicrisis', labelKey: 'ortak.belgeEpikriz' },
+  { value: 'prescription', labelKey: 'ortak.belgeRecete' },
+  { value: 'pathology', labelKey: 'ortak.belgePatoloji' },
+  { value: 'surgery', labelKey: 'ortak.belgeAmeliyat' },
+  { value: 'vaccination', labelKey: 'ortak.belgeAsi' },
+  { value: 'allergy', labelKey: 'ortak.belgeAlerji' },
+  { value: 'insurance', labelKey: 'ortak.belgeSigorta' },
+  { value: 'other', labelKey: 'ortak.belgeDiger' },
 ];
-const CATEGORY_LABEL = Object.fromEntries(CATEGORIES.map((c) => [c.value, c.label]));
+const CATEGORY_LABEL_KEY = Object.fromEntries(CATEGORIES.map((c) => [c.value, c.labelKey]));
 
 // Mirror of backend PatientDocument::$allowedMimeTypes (PHI — safe types only)
 const ALLOWED_MIME = [
@@ -240,7 +243,7 @@ const CRMDocuments = () => {
             <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}
               className="text-[11px] border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-gray-600">
               <option value="All">{t('common.all', 'Tümü')}</option>
-              {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+              {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{t(c.labelKey)}</option>)}
             </select>
           </div>
         </div>
@@ -276,7 +279,7 @@ const CRMDocuments = () => {
                     <span>{doc.document_date ? String(doc.document_date).slice(0, 10) : ''}</span>
                   </div>
                 </div>
-                <span className="hidden sm:inline-flex text-[10px] font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-lg border border-gray-200 flex-shrink-0">{CATEGORY_LABEL[doc.category] || doc.category}</span>
+                <span className="hidden sm:inline-flex text-[10px] font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-lg border border-gray-200 flex-shrink-0">{CATEGORY_LABEL_KEY[doc.category] ? t(CATEGORY_LABEL_KEY[doc.category]) : doc.category}</span>
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                   <button onClick={() => handleDownload(doc)} className="w-7 h-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600" title={t('common.download', 'İndir')}><Download className="w-3.5 h-3.5" /></button>
                   <button onClick={() => handleDelete(doc)} disabled={deletingId === doc.id} className="w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center text-gray-400 hover:text-red-600 disabled:opacity-50" title={t('common.delete', 'Sil')}>
@@ -335,7 +338,7 @@ const CRMDocuments = () => {
                 <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.documents.category')}</label>
                 <select value={uploadCategory} onChange={(e) => setUploadCategory(e.target.value)}
                   className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-                  {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+                  {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{t(c.labelKey)}</option>)}
                 </select>
               </div>
               {uploadError && (

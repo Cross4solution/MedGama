@@ -4858,6 +4858,13 @@
     "cerezAnalitik": "Analytics & performance",
     "cerezPazarlama": "Marketing & advertising",
     "cerezYurtdisi": "Cross-border data transfer (KVKK Art. 9)",
-    "cerezYurtdisiAciklama": "Some of our cloud providers (TiDB Cloud, Render, Vercel, Google Maps) may process data outside Türkiye and the EEA. Ticking this box means you give explicit consent to that transfer under KVKK Art. 9. You can withdraw it at any time."
+    "cerezYurtdisiAciklama": "Some of our cloud providers (TiDB Cloud, Render, Vercel, Google Maps) may process data outside Türkiye and the EEA. Ticking this box means you give explicit consent to that transfer under KVKK Art. 9. You can withdraw it at any time.",
+    "belgeLab": "Lab result",
+    "belgeEpikriz": "Discharge summary",
+    "belgePatoloji": "Pathology",
+    "belgeAmeliyat": "Surgery",
+    "belgeAsi": "Vaccination",
+    "belgeAlerji": "Allergy",
+    "belgeSigorta": "Insurance"
   }
 }

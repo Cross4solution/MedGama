@@ -21,7 +21,8 @@ export async function generateMetadata({ params }) {
   });
 }
 
-export default async function Page() {
+export default async function Page({ params }) {
+  const { locale } = await params;
   const specialties = await getSpecialties();
 
   const breadcrumb = buildBreadcrumbSchema([
