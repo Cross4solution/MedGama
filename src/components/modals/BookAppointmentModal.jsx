@@ -304,7 +304,11 @@ export default function BookAppointmentModal({ open, onClose, targetId, targetNa
                     <Loader2 className="w-6 h-6 text-teal-600 animate-spin" />
                   </div>
                 ) : (
-                  <div className="flex gap-4">
+                  /* Takvim ve saatler telefonda yan yana duruyordu: takvime
+                     ~200px kalıyor, yedi sütun sığmadığı için gün başlıkları
+                     ("Pzt Sal Çar") ÜST ÜSTE biniyor ve gün numaraları
+                     dokunulamayacak kadar sıkışıyordu. Dar ekranda alt alta. */
+                  <div className="flex flex-col sm:flex-row gap-4">
                     {/* Mini Calendar */}
                     <div className="flex-1 border border-gray-200 rounded-xl p-3">
                       <div className="flex items-center justify-between mb-3">
@@ -345,11 +349,11 @@ export default function BookAppointmentModal({ open, onClose, targetId, targetNa
                     </div>
 
                     {/* Time Slots - right side */}
-                    <div className="w-44 flex-shrink-0">
+                    <div className="w-full sm:w-44 sm:flex-shrink-0">
                       <h4 className="text-xs font-semibold text-gray-500 mb-2">{t('booking.availableTimes')}</h4>
                       {selectedDate ? (
                         daySlots.length > 0 ? (
-                          <div className="grid grid-cols-2 gap-1.5 max-h-64 overflow-y-auto pr-1">
+                          <div className="grid grid-cols-3 sm:grid-cols-2 gap-1.5 max-h-64 overflow-y-auto pe-1">
                             {daySlots.map((s, i) => (
                               <button
                                 key={s.id || i}

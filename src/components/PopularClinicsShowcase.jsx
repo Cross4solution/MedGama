@@ -58,6 +58,29 @@ function ClinicCard({ clinic, onClick, onView }) {
   );
 }
 
+/**
+ * Yükleme yer tutucusu.
+ *
+ * Veri gelene kadar bölümler BAŞLIK gösterip altını boş bırakıyordu. Ölçüldü:
+ * kartlar canlıda 1.5–3 sn'de geliyor, bir koşuda 11 sn sürdü. O süre boyunca
+ * sayfa "içerik yüklenmiyor" gibi görünüyor — hata yok, gösterge de yok.
+ */
+function KartIskeleti() {
+  return (
+    <div className="rounded-md border border-[#e5edf5] bg-white overflow-hidden animate-pulse">
+      <div className="h-40 bg-gray-100" />
+      <div className="p-3.5 space-y-2">
+        <div className="h-3.5 rounded bg-gray-100 w-3/4" />
+        <div className="h-3 rounded bg-gray-100 w-1/2" />
+        <div className="flex items-center justify-between pt-3">
+          <div className="h-2.5 rounded bg-gray-100 w-16" />
+          <div className="h-6 rounded-md bg-gray-100 w-14" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ScrollArrow({ direction, onClick }) {
   const Icon = direction === 'left' ? ChevronLeft : ChevronRight;
   return (
@@ -74,6 +97,7 @@ function ScrollArrow({ direction, onClick }) {
 
 export default function PopularClinicsShowcase({
   items = [],
+  loading = false,
   title: titleProp,
   midTitle: midTitleProp,
   viewAllHref = '/browse/treatments',
@@ -84,6 +108,9 @@ export default function PopularClinicsShowcase({
   const { t } = useTranslation();
   const title = titleProp || t('home.popularTreatments');
   const midTitle = midTitleProp || t('home.popularClinics');
+  // Yalnız gerçekten boşken iskelet göster: veri geldikten sonra yenileme
+  // sırasında kartların yerini yer tutucuya bırakması göz kırpması yaratır.
+  const yukleniyorMu = loading && items.length === 0;
   const scrollRefTop = useRef(null);
   const scrollRefBottom = useRef(null);
   // Popular Treatments: 6 items (3×2 grid)
@@ -160,7 +187,13 @@ export default function PopularClinicsShowcase({
             style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
           >
             <div className="flex gap-4 px-0">
-              {treatmentGroups.map((group, i) => (
+              {yukleniyorMu ? (
+                <div className="flex-none shrink-0 w-full min-w-0">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                    {Array.from({ length: 6 }).map((_, i) => <KartIskeleti key={`ti-${i}`} />)}
+                  </div>
+                </div>
+              ) : treatmentGroups.map((group, i) => (
                 <div key={`top-${i}`} className="flex-none shrink-0 w-full min-w-0 snap-start [scroll-snap-stop:always]">
                   {/* Telefonda tek sütun altı kartı alt alta diziyordu; sayfa
                       bu tek bölüm yüzünden ekran boyu uzuyordu. İki sütun ×
@@ -196,7 +229,11 @@ export default function PopularClinicsShowcase({
                 telefonda iki, sm ve üstünde eskisi gibi üç kart görünüyor.
                 Oklar bir SAYFA kaydırdığı için masaüstü davranışı aynı. */}
             <div className="flex gap-4 px-0">
-              {items.map((clinic, idx) => (
+              {yukleniyorMu ? Array.from({ length: 3 }).map((_, i) => (
+                <div key={`ki-${i}`} className="flex-none shrink-0 w-[47%] sm:w-[calc((100%-2rem)/3)]">
+                  <KartIskeleti />
+                </div>
+              )) : items.map((clinic, idx) => (
                 <div
                   key={idx}
                   className="flex-none shrink-0 w-[47%] sm:w-[calc((100%-2rem)/3)] snap-start [scroll-snap-stop:always]"

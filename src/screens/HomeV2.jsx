@@ -37,6 +37,8 @@ export default function HomeV2() {
   const { t } = useTranslation();
   const [clinics, setClinics] = useState([]);
   const [klinikHatasi, setKlinikHatasi] = useState(false);
+  // Vitrin veri gelene kadar başlık gösterip altını boş bırakıyordu.
+  const [klinikYukleniyor, setKlinikYukleniyor] = useState(true);
   // Yeniden deneme sayacı: aynı ülkeyi tekrar yazmak efekti tetiklemiyor.
   const [yenidenDene, setYenidenDene] = useState(0);
   // Konum akışı: ana sayfa önizleme + popüler klinikler ülkeye göre.
@@ -81,7 +83,8 @@ export default function HomeV2() {
         })));
         setKlinikHatasi(false);
       }
-    }).catch(() => setKlinikHatasi(true));
+    }).catch(() => setKlinikHatasi(true))
+      .finally(() => setKlinikYukleniyor(false));
   }, [geoCountry, yenidenDene]);
 
   // Popular vitrini artık reusable component ile render ediliyor
@@ -181,6 +184,7 @@ export default function HomeV2() {
       ) : (
       <PopularClinicsShowcase
         items={clinics}
+        loading={klinikYukleniyor}
         title={t('home.popularTreatments')}
         midTitle={t('home.popularClinics')}
         onCardClick={(c) => navigate(c.codename ? `/clinic/${c.codename}` : '/clinic')}
