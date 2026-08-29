@@ -2,9 +2,12 @@
 import React from 'react';
 import { Link } from '@/compat/router';
 import { Shield, ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 // SEO meta + canonical artık app/privacy-policy/page.jsx generateMetadata ile sunucuda üretiliyor (Faz 3).
 
 export default function PrivacyPolicyPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -184,80 +187,50 @@ export default function PrivacyPolicyPage() {
             </ul>
           </div>
 
-          {/* 7b. Subprocessors & Cross-Border Transfers — KVKK Md. 9 / GDPR Art. 28 & 46 */}
+          {/* 7b. Subprocessors & Cross-Border Transfers — KVKK Md. 9 / GDPR Art. 28 & 46
+              Tablo sabit TÜRKÇE yazılmıştı. Bu, GDPR'ın açıkça istediği
+              "verilerinizi kim, nerede, hangi dayanakla işliyor" bildirimi —
+              anlaşılmadığı sürece bildirim sayılmaz, İngilizce okuyan bir
+              hasta için Türkçe bir tablo hiçbir şey açıklamıyordu. */}
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">7.1 Veri İşleyiciler ve Yurtdışı Aktarımı (KVKK Md. 9 / GDPR Art. 28 &amp; 46)</h2>
-            <p className="text-gray-700 leading-relaxed mb-3">
-              Hizmetlerimizin sağlanabilmesi için aşağıdaki alt-işleyiciler (subprocessors) ile çalışmaktayız.
-              Bu sağlayıcıların bir kısmı verilerinizi Avrupa Ekonomik Alanı (AEA) dışında işleyebilir.
-              Yurtdışı aktarımlar; Standart Sözleşme Hükümleri (SCC), KVKK Md. 9 kapsamındaki açık rıza ve
-              veri işleyici sözleşmeleri (DPA) gibi uygun güvenceler altında gerçekleştirilir.
-            </p>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('privacy.isleyiciler.baslik')}</h2>
+            <p className="text-gray-700 leading-relaxed mb-3">{t('privacy.isleyiciler.giris')}</p>
             <div className="overflow-x-auto border border-gray-200 rounded-xl">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Servis</th>
-                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Amaç</th>
-                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Bölge</th>
-                    <th className="text-start px-4 py-3 font-semibold text-gray-700">Yasal Dayanak</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">{t('privacy.isleyiciler.sutunServis')}</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">{t('privacy.isleyiciler.sutunAmac')}</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">{t('privacy.isleyiciler.sutunBolge')}</th>
+                    <th className="text-start px-4 py-3 font-semibold text-gray-700">{t('privacy.isleyiciler.sutunDayanak')}</th>
                   </tr>
                 </thead>
                 <tbody className="text-gray-600">
-                  <tr className="border-b border-gray-100">
-                    <td className="px-4 py-2.5 font-medium text-gray-800">TiDB Cloud (AWS)</td>
-                    <td className="px-4 py-2.5">Veritabanı barındırma</td>
-                    <td className="px-4 py-2.5">EU / US</td>
-                    <td className="px-4 py-2.5">SCC + KVKK Md. 9 açık rıza</td>
-                  </tr>
-                  <tr className="border-b border-gray-100 bg-gray-50/50">
-                    <td className="px-4 py-2.5 font-medium text-gray-800">Render</td>
-                    <td className="px-4 py-2.5">Backend hosting</td>
-                    <td className="px-4 py-2.5">EU / US</td>
-                    <td className="px-4 py-2.5">SCC</td>
-                  </tr>
-                  <tr className="border-b border-gray-100">
-                    <td className="px-4 py-2.5 font-medium text-gray-800">Vercel</td>
-                    <td className="px-4 py-2.5">Frontend hosting / CDN</td>
-                    <td className="px-4 py-2.5">Global</td>
-                    <td className="px-4 py-2.5">SCC</td>
-                  </tr>
-                  <tr className="border-b border-gray-100 bg-gray-50/50">
-                    <td className="px-4 py-2.5 font-medium text-gray-800">Google Maps</td>
-                    <td className="px-4 py-2.5">Harita servisi</td>
-                    <td className="px-4 py-2.5">Global</td>
-                    <td className="px-4 py-2.5">DPA + Çerez rızası</td>
-                  </tr>
-                  <tr className="border-b border-gray-100">
-                    <td className="px-4 py-2.5 font-medium text-gray-800">Daily.co</td>
-                    <td className="px-4 py-2.5">Telehealth görüntülü görüşme (kayıt KAPALI)</td>
-                    <td className="px-4 py-2.5">US</td>
-                    <td className="px-4 py-2.5">DPA — görüşme kaydı saklanmaz</td>
-                  </tr>
-                  <tr className="border-b border-gray-100 bg-gray-50/50">
-                    <td className="px-4 py-2.5 font-medium text-gray-800">Deepgram</td>
-                    <td className="px-4 py-2.5">Canlı transkripsiyon (devre dışı — kullanılmıyor)</td>
-                    <td className="px-4 py-2.5">US</td>
-                    <td className="px-4 py-2.5">Devre dışı (KVKK/HIPAA)</td>
-                  </tr>
-                  <tr className="border-b border-gray-100">
-                    <td className="px-4 py-2.5 font-medium text-gray-800">Pusher / Reverb</td>
-                    <td className="px-4 py-2.5">Gerçek zamanlı bildirim</td>
-                    <td className="px-4 py-2.5">EU / Global</td>
-                    <td className="px-4 py-2.5">DPA</td>
-                  </tr>
-                  <tr className="border-b border-gray-100 bg-gray-50/50">
-                    <td className="px-4 py-2.5 font-medium text-gray-800">Google Analytics</td>
-                    <td className="px-4 py-2.5">Anonim analitik (IP anonimleştirilir, PHI maskelenir)</td>
-                    <td className="px-4 py-2.5">Global</td>
-                    <td className="px-4 py-2.5">Çerez onayına bağlı</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-2.5 font-medium text-gray-800">Sentry (opsiyonel)</td>
-                    <td className="px-4 py-2.5">Hata izleme</td>
-                    <td className="px-4 py-2.5">EU</td>
-                    <td className="px-4 py-2.5">DPA</td>
-                  </tr>
+                  {[
+                    { servis: 'TiDB Cloud (AWS)', amac: 'amacVeritabani', bolge: 'EU / US', dayanak: 'dayanakTidb' },
+                    { servis: 'Render', amac: 'amacBackend', bolge: 'EU / US', dayanakDuz: 'SCC' },
+                    { servis: 'Vercel', amac: 'amacFrontend', bolge: 'Global', dayanakDuz: 'SCC' },
+                    { servis: 'Google Maps', amac: 'amacHarita', bolge: 'Global', dayanak: 'dayanakHarita' },
+                    { servis: 'Daily.co', amac: 'amacTelehealth', bolge: 'US', dayanak: 'dayanakTelehealth' },
+                    { servis: 'Deepgram', amac: 'amacTranskripsiyon', bolge: 'US', dayanak: 'dayanakTranskripsiyon' },
+                    { servis: 'Pusher / Reverb', amac: 'amacBildirim', bolge: 'EU / Global', dayanakDuz: 'DPA' },
+                    { servis: 'Google Analytics', amac: 'amacAnalitik', bolge: 'Global', dayanak: 'dayanakAnalitik' },
+                    { servisAnahtar: 'sentryOpsiyonel', amac: 'amacHata', bolge: 'EU', dayanakDuz: 'DPA' },
+                  ].map((satir, i, dizi) => (
+                    <tr
+                      key={satir.servis || satir.servisAnahtar}
+                      className={`${i < dizi.length - 1 ? 'border-b border-gray-100' : ''} ${i % 2 === 1 ? 'bg-gray-50/50' : ''}`}
+                    >
+                      <td className="px-4 py-2.5 font-medium text-gray-800">
+                        {satir.servis || t(`privacy.isleyiciler.${satir.servisAnahtar}`)}
+                      </td>
+                      <td className="px-4 py-2.5">{t(`privacy.isleyiciler.${satir.amac}`)}</td>
+                      <td className="px-4 py-2.5">{satir.bolge}</td>
+                      <td className="px-4 py-2.5">
+                        {satir.dayanakDuz || t(`privacy.isleyiciler.${satir.dayanak}`)}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

@@ -4704,5 +4704,30 @@
     "sss2CevapBas": "Write to us to start the process, or see",
     "sss3CevapBas": "For requests about your personal data, reach us at",
     "sss3CevapSon": "."
+  },
+  "privacy": {
+    "isleyiciler": {
+      "baslik": "7.1 Data processors and cross-border transfers (KVKK Art. 9 / GDPR Art. 28 & 46)",
+      "giris": "We work with the subprocessors listed below to provide our services. Some of them may process your data outside the European Economic Area (EEA). Cross-border transfers take place under appropriate safeguards such as Standard Contractual Clauses (SCC), explicit consent under KVKK Art. 9, and data processing agreements (DPA).",
+      "sutunServis": "Service",
+      "sutunAmac": "Purpose",
+      "sutunBolge": "Region",
+      "sutunDayanak": "Legal basis",
+      "amacVeritabani": "Database hosting",
+      "dayanakTidb": "SCC + explicit consent under KVKK Art. 9",
+      "amacBackend": "Backend hosting",
+      "amacFrontend": "Frontend hosting / CDN",
+      "amacHarita": "Map service",
+      "dayanakHarita": "DPA + cookie consent",
+      "amacTelehealth": "Telehealth video consultation (recording OFF)",
+      "dayanakTelehealth": "DPA — no consultation recording is kept",
+      "amacTranskripsiyon": "Live transcription (disabled — not in use)",
+      "dayanakTranskripsiyon": "Disabled (KVKK/HIPAA)",
+      "amacBildirim": "Real-time notifications",
+      "amacAnalitik": "Anonymous analytics (IP anonymised, PHI masked)",
+      "dayanakAnalitik": "Subject to cookie consent",
+      "amacHata": "Error monitoring",
+      "sentryOpsiyonel": "Sentry (optional)"
+    }
   }
 }

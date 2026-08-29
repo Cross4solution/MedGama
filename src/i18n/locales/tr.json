@@ -4644,5 +4644,30 @@
     "sss2CevapBas": "Katılım sürecini başlatmak için bize yazın veya",
     "sss3CevapBas": "Kişisel verilerinizle ilgili talepleriniz için",
     "sss3CevapSon": "adresinden bize ulaşabilirsiniz."
+  },
+  "privacy": {
+    "isleyiciler": {
+      "baslik": "7.1 Veri İşleyiciler ve Yurtdışı Aktarımı (KVKK Md. 9 / GDPR Art. 28 & 46)",
+      "giris": "Hizmetlerimizin sağlanabilmesi için aşağıdaki alt-işleyiciler (subprocessors) ile çalışmaktayız. Bu sağlayıcıların bir kısmı verilerinizi Avrupa Ekonomik Alanı (AEA) dışında işleyebilir. Yurtdışı aktarımlar; Standart Sözleşme Hükümleri (SCC), KVKK Md. 9 kapsamındaki açık rıza ve veri işleyici sözleşmeleri (DPA) gibi uygun güvenceler altında gerçekleştirilir.",
+      "sutunServis": "Servis",
+      "sutunAmac": "Amaç",
+      "sutunBolge": "Bölge",
+      "sutunDayanak": "Yasal Dayanak",
+      "amacVeritabani": "Veritabanı barındırma",
+      "dayanakTidb": "SCC + KVKK Md. 9 açık rıza",
+      "amacBackend": "Arka uç barındırma",
+      "amacFrontend": "Ön yüz barındırma / CDN",
+      "amacHarita": "Harita servisi",
+      "dayanakHarita": "DPA + Çerez rızası",
+      "amacTelehealth": "Telehealth görüntülü görüşme (kayıt KAPALI)",
+      "dayanakTelehealth": "DPA — görüşme kaydı saklanmaz",
+      "amacTranskripsiyon": "Canlı transkripsiyon (devre dışı — kullanılmıyor)",
+      "dayanakTranskripsiyon": "Devre dışı (KVKK/HIPAA)",
+      "amacBildirim": "Gerçek zamanlı bildirim",
+      "amacAnalitik": "Anonim analitik (IP anonimleştirilir, PHI maskelenir)",
+      "dayanakAnalitik": "Çerez onayına bağlı",
+      "amacHata": "Hata izleme",
+      "sentryOpsiyonel": "Sentry (opsiyonel)"
+    }
   }
 }
