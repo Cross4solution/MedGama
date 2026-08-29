@@ -40,8 +40,11 @@ function ClinicCard({ clinic, onClick, onView }) {
           <MapPin className="w-3 h-3 text-[#64748d] flex-shrink-0" />
           <span className="truncate">{clinic.city} · {clinic.dept}</span>
         </div>
-        <div className="mt-auto pt-3 flex items-center justify-between">
-          <span className="text-[11px] text-[#64748d] font-normal">{clinic.reviews > 0 ? `${clinic.reviews} ${t('home.reviews')}` : t('common.noReviewsYet', 'Henüz yorum yok')}</span>
+        {/* Dar kartta (telefonda iki sütun) "Henüz yorum yok" üç satıra
+            sarıyor ve "Görüntüle" düğmesinin ALTINA giriyordu: iki öğe
+            üst üste biniyordu. Sarmalama açık, metin kırpılabilir. */}
+        <div className="mt-auto pt-3 flex flex-wrap items-center justify-between gap-x-2 gap-y-1.5">
+          <span className="text-[11px] text-[#64748d] font-normal min-w-0 truncate">{clinic.reviews > 0 ? `${clinic.reviews} ${t('home.reviews')}` : t('common.noReviewsYet', 'Henüz yorum yok')}</span>
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onView(clinic); }}
@@ -91,14 +94,6 @@ export default function PopularClinicsShowcase({
     return grps;
   }, [items]);
 
-  // Popular Clinics: 3 items per carousel view (single row)
-  const clinicGroups = useMemo(() => {
-    const arr = items;
-    const grps = [];
-    for (let i = 0; i < arr.length; i += 3) grps.push(arr.slice(i, i + 3));
-    return grps;
-  }, [items]);
-
   /**
    * Kartları bir grup kaydırır.
    *
@@ -113,9 +108,10 @@ export default function PopularClinicsShowcase({
     const el = ref?.current;
     if (!el) return;
 
-    const firstGroup = el.querySelector('.snap-start');
-    const gap = 16;
-    const amount = firstGroup ? firstGroup.clientWidth + gap : el.clientWidth;
+    // Bir SAYFA kaydır. Eskiden `.snap-start` bir grubu (üç kart) sarıyordu ve
+    // ölçüsü sayfa genişliğine eşitti. Alt şerit artık düz liste, yani
+    // `.snap-start` TEK kart — onu ölçmek okları birer birer ilerletirdi.
+    const amount = el.clientWidth;
     const hedef = el.scrollLeft + dir * amount;
 
     const azHareket = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
@@ -166,7 +162,10 @@ export default function PopularClinicsShowcase({
             <div className="flex gap-4 px-0">
               {treatmentGroups.map((group, i) => (
                 <div key={`top-${i}`} className="flex-none shrink-0 w-full min-w-0 snap-start [scroll-snap-stop:always]">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-max">
+                  {/* Telefonda tek sütun altı kartı alt alta diziyordu; sayfa
+                      bu tek bölüm yüzünden ekran boyu uzuyordu. İki sütun ×
+                      üç satır: aynı altı kart, üçte bir yükseklik. */}
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 auto-rows-max">
                     {group.map((clinic, idx) => (
                       <ClinicCard key={idx} clinic={clinic} onClick={handleCardClick} onView={handleViewClick} />
                     ))}
@@ -191,16 +190,18 @@ export default function PopularClinicsShowcase({
             className="overflow-x-auto overflow-y-hidden scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] snap-x snap-mandatory pr-2 -mr-2 [&::-webkit-scrollbar]:hidden"
             style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
           >
+            {/* Üçlü gruplar telefonda üç kartı 375px'e sıkıştırıyordu: klinik
+                adı "Medagam…" diye kesiliyor, alt satır üst üste biniyordu.
+                Gruplama yerine düz liste — kart genişliği ekrana göre:
+                telefonda iki, sm ve üstünde eskisi gibi üç kart görünüyor.
+                Oklar bir SAYFA kaydırdığı için masaüstü davranışı aynı. */}
             <div className="flex gap-4 px-0">
-              {clinicGroups.map((group, i) => (
-                <div key={`bot-${i}`} className="flex-none shrink-0 w-full min-w-0 snap-start [scroll-snap-stop:always]">
-                  <div className="flex gap-4">
-                    {group.map((clinic, idx) => (
-                      <div key={idx} className="flex-1 min-w-0">
-                        <ClinicCard clinic={clinic} onClick={handleCardClick} onView={handleViewClick} />
-                      </div>
-                    ))}
-                  </div>
+              {items.map((clinic, idx) => (
+                <div
+                  key={idx}
+                  className="flex-none shrink-0 w-[47%] sm:w-[calc((100%-2rem)/3)] snap-start [scroll-snap-stop:always]"
+                >
+                  <ClinicCard clinic={clinic} onClick={handleCardClick} onView={handleViewClick} />
                 </div>
               ))}
             </div>

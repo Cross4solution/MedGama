@@ -41,10 +41,20 @@ export default function SelectCombobox({
     return list.filter((opt) => normalize(opt.label).includes(q));
   }, [list, query, searchable]);
 
+  // Panel `position: fixed` ve sol kenarı tetikleyiciye eşitleniyordu; ama
+  // panelin `min-w-[220px]` tabanı var. Tetikleyici dar (132px) ve sağda
+  // olduğunda panel ekranın DIŞINA taşıyordu — MedStream'de branş süzgeci
+  // 390px telefonda ~72px sağa çıkıyor, seçeneklerin bir kısmı okunamıyordu.
+  // Sabit konumlu öğe sayfayı kaydırmadığı için de kimse fark etmiyordu.
   const updatePos = useCallback(() => {
     if (!btnRef.current) return;
     const r = btnRef.current.getBoundingClientRect();
-    setPos({ top: r.bottom + 4, left: r.left, width: r.width });
+    const kenar = 8;
+    const ekran = window.innerWidth;
+    const genislik = Math.min(Math.max(r.width, 220), ekran - kenar * 2);
+    // Ekranın sağını aşıyorsa sola kaydır; sonra soldan da taşmasın.
+    const left = Math.max(kenar, Math.min(r.left, ekran - genislik - kenar));
+    setPos({ top: r.bottom + 4, left, width: genislik });
   }, []);
 
   useEffect(() => {

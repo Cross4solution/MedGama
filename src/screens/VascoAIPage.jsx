@@ -85,22 +85,25 @@ function VascoAssistant() {
         </span>
       </div>
       <div className="p-5 sm:p-7">
-        <div className="flex items-center gap-2">
+        {/* Telefonda alan ve düğme yan yanaydı: metin kutusuna ~180px kalıyor,
+            iki satırlık yer tutucu üç satıra sarıp KESİLİYORDU (kutunun
+            içinde kaydırma çubuğu beliriyordu). Dar ekranda alt alta. */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) ask(); }}
-            rows={2}
+            rows={3}
             // Yer tutucu burada DEĞİŞKEN (yazı yazıldıkça animasyonlu örnek
             // metinler dönüyor), üstelik odaklanınca kayboluyor. Ekran okuyucu
             // için sabit bir ad şart: alanın ne istediği yer tutucuya bağlı
             // kalamaz.
             aria-label={t('vascoAI.inputLabel', 'Şikâyetinizi yazın')}
             placeholder={accumulated ? t('vascoAI.answerPlaceholder', 'Yanıtınızı yazın...') : (animPh || t('vascoAI.placeholder', 'ör. İki gündür göğsümde ağrı ve çarpıntı var...'))}
-            className="flex-1 resize-none border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
+            className="flex-1 min-w-0 resize-none border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
           />
           <button onClick={() => ask()} disabled={loading || text.trim().length < 3}
-            className="h-12 px-5 rounded-2xl bg-teal-600 text-white font-semibold text-sm hover:bg-teal-700 disabled:opacity-50 inline-flex items-center gap-1.5 transition-colors">
+            className="h-11 sm:h-12 w-full sm:w-auto px-5 rounded-2xl bg-teal-600 text-white font-semibold text-sm hover:bg-teal-700 disabled:opacity-50 inline-flex items-center justify-center gap-1.5 transition-colors flex-shrink-0">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             {t('vascoAI.ask', 'Öner')}
           </button>
@@ -108,10 +111,15 @@ function VascoAssistant() {
 
         {/* Quick examples */}
         {!result && !loading && (
-          <div className="mt-3 flex flex-wrap gap-2">
+          /* Örnek şikâyetler tam cümle: telefonda her biri kendi satırına
+             düşüp beş satır yer kaplıyordu. Dar ekranda tek satırlık yatay
+             şerit, sm'den itibaren eskisi gibi sarmalanıyor. */
+          <div className="mt-3 flex gap-2 overflow-x-auto pe-5 -me-5 pb-1
+                          [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden
+                          sm:flex-wrap sm:overflow-visible sm:pe-0 sm:me-0 sm:pb-0">
             {ORNEK_ANAHTARLARI.map((anahtar) => t(anahtar)).map((ex) => (
               <button key={ex} type="button" onClick={() => ask(ex)}
-                className="px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200 text-xs text-gray-600 hover:border-teal-300 hover:text-teal-700 transition-colors">
+                className="flex-none whitespace-nowrap sm:whitespace-normal px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200 text-xs text-gray-600 hover:border-teal-300 hover:text-teal-700 transition-colors">
                 {ex}
               </button>
             ))}

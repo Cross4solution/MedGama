@@ -48,6 +48,7 @@ const SAYFALAR = [
   { yol: '/doctor/appointments', oturum: 'demoDoktor' }, // eylem sütunu ekran dışıydı
   { yol: '/doctor/billing',   oturum: 'doktor' },     // başlık ve süzgeç çubuğu
   { yol: '/settings',         oturum: 'hasta' },      // takvim bağlantısı + "Kopyala"
+  { yol: '/',                 oturum: null },     // arama ızgarası, 768px'te 210px
   { yol: '/medstream',        oturum: null },
   { yol: '/login',            oturum: null },
 ];
@@ -55,7 +56,13 @@ const SAYFALAR = [
 // 375 px yaygın telefon; 320 px hem eski küçük telefonlar hem de WCAG
 // 1.4.10'un istediği yeniden akma genişliği (metni büyüten kullanıcı
 // efektif olarak buraya iner).
-const GENISLIKLER = [375, 320];
+//
+// 768 px sonradan eklendi ve eklenir eklenmez bir hata buldu: ana sayfadaki
+// arama ızgarası altı sütununu `md`'den itibaren açıyordu ve 768 px'e
+// sığmıyordu — sayfa 210 px yana kayıyordu. Telefon genişlikleri bunu
+// göremez, çünkü orada ızgara zaten iki sütuna düşüyor; masaüstü de göremez,
+// çünkü orada altı sütun rahat sığıyor. Hata yalnız aradaki bantta yaşıyordu.
+const GENISLIKLER = [375, 320, 768];
 
 for (const { yol, oturum } of SAYFALAR) {
   for (const genislikPx of GENISLIKLER) {

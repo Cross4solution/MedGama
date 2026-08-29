@@ -219,7 +219,10 @@ export default function CustomSearch() {
   return (
     <form onSubmit={onSubmit}>
       <div className="bg-white border border-gray-200 rounded-2xl p-4 md:p-5 shadow-sm">
-        <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-[11rem,11rem,1.1fr,auto,1.1fr,auto] items-start">
+        {/* Altı sütunlu düzen 768px'e sığmıyordu: iki sabit 11rem + iki
+            `1.1fr` + iki `auto`, en dar içerikte bile ekranı 210px aşıp
+            ANA SAYFAYI yana kaydırıyordu. Altılı düzen artık lg ve üstünde. */}
+        <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-[11rem,11rem,1.1fr,auto,1.1fr,auto] items-start">
         {/* 1. Country — "Use my location" kutunun altında, hata durumunda metniyle belli */}
         <div>
           <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('search.country')}</label>
@@ -289,7 +292,7 @@ export default function CustomSearch() {
         </div>
 
         {/* 3. Symptom — çoklu girilebilir (etikette "(s)"), örnek metin kutunun altında */}
-        <div className="relative col-span-1 sm:col-span-2 md:col-span-1">
+        <div className="relative col-span-1 sm:col-span-2 lg:col-span-1">
           <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('search.symptomProcedure')}</label>
           <GlobalSuggest
             type="symptom"
@@ -304,16 +307,16 @@ export default function CustomSearch() {
           <p className="mt-1.5 text-[11px] text-gray-400 leading-snug">{t('search.symptomHint', 'e.g., nasal congestion, headache')}</p>
         </div>
 
-        <div className="flex items-center justify-center col-span-1 sm:col-span-2 md:col-span-1 md:pt-[44px] py-1 md:py-0">
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="flex-1 h-px bg-gray-200 md:hidden"></div>
+        <div className="flex items-center justify-center col-span-1 sm:col-span-2 lg:col-span-1 lg:pt-[44px] py-1 lg:py-0">
+          <div className="flex items-center gap-3 w-full lg:w-auto">
+            <div className="flex-1 h-px bg-gray-200 lg:hidden"></div>
             <span className="text-xs font-medium text-gray-400 tracking-wider">{t('search.or')}</span>
-            <div className="flex-1 h-px bg-gray-200 md:hidden"></div>
+            <div className="flex-1 h-px bg-gray-200 lg:hidden"></div>
           </div>
         </div>
 
         {/* 4. Specialty — TEK seçim (kişi iki uzmanlık aynı anda aramaz), örnek metin altta */}
-        <div className="relative col-span-1 sm:col-span-2 md:col-span-1">
+        <div className="relative col-span-1 sm:col-span-2 lg:col-span-1">
           <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('search.specialtyDisease')}</label>
           <GlobalSuggest
             type="specialty"
@@ -329,11 +332,11 @@ export default function CustomSearch() {
         </div>
 
         {/* 5. Search button */}
-        <div className="col-span-1 sm:col-span-2 md:col-span-1 md:pt-6">
+        <div className="col-span-1 sm:col-span-2 lg:col-span-1 lg:pt-6">
           <button
             type="submit"
             disabled={!canSearch}
-            className="w-full md:w-auto bg-teal-600 text-white rounded-xl text-sm font-semibold px-5 py-2.5 h-10 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 justify-center hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all shadow-sm hover:shadow-md"
+            className="w-full lg:w-auto bg-teal-600 text-white rounded-xl text-sm font-semibold px-5 py-2.5 h-10 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 justify-center hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all shadow-sm hover:shadow-md"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <circle cx="11" cy="11" r="8"></circle>
