@@ -14,19 +14,22 @@ import { doctorBillingAPI, billingAPI, reportAPI } from '../../lib/api';
 import { exportPDF, exportExcel } from '../../utils/exportUtils';
 
 // Reports that genuinely need data sources not yet captured by the backend — honest "yakında".
+//
+// Etiketler sabit Türkçeydi ve bu sabitler bileşenin DIŞINDA tanımlı, yani
+// `t` oraya erişemiyor. Bu yüzden metin değil ANAHTAR tutuluyor; çeviri
+// kullanım anında, bileşenin içinde yapılıyor.
 const UPCOMING_REPORTS = [
-  { title: 'Tedavi Sonuçları', description: 'Başarı oranları, takip uyumu, memnuniyet skorları', icon: Activity },
-  { title: 'Reçete Analizi', description: 'En çok yazılan ilaçlar, yenileme oranları', icon: FileText },
-  { title: 'Operasyonel Verimlilik', description: 'Ortalama bekleme süresi, muayene süresi', icon: Clock },
+  { titleKey: 'crm.raporlar.yakinda1Baslik', descKey: 'crm.raporlar.yakinda1Aciklama', icon: Activity },
+  { titleKey: 'crm.raporlar.yakinda2Baslik', descKey: 'crm.raporlar.yakinda2Aciklama', icon: FileText },
+  { titleKey: 'crm.raporlar.yakinda3Baslik', descKey: 'crm.raporlar.yakinda3Aciklama', icon: Clock },
 ];
 
-// Türkçe randevu durumu etiketleri
-const STATUS_LABELS = {
-  pending: 'Bekliyor',
-  confirmed: 'Onaylandı',
-  cancelled: 'İptal',
-  completed: 'Tamamlandı',
-  no_show: 'Gelmedi',
+const STATUS_LABEL_KEYS = {
+  pending: 'crm.raporlar.durumBekliyor',
+  confirmed: 'crm.raporlar.durumOnaylandi',
+  cancelled: 'crm.raporlar.durumIptal',
+  completed: 'crm.raporlar.durumTamamlandi',
+  no_show: 'crm.raporlar.durumGelmedi',
 };
 const STATUS_COLORS = {
   pending: '#f59e0b',
@@ -35,11 +38,11 @@ const STATUS_COLORS = {
   completed: '#14b8a6',
   no_show: '#a855f7',
 };
-const TYPE_LABELS = {
-  inPerson: 'Yüz yüze',
-  online: 'Online',
-  phone: 'Telefon',
-  examination: 'Muayene',
+const TYPE_LABEL_KEYS = {
+  inPerson: 'crm.raporlar.turYuzYuze',
+  online: 'crm.raporlar.turOnline',
+  phone: 'crm.raporlar.turTelefon',
+  examination: 'crm.raporlar.turMuayene',
 };
 const SERVICE_COLORS = ['#14b8a6', '#3b82f6', '#f59e0b', '#a855f7', '#ef4444', '#10b981'];
 
@@ -166,7 +169,7 @@ const CRMReports = () => {
   // ── Derived analytics data ──
   const statusData = (apptReport?.status_distribution ?? [])
     .filter((s) => s.count > 0)
-    .map((s) => ({ name: STATUS_LABELS[s.status] ?? s.status, value: s.count, key: s.status }));
+    .map((s) => ({ name: STATUS_LABEL_KEYS[s.status] ? t(STATUS_LABEL_KEYS[s.status]) : s.status, value: s.count, key: s.status }));
   const apptHasData = statusData.length > 0;
 
   const apptSeries = (apptReport?.timeseries ?? []).map((p) => ({ label: fmtDay(p.date), count: p.count }));
@@ -179,19 +182,19 @@ const CRMReports = () => {
     ...(serviceReport?.record_types ?? []),
   ]
     .filter((s) => s.count > 0)
-    .map((s) => ({ name: TYPE_LABELS[s.label] ?? s.label, count: s.count }));
+    .map((s) => ({ name: TYPE_LABEL_KEYS[s.label] ? t(TYPE_LABEL_KEYS[s.label]) : s.label, count: s.count }));
   const servicesHasData = services.length > 0;
 
   const patientKpis = patientReport ? [
     { label: 'Toplam Hasta', value: String(patientReport.total_patients ?? 0), icon: Users },
     { label: 'Bu Ay Yeni Hasta', value: String(patientReport.new_this_month ?? 0), icon: TrendingUp },
-    { label: 'Gelmedi Oranı', value: `%${noShowRate}`, icon: AlertCircle },
+    { label: t('crm.raporlar.gelmediOrani'), value: `%${noShowRate}`, icon: AlertCircle },
   ] : [];
 
   const kpis = stats ? [
     { label: 'Toplam Gelir', value: fmtMoney(stats.total_revenue, currency), icon: DollarSign },
     { label: 'Bu Ay Gelir', value: fmtMoney(stats.monthly_revenue, currency), icon: TrendingUp },
-    { label: 'Bugün Gelir', value: fmtMoney(stats.today_revenue, currency), icon: TrendingUp },
+    { label: t('crm.raporlar.bugunGelir'), value: fmtMoney(stats.today_revenue, currency), icon: TrendingUp },
     { label: 'Toplam Fatura', value: String(stats.total_invoices ?? 0), icon: Receipt },
     { label: 'Beklenen Gelir', value: fmtMoney(stats.expected_revenue, currency), icon: Clock },
     { label: 'Tahsil Edilecek', value: fmtMoney(stats.receivable_amount, currency), icon: AlertCircle },
@@ -201,13 +204,13 @@ const CRMReports = () => {
     summaryCards: kpis.map((k) => ({ label: k.label, value: k.value })),
     tables: [
       {
-        title: 'Gelir & Faturalama Özeti',
-        headers: ['Metrik', 'Değer'],
+        title: t('crm.raporlar.gelirOzeti'),
+        headers: ['Metrik', t('crm.raporlar.deger')],
         rows: kpis.map((k) => [k.label, k.value]),
       },
       ...(chart.length ? [{
-        title: 'Gelir Grafiği',
-        headers: ['Dönem', 'Gelir'],
+        title: t('crm.raporlar.gelirGrafigi'),
+        headers: [t('crm.raporlar.donem'), 'Gelir'],
         rows: chart.map((c) => [c.label, fmtMoney(c.revenue, currency)]),
       }] : []),
     ],
@@ -296,7 +299,7 @@ const CRMReports = () => {
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
               <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="w-4 h-4 text-gray-400" />
-                <h2 className="text-sm font-bold text-gray-900">{t('crm.reports.revenueTrend', 'Gelir Grafiği')}</h2>
+                <h2 className="text-sm font-bold text-gray-900">{t('crm.reports.revenueTrend', t('crm.raporlar.gelirGrafigi'))}</h2>
               </div>
               <ResponsiveContainer width="100%" height={280}>
                 <AreaChart data={chart} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -356,7 +359,7 @@ const CRMReports = () => {
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <EmptyState hata={raporHatasi.randevu} message={raporHatasi.randevu ? t('common.loadFailedTitle') : "Henüz randevu verisi yok"} />
+                <EmptyState hata={raporHatasi.randevu} message={raporHatasi.randevu ? t('common.loadFailedTitle') : t('crm.raporlar.randevuVerisiYok')} />
               )}
             </div>
 
@@ -383,7 +386,7 @@ const CRMReports = () => {
                   </AreaChart>
                 </ResponsiveContainer>
               ) : (
-                <EmptyState hata={raporHatasi.randevu} message={raporHatasi.randevu ? t('common.loadFailedTitle') : "Son 30 günde randevu yok"} />
+                <EmptyState hata={raporHatasi.randevu} message={raporHatasi.randevu ? t('common.loadFailedTitle') : t('crm.raporlar.son30GunYok')} />
               )}
             </div>
           </div>
@@ -410,7 +413,7 @@ const CRMReports = () => {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <EmptyState hata={raporHatasi.hizmet} message={raporHatasi.hizmet ? t('common.loadFailedTitle') : "Henüz hizmet/tedavi verisi yok"} />
+                <EmptyState hata={raporHatasi.hizmet} message={raporHatasi.hizmet ? t('common.loadFailedTitle') : t('crm.raporlar.hizmetVerisiYok')} />
               )}
             </div>
           )}
@@ -420,15 +423,15 @@ const CRMReports = () => {
             <h2 className="text-sm font-bold text-gray-900 mb-3">{t('crm.reports.upcoming', 'Yakında Eklenecek Raporlar')}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {UPCOMING_REPORTS.map((r) => (
-                <div key={r.title} className="relative bg-white rounded-2xl border border-gray-200/60 p-5 opacity-75">
+                <div key={r.titleKey} className="relative bg-white rounded-2xl border border-gray-200/60 p-5 opacity-75">
                   <div className="absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-[9px] font-bold uppercase">
-                    <Lock className="w-2.5 h-2.5" /> Yakında
+                    <Lock className="w-2.5 h-2.5" /> {t('crm.raporlar.yakinda', 'Yakında')}
                   </div>
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-gray-200 bg-gray-50 mb-3">
                     <r.icon className="w-5 h-5 text-gray-400" />
                   </div>
-                  <h3 className="text-sm font-bold text-gray-900 mb-1">{r.title}</h3>
-                  <p className="text-xs text-gray-500 leading-relaxed">{r.description}</p>
+                  <h3 className="text-sm font-bold text-gray-900 mb-1">{t(r.titleKey)}</h3>
+                  <p className="text-xs text-gray-500 leading-relaxed">{t(r.descKey)}</p>
                 </div>
               ))}
             </div>

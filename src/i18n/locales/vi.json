@@ -657,6 +657,33 @@
       "paymentMethod": "Phương thức thanh toán",
       "billingHistory": "Lịch sử thanh toán",
       "change": "Thay đổi"
+    },
+    "raporlar": {
+      "yakinda1Baslik": "Treatment outcomes",
+      "yakinda1Aciklama": "Success rates, follow-up adherence, satisfaction scores",
+      "yakinda2Baslik": "Prescription analysis",
+      "yakinda2Aciklama": "Most prescribed medicines, refill rates",
+      "yakinda3Baslik": "Operational efficiency",
+      "yakinda3Aciklama": "Average waiting time, consultation duration",
+      "durumBekliyor": "Pending",
+      "durumOnaylandi": "Confirmed",
+      "durumIptal": "Cancelled",
+      "durumTamamlandi": "Completed",
+      "durumGelmedi": "No-show",
+      "turYuzYuze": "In person",
+      "turOnline": "Online",
+      "gelmediOrani": "No-show rate",
+      "bugunGelir": "Revenue today",
+      "gelirOzeti": "Revenue & billing summary",
+      "deger": "Value",
+      "gelirGrafigi": "Revenue chart",
+      "donem": "Period",
+      "randevuVerisiYok": "No appointment data yet",
+      "son30GunYok": "No appointments in the last 30 days",
+      "hizmetVerisiYok": "No service or treatment data yet",
+      "turTelefon": "Phone",
+      "turMuayene": "Examination",
+      "yakinda": "Coming soon"
     }
   },
   "home": {
