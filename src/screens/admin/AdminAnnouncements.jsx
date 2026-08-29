@@ -159,7 +159,9 @@ function AnnouncementFormModal({ announcement, onClose, onSave, loading }) {
             </div>
 
             {/* Options Row */}
-            <div className="flex items-center gap-4">
+            {/* 320px'te üç öğe tek satıra sığmıyordu: öncelik alanı pencerenin
+                4px dışında kalıyor ve `overflow-hidden` onu tamamen kesiyordu. */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" checked={form.is_active} onChange={e => handleChange('is_active', e.target.checked)}
                   className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" />
