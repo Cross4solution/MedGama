@@ -187,7 +187,7 @@ export default function PatientAppointments() {
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+        <div className="flex items-center gap-2 mb-6 overflow-x-auto scrollbar-hide pb-2">
           {[
             { key: 'all', label: t('hastaRandevu.all', 'All') },
             { key: 'upcoming', label: t('hastaRandevu.upcoming', 'Upcoming') },

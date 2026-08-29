@@ -234,7 +234,7 @@ const CRMDocuments = () => {
             <input type="text" placeholder={t('crm.documents.searchDocuments')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
               className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full" />
           </div>
-          <div className="flex items-center gap-1.5 overflow-x-auto">
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
             <button onClick={() => setCategoryFilter('All')}
               className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium whitespace-nowrap transition-colors ${categoryFilter === 'All' ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'text-gray-500 hover:bg-gray-50'}`}>{t('common.all', 'Tümü')}</button>
             <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}

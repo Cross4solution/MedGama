@@ -350,7 +350,7 @@ const CRMMessages = () => {
               <input type="text" placeholder={t('crm.messages.searchConversations')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                 className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full" />
             </div>
-            <div className="flex items-center gap-1 overflow-x-auto">
+            <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
               {[
                 { key: 'all', label: t('common.all') },
                 { key: 'unread', label: `${t('crm.messages.unreadMessages')} (${totalUnread})` },

@@ -454,7 +454,13 @@ const DoctorProfilePage = ({ initialDoctor }) => {
           <div className="flex-1 min-w-0">
             {/* Tabs */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6">
-              <div className="flex overflow-x-auto border-b border-gray-100">
+              {/* Sekmeler ekrana sığmadığında yatay kayıyor; tarayıcının
+                  kendi kaydırma çubuğu sekmelerin hemen altında kalın gri
+                  bir şerit olarak çiziliyordu ve tasarım hatası gibi
+                  duruyordu. `scrollbar-hide` projede zaten vardı, buraya
+                  uygulanmamıştı — kaydırma çalışmaya devam ediyor, yalnız
+                  çubuk görünmüyor. */}
+              <div className="flex overflow-x-auto scrollbar-hide border-b border-gray-100">
                 {tabs.map(tab => (
                   <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                     className={`px-4 py-3 text-sm font-semibold whitespace-nowrap transition-all border-b-2 ${

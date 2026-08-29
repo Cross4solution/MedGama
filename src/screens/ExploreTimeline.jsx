@@ -719,7 +719,7 @@ export default function ExploreTimeline() {
                     {!isUnverifiedDoctor && (
                     <div className="border-t border-gray-100 mt-4 pt-3">
                       <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-0.5 sm:gap-1 flex-1 min-w-0 overflow-x-auto">
+                        <div className="flex items-center gap-0.5 sm:gap-1 flex-1 min-w-0 overflow-x-auto scrollbar-hide">
                           <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>imageInputRef.current?.click(),0); }} className="inline-flex items-center gap-1 sm:gap-1.5 text-gray-600 hover:text-emerald-600 py-2 px-2 sm:px-3 rounded-lg hover:bg-emerald-50/60 transition-all duration-200 flex-shrink-0" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-emerald-500" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
                             <span className="text-sm font-medium hidden sm:inline">{t('medstream.photo')}</span>

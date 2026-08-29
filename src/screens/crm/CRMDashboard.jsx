@@ -543,7 +543,7 @@ const CRMDashboard = () => {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-1.5 overflow-x-auto">
+            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
               {[
                 { key: 'all', label: t('crm.dashboard.filter.all', 'All') },
                 { key: 'upcoming', label: t('crm.dashboard.filter.upcoming', 'Upcoming') },
