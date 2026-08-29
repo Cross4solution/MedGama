@@ -5,7 +5,6 @@
 // görünürlük mantığı + scroll override + toast navigate bridge + OnboardingGate yaşar.
 // document.title YÖNETİLMEZ — Next Metadata API hallediyor (App.js'teki titleMap effect'i ATLANDI).
 import React, { useEffect, Suspense } from 'react';
-import { useTranslation } from 'react-i18next';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { stripLocale } from '@/lib/locales';
 import { Link, useNavigate, useNavigationType } from '@/compat/router';
@@ -26,42 +25,19 @@ import resolveStorageUrl from '@/utils/resolveStorageUrl';
  * hemen siliniyor ki tarayıcı geçmişinde ve paylaşılan ekran görüntüsünde
  * kalmasın. Jeton yoksa bu bileşen hiçbir şey yapmaz.
  */
-/**
- * "İçeriğe geç" bağlantısı.
- *
- * Ölçüldü: ana sayfada 160 odaklanabilir denetim var ve bunların büyük kısmı
- * her sayfada tekrar eden menü. Klavyeyle ya da ekran okuyucuyla gelen biri,
- * okumak istediği metne varmak için her seferinde o menünün tamamını geçmek
- * zorundaydı.
- *
- * Bağlantı görünmez durmuyor, ODAKLANINCA görünüyor: fareyle gezen kimse onu
- * görmüyor, sekmeye basan herkes ilk onu buluyor.
- */
-function IcerigeGec() {
-  const { t } = useTranslation();
-
-  // Görünürlük `sr-only`/`not-sr-only` ikilisine bırakılmıyor: ölçüldü,
-  // `focus:not-sr-only` bu kurulumda üretilmiyor ve bağlantı odaklanınca da
-  // 1x1 kalıyordu — ekran okuyucu duyuyor ama gören klavye kullanıcısı odağın
-  // nereye gittiğini göremiyordu. Bağlantı artık ekranın DIŞINDA duruyor ve
-  // odaklanınca içeri kayıyor; bu, sınıf üretimine değil konuma bağlı.
-  //
-  // `no-print`: bağlantı `position: fixed` ve Chrome sabit ögeleri kâğıdın ilk
-  // sayfasına basabiliyor. Reçete ya da faturanın tepesinde "İçeriğe geç"
-  // satırı istemiyoruz; yazdırma stili bu sınıfı zaten gizliyor.
-  //
-  // `focus:` kuralı `!` ile baskın: ikisi de aynı özgüllükte tek sınıf ve
-  // üretilen CSS'te kapalı konum sonra geliyordu — bağlantı odaklanıyor ama
-  // yerinden kımıldamıyordu. Ölçüldü.
-  return (
-    <a
-      href="#icerik"
-      className="no-print fixed left-3 top-3 z-[9999] -translate-y-[200%] rounded-lg bg-white px-4 py-2 text-sm font-semibold text-teal-700 shadow-lg outline outline-2 outline-teal-600 transition-transform focus:!translate-y-0"
-    >
-      {t('a11y.skipToContent', 'Skip to content')}
-    </a>
-  );
-}
+// "İçeriğe geç" bağlantısı KALDIRILDI (müşteri isteği).
+//
+// Bağlantı ekranın dışında duruyor, yalnız Tab'a basınca içeri kayıyordu;
+// fareyle gezen kimse görmüyordu. Ölçülmüştü: açılışta -60px, ilk Tab'da
+// +12px, ikinci Tab'da yine -60px.
+//
+// Kaldırmanın bedeli: WCAG 2.4.1 (Bypass Blocks) artık karşılanmıyor.
+// Ana sayfada 160 odaklanabilir denetim var ve büyük kısmı her sayfada
+// tekrar eden menü; klavye ya da ekran okuyucu kullanan biri okumak
+// istediği metne varmak için her seferinde o menünün tamamını geçecek.
+//
+// `<main id="icerik">` işaretlemesi DURUYOR: ekran okuyucular ana bölgeye
+// oradan atlayabiliyor, geri getirmek istenirse bağlantının hedefi hazır.
 
 function DemoTokenGate() {
   const searchParams = useSearchParams();
@@ -261,7 +237,6 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
     return (
       <BrandProvider brand="medstream">
         <div className="min-h-screen bg-white">
-          <IcerigeGec />
           <Suspense fallback={null}>
             <header className="sticky top-0 z-30 h-12 flex items-center justify-between px-4 border-b border-gray-100 bg-white/90 backdrop-blur">
               <Link to="/" className="flex items-center gap-1.5 font-bold text-[#0f766e]">
@@ -310,7 +285,6 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
   return (
     <BrandProvider brand={brand}>
     <div className={hasSidebar ? 'lg:pl-[10.25rem]' : ''}>
-      <IcerigeGec />
       <Suspense fallback={null}>
         {showHeader && <Header />}
         {hasSidebar && <SidebarPatient />}
