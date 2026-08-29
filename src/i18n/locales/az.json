@@ -4816,5 +4816,12 @@
   "emoji": {
     "yuzIfadeleri": "Smileys",
     "elIsaretleri": "Gestures"
+  },
+  "etiket": {
+    "sgkAnlasmali": "Public Insurance",
+    "crmOzellik1": "Appointment & patient management",
+    "crmOzellik2": "Revenue and analytics reports",
+    "crmOzellik3": "MedStream professional posting",
+    "crmOzellik4": "Invoicing & accounting"
   }
 }

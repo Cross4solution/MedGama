@@ -4716,5 +4716,12 @@
   "emoji": {
     "yuzIfadeleri": "Yüz İfadeleri",
     "elIsaretleri": "El İşaretleri"
+  },
+  "etiket": {
+    "sgkAnlasmali": "SGK Anlaşmalı",
+    "crmOzellik1": "Randevu & Hasta Yönetimi",
+    "crmOzellik2": "Gelir ve Analitik Raporları",
+    "crmOzellik3": "MedStream Profesyonel Paylaşım",
+    "crmOzellik4": "Fatura & Muhasebe"
   }
 }

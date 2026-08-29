@@ -41,12 +41,13 @@ function FeaturePill({ label }) {
   );
 }
 
-function mapTagLabel(tag) {
-  const map = {
-    'SGK Anlaşmalı': 'Public Insurance',
-    'SGK': 'Public Insurance',
-  };
-  return map[tag] || tag;
+// Etiketler arka uçtan TÜRKÇE geliyor (veri değeri, çeviri metni değil).
+// Eski hâli "SGK Anlaşmalı"yı KOŞULSUZ "Public Insurance" yapıyordu: Türk
+// kullanıcı, Türkiye'ye özgü bir kurumun adı yerine İngilizce bir ifade
+// görüyordu. Artık kullanıcının diline göre çözülüyor.
+function mapTagLabel(tag, t) {
+  if (tag === 'SGK Anlaşmalı' || tag === 'SGK') return t('etiket.sgkAnlasmali');
+  return tag;
 }
 
 function getTagVariant(tag) {
@@ -96,7 +97,7 @@ export default function ClinicCard({ clinic, isFavorite, onToggleFavorite, onVie
             {(clinic.tags || []).map((tag, index) => (
               <Badge
                 key={index}
-                label={mapTagLabel(tag)}
+                label={mapTagLabel(tag, t)}
                 variant={getTagVariant(tag)}
                 size="sm"
                 rounded="full"

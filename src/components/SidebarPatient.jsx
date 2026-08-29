@@ -248,7 +248,7 @@ export default function SidebarPatient() {
               {t('crm.upgradeDesc', 'Randevu yönetimi, hasta takibi, gelir raporları ve daha fazlası için CRM paketini aktif edin.')}
             </p>
             <div className="space-y-2 mb-5">
-              {['Randevu & Hasta Yönetimi', 'Gelir ve Analitik Raporları', 'MedStream Profesyonel Paylaşım', 'Fatura & Muhasebe'].map(f => (
+              {['etiket.crmOzellik1', 'etiket.crmOzellik2', 'etiket.crmOzellik3', 'etiket.crmOzellik4'].map(anahtar => t(anahtar)).map(f => (
                 <div key={f} className="flex items-center gap-2 text-sm text-gray-600">
                   <span className="w-4 h-4 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
                     <span className="w-1.5 h-1.5 rounded-full bg-teal-600" />
