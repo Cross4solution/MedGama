@@ -42,7 +42,7 @@ export async function generateMetadata({ params }) {
   const { specialty, city, locale } = await params;
   const r = await resolve(specialty, city);
   if (!r.specialty || !r.city || !r.providers) {
-    return { title: 'Bulunamadı | Medagama', robots: { index: false } };
+    return { title: locale === 'tr' ? 'Bulunamadı | Medagama' : 'Not found | Medagama', robots: { index: false } };
   }
   const specialtyName = trName(r.specialty);
   const cityName = trName(r.city);

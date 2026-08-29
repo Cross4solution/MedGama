@@ -23,7 +23,7 @@ async function getClinicData(codename) {
 export async function generateMetadata({ params }) {
   const { id, locale } = await params;
   const c = await getClinicData(id);
-  if (!c) return { title: 'Bulunamadı | Medagama', robots: { index: false } };
+  if (!c) return { title: locale === 'tr' ? 'Bulunamadı | Medagama' : 'Not found | Medagama', robots: { index: false } };
 
   const name = c.fullname || c.name || 'Klinik';
   const description = clamp(

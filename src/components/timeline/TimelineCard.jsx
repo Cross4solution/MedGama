@@ -770,7 +770,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const actorName = item?.actor?.name || item?.title || 'Medagama';
   const actorTitle = item?.actor?.title || item?.subtitle || 'Healthcare';
   const actorAvatar = item?.actor?.avatarUrl || avatarUrl;
-  const timeAgo = item?.timeAgo || '1 gün';
+  const timeAgo = item?.timeAgo || t('ortak.birGun');
   // Göreli zamanı arka uç ZATEN kullanıcının dilinde gönderiyor: Carbon'un
   // `diffForHumans()` çıktısı `Accept-Language`'e göre yerelleşiyor. Ölçüldü —
   // tr: "4 gün önce", de: "vor 4 Tagen", en: "4 days ago".

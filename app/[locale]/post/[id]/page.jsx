@@ -13,7 +13,7 @@ async function getPostData(id) {
 export async function generateMetadata({ params }) {
   const { id, locale } = await params;
   const p = await getPostData(id);
-  if (!p) return { title: 'Gönderi', alternates: altLanguages(`/post/${id}`, locale) };
+  if (!p) return { title: locale === 'tr' ? 'Gönderi' : 'Post', alternates: altLanguages(`/post/${id}`, locale) };
 
   const author =
     p.author?.fullname || p.clinic?.fullname || p.hospital?.fullname || 'Medagama';

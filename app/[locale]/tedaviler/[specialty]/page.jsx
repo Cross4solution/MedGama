@@ -44,7 +44,7 @@ async function resolve(specialtySlug) {
 export async function generateMetadata({ params }) {
   const { specialty, locale } = await params;
   const { specialty: sp } = await resolve(specialty);
-  if (!sp) return { title: 'Bulunamadı | Medagama', robots: { index: false } };
+  if (!sp) return { title: locale === 'tr' ? 'Bulunamadı | Medagama' : 'Not found | Medagama', robots: { index: false } };
   const name = trName(sp);
   const path = `/tedaviler/${specialty}`;
   const title = `${name} Doktorları ve Klinikleri | Medagama`;

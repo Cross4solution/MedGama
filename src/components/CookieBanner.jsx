@@ -7,29 +7,29 @@ import { useTranslation } from 'react-i18next';
 const COOKIE_CATEGORIES = [
   {
     key: 'necessary',
-    label: 'Strictly Necessary',
+    labelKey: 'ortak.cerezZorunlu',
     description: 'Essential for the website to function. These cookies enable core features like security, session management, and accessibility. They cannot be disabled.',
     locked: true,
   },
   {
     key: 'functional',
-    label: 'Functional',
+    labelKey: 'ortak.cerezIslevsel',
     description: 'Enable personalized features such as remembering your preferences, language settings, and region. Disabling these may affect your user experience.',
   },
   {
     key: 'analytics',
-    label: 'Analytics & Performance',
+    labelKey: 'ortak.cerezAnalitik',
     description: 'Help us understand how visitors interact with our website by collecting anonymous usage data. This information is used to improve our services.',
   },
   {
     key: 'marketing',
-    label: 'Marketing & Advertising',
+    labelKey: 'ortak.cerezPazarlama',
     description: 'Used to deliver relevant advertisements and measure the effectiveness of marketing campaigns. These may be set by third-party partners.',
   },
   {
     key: 'crossBorder',
-    label: t('ortak.yurtdisiAktarim'),
-    description: 'Bazı bulut hizmet sağlayıcılarımız (TiDB Cloud, Render, Vercel, Google Maps) verileri Türkiye ve AEA dışında işleyebilir. Bu seçeneği işaretlemek, KVKK Md. 9 kapsamında yurtdışına veri aktarımına açık rızanız anlamına gelir. Geri alabilirsiniz.',
+    labelKey: 'ortak.cerezYurtdisi',
+    descriptionKey: 'ortak.cerezYurtdisiAciklama',
   },
 ];
 
@@ -157,7 +157,7 @@ const CookieBanner = () => {
                       ) : (
                         <ChevronDown className="w-4 h-4 text-gray-400 flex-shrink-0" />
                       )}
-                      <span className="text-sm font-semibold text-gray-800">{cat.label}</span>
+                      <span className="text-sm font-semibold text-gray-800">{cat.labelKey ? t(cat.labelKey) : cat.label}</span>
                       {cat.locked && (
                         <span className="text-[10px] font-medium text-teal-700 bg-teal-50 border border-teal-200 px-1.5 py-0.5 rounded-full">
                           {t('cookie.alwaysActive')}
@@ -178,7 +178,7 @@ const CookieBanner = () => {
                       }`}
                       role="switch"
                       aria-checked={isEnabled}
-                      aria-label={`Toggle ${cat.label} cookies`}
+                      aria-label={`Toggle ${cat.labelKey ? t(cat.labelKey) : cat.label} cookies`}
                     >
                       <span
                         className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
@@ -189,7 +189,7 @@ const CookieBanner = () => {
                   </div>
                   {isExpanded && (
                     <div className="px-4 py-3 border-t border-gray-100 bg-white">
-                      <p className="text-xs text-gray-500 leading-relaxed">{cat.description}</p>
+                      <p className="text-xs text-gray-500 leading-relaxed">{cat.descriptionKey ? t(cat.descriptionKey) : cat.description}</p>
                     </div>
                   )}
                 </div>

@@ -149,7 +149,7 @@ export default function KVKKPage() {
             <p><strong>{t('ortak.kvkkIletisim')}</strong>{' '}
               <a href="mailto:kvkk@medgama.com" className="text-teal-600 underline underline-offset-2">{t('kVKKPage.kvkkMedgamaCom', "kvkk@medgama.com")}</a>
             </p>
-            <p><strong>Veri Koruma Görevlisi (DPO):</strong>{' '}
+            <p><strong>{t('ortak.dpoEtiket')}</strong>{' '}
               <a href="mailto:dpo@medgama.com" className="text-teal-600 underline underline-offset-2">{t('kVKKPage.dpoMedgamaCom', "dpo@medgama.com")}</a>
             </p>
           </div>

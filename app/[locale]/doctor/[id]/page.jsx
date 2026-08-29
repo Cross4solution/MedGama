@@ -31,7 +31,7 @@ export async function generateMetadata({ params }) {
   const { id, locale } = await params; // Next 15: params async
   const res = await getDoctorData(id);
   if (!res)
-    return { title: 'Bulunamadı | Medagama', robots: { index: false } };
+    return { title: locale === 'tr' ? 'Bulunamadı | Medagama' : 'Not found | Medagama', robots: { index: false } };
 
   const { doctor: d } = res;
   const name = d.fullname || d.name || 'Doktor';

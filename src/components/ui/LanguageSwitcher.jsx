@@ -59,7 +59,7 @@ export default function LanguageSwitcher({ compact = false }) {
         type="button"
         onClick={() => setOpen((o) => !o)}
         className={`inline-flex items-center gap-1 rounded-md hover:bg-gray-100 transition-colors ${compact ? 'px-1.5 py-1' : 'px-1.5 py-1'}`}
-        aria-label="Dil seçimi"
+        aria-label={t('ortak.dilSecimi')}
       >
         <LangFlag lang={currentLang} size={15} />
         {!compact && <span className="text-xs font-medium text-gray-500">{currentLang?.code?.toUpperCase()}</span>}

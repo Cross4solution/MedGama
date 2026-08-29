@@ -62,7 +62,7 @@ export default async function Page() {
           })}
         </ul>
       ) : (
-        <p className="text-gray-500">Uzmanlık listesi şu anda yüklenemedi.</p>
+        <p className="text-gray-500">{locale === 'tr' ? 'Uzmanlık listesi şu anda yüklenemedi.' : 'The specialty list could not be loaded right now.'}</p>
       )}
     </main>
   );

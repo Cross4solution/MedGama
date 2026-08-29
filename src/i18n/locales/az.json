@@ -4847,6 +4847,17 @@
     "son30GunTrend": "Appointment trend, last 30 days",
     "yurtdisiAktarim": "Cross-border data transfer (KVKK Art. 9)",
     "kvkkIletisim": "KVKK contact:",
-    "henuzSorulmadi": "not asked yet"
+    "henuzSorulmadi": "not asked yet",
+    "cerezAktarimMetin": "Some of our cloud providers (TiDB Cloud, Render, Vercel, Google Maps) may process your data outside your country.",
+    "desteklenmeyenDosya": "The message was sent, but these files were not because their type is unsupported:",
+    "dilSecimi": "Language",
+    "birGun": "1 day",
+    "dpoEtiket": "Data Protection Officer (DPO):",
+    "cerezZorunlu": "Strictly necessary",
+    "cerezIslevsel": "Functional",
+    "cerezAnalitik": "Analytics & performance",
+    "cerezPazarlama": "Marketing & advertising",
+    "cerezYurtdisi": "Cross-border data transfer (KVKK Art. 9)",
+    "cerezYurtdisiAciklama": "Some of our cloud providers (TiDB Cloud, Render, Vercel, Google Maps) may process data outside Türkiye and the EEA. Ticking this box means you give explicit consent to that transfer under KVKK Art. 9. You can withdraw it at any time."
   }
 }

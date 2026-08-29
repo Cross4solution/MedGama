@@ -24,6 +24,7 @@ const KOK = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const MUAF = new Set([
   'aboutPage.scopeDesc',              // "…doctors and clinics in Türkiye."
   'forClinics.erisimMetin',           // "…researching Türkiye for medical tourism."
+  'ortak.cerezYurtdisiAciklama',      // "…outside Türkiye and the EEA."
   'clinicOnboarding.addressHint',     // adres örneği: "Sağlık Cad. No: 12"
   'admin.catalog.aliasesHint',        // Türkçe eşanlam örneği gösteriyor
   'admin.catalog.aliasPlaceholderTr', // Türkçe eşanlam alanının örneği
