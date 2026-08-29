@@ -13,8 +13,15 @@ Sistem, roller yerine **"Seviyeler" (Levels)** üzerine kurulu keskin bir yetki 
 - Arama yapar, randevu oluşturur (S3 için) ve iletişim kurar
 
 ### Seviye 2: Bağımsız Doktorlar (Independent Professionals)
-- **Odak:** Kişisel markalama ve MedStream (Sosyal Etkileşim)
-- **Sınır:** Randevu alma veya Telehealth yetkisi yoktur. Sadece içerik üretir ve kendini tanıtır
+- **Odak:** Kişisel markalama, MedStream (sosyal etkileşim) ve hasta kabulü
+- **Yetki:** Hastalardan randevu kabul eder ve telesağlık görüşmesi yapar —
+  kliniğe bağlı olma zorunluluğu yoktur.
+
+> Bu madde 29 Ağustos 2026'da düzeltildi. Önceki hâli "randevu alma veya
+> Telehealth yetkisi yoktur" diyordu; sistem başından beri tersini yapıyor ve
+> veritabanında bağımsız hekimlere ait randevular var. Ürün kararı: bağımsız
+> hekim de platformdan hizmet verebilir. Kod değişmedi, belge kodun yaptığına
+> uyduruldu.
 
 ### Seviye 3: Klinikler (The Transactional Hub)
 - **Odak:** Ticari operasyon. Randevu yönetimi ve Telehealth sunar
