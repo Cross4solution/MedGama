@@ -110,7 +110,7 @@ export default function VerifyEmailPage() {
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-emerald-50 px-4">
-        <SEOHead title="E-posta Doğrulama" canonical="/verify-email" noIndex />
+        <SEOHead title={t('ortak.epostaDogrulama')} canonical="/verify-email" noIndex />
         <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 max-w-md w-full text-center">
           <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8 text-emerald-600" />
@@ -124,7 +124,7 @@ export default function VerifyEmailPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-emerald-50 px-4">
-      <SEOHead title="E-posta Doğrulama" canonical="/verify-email" noIndex />
+      <SEOHead title={t('ortak.epostaDogrulama')} canonical="/verify-email" noIndex />
       <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 max-w-md w-full">
         {/* Icon */}
         <div className="w-16 h-16 rounded-full bg-teal-50 flex items-center justify-center mx-auto mb-5">

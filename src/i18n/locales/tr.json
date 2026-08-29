@@ -4723,5 +4723,20 @@
     "crmOzellik2": "Gelir ve Analitik Raporları",
     "crmOzellik3": "MedStream Profesyonel Paylaşım",
     "crmOzellik4": "Fatura & Muhasebe"
+  },
+  "ortak": {
+    "epostaDogrulama": "E-posta Doğrulama",
+    "sifremiUnuttum": "Şifremi Unuttum",
+    "sertifikaSec": "Sertifika seç...",
+    "sertifikaAra": "Sertifika adı ara...",
+    "yukleniyor": "Yükleniyor...",
+    "sonucYok": "Sonuç bulunamadı",
+    "belgeGoruntuleme": "Görüntüleme",
+    "belgeRecete": "Reçete",
+    "belgeDiger": "Diğer",
+    "gelmediOnay": "Bu randevuyu \"Gelmedi\" olarak işaretlemek istediğinizden emin misiniz?",
+    "gelmediIsaretle": "Hasta gelmedi olarak işaretle",
+    "medstreamBaslik": "MedStream — Sağlık Akışı",
+    "medstreamAciklama": "Doktorlar, klinikler ve hastaneler tarafından paylaşılan güncel sağlık içerikleri."
   }
 }

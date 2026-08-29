@@ -66,7 +66,7 @@ const ClinicLogin = () => {
 
   return (
     <>
-    <SEOHead title=t('rolGirisi.klinikGirisi') canonical="/clinic-login" noIndex />
+    <SEOHead title={t('rolGirisi.klinikGirisi')} canonical="/clinic-login" noIndex />
     <div className="min-h-screen w-full flex relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-teal-600 via-teal-700 to-cyan-800" />

@@ -393,7 +393,7 @@ const DoctorDashboard = () => {
                 const isPast = apptDate && apptDate < new Date(new Date().toDateString());
                 const canMarkNoShow = isPast && (appt.status === 'completed' || appt.status === 'confirmed');
                 const handleNoShow = () => {
-                  if (!window.confirm('Bu randevuyu "Gelmedi" olarak işaretlemek istediğinizden emin misiniz?')) return;
+                  if (!window.confirm(t('ortak.gelmediOnay'))) return;
                   appointmentAPI.markNoShow(appt.id)
                     .then(() => window.location.reload())
                     .catch(() => notify({ type: 'error', message: t('doctorDashboard.bookmarkFailed', 'İşaretleme başarısız oldu.') }));
@@ -422,7 +422,7 @@ const DoctorDashboard = () => {
                         <button
                           onClick={handleNoShow}
                           className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 hover:bg-red-100"
-                          title="Hasta gelmedi olarak işaretle"
+                          title={t('ortak.gelmediIsaretle')}
                         >
                           {t('appointments.noShow', 'Gelmedi')}
                         </button>

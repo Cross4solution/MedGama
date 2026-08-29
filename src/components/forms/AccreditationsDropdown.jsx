@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, X, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { aramaIceriyor, aramaBasliyor } from '../../utils/searchNormalize';
 
 /**
@@ -10,6 +11,7 @@ import { aramaIceriyor, aramaBasliyor } from '../../utils/searchNormalize';
  *   - disabled: Boolean to disable the dropdown
  */
 export default function AccreditationsDropdown({ selected = [], onChange, disabled = false }) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [accreditations, setAccreditations] = useState([]);
@@ -78,7 +80,7 @@ export default function AccreditationsDropdown({ selected = [], onChange, disabl
       >
         <span className="text-sm text-gray-600">
           {selected.length === 0
-            ? 'Sertifika seç...'
+            ? t('ortak.sertifikaSec')
             : `${selected.length} sertifika seçildi`}
         </span>
         <Search className="w-4 h-4 text-gray-400" />
@@ -91,7 +93,7 @@ export default function AccreditationsDropdown({ selected = [], onChange, disabl
           <div className="p-3 border-b border-gray-100">
             <input
               type="text"
-              placeholder="Sertifika adı ara..."
+              placeholder={t('ortak.sertifikaAra')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-200 text-sm"
@@ -102,9 +104,9 @@ export default function AccreditationsDropdown({ selected = [], onChange, disabl
           {/* Options List */}
           <div className="max-h-64 overflow-y-auto">
             {loading ? (
-              <div className="p-4 text-center text-gray-400 text-sm">Yükleniyor...</div>
+              <div className="p-4 text-center text-gray-400 text-sm">{t('ortak.yukleniyor')}</div>
             ) : filteredAccreditations.length === 0 ? (
-              <div className="p-4 text-center text-gray-400 text-sm">Sonuç bulunamadı</div>
+              <div className="p-4 text-center text-gray-400 text-sm">{t('ortak.sonucYok')}</div>
             ) : (
               filteredAccreditations.map((acc) => {
                 const isSelected = selected.includes(acc.id);

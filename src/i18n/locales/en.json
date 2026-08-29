@@ -4725,5 +4725,20 @@
     "crmOzellik2": "Revenue and analytics reports",
     "crmOzellik3": "MedStream professional posting",
     "crmOzellik4": "Invoicing & accounting"
+  },
+  "ortak": {
+    "epostaDogrulama": "Email verification",
+    "sifremiUnuttum": "Forgot password",
+    "sertifikaSec": "Select a certificate…",
+    "sertifikaAra": "Search certificate name…",
+    "yukleniyor": "Loading…",
+    "sonucYok": "No results found",
+    "belgeGoruntuleme": "Imaging",
+    "belgeRecete": "Prescription",
+    "belgeDiger": "Other",
+    "gelmediOnay": "Are you sure you want to mark this appointment as a no-show?",
+    "gelmediIsaretle": "Mark patient as no-show",
+    "medstreamBaslik": "MedStream — health feed",
+    "medstreamAciklama": "Up-to-date health content shared by doctors, clinics and hospitals."
   }
 }

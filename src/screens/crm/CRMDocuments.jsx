@@ -12,15 +12,15 @@ import useModalDavranisi from '../../hooks/useModalDavranisi';
 // Backend enum (PatientDocument::$allowedCategories) → TR label
 const CATEGORIES = [
   { value: 'lab_result', label: 'Laboratuvar' },
-  { value: 'radiology', label: 'Görüntüleme' },
+  { value: 'radiology', label: t('ortak.belgeGoruntuleme') },
   { value: 'epicrisis', label: 'Epikriz' },
-  { value: 'prescription', label: 'Reçete' },
+  { value: 'prescription', label: t('ortak.belgeRecete') },
   { value: 'pathology', label: 'Patoloji' },
   { value: 'surgery', label: 'Ameliyat' },
   { value: 'vaccination', label: 'Aşı' },
   { value: 'allergy', label: 'Alerji' },
   { value: 'insurance', label: 'Sigorta' },
-  { value: 'other', label: 'Diğer' },
+  { value: 'other', label: t('ortak.belgeDiger') },
 ];
 const CATEGORY_LABEL = Object.fromEntries(CATEGORIES.map((c) => [c.value, c.label]));
 
