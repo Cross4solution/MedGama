@@ -4617,5 +4617,32 @@
     "ornek3": "Göğsümde baskı ve çarpıntı",
     "ornek4": "Sürekli baş ağrım ve baş dönmem var",
     "ornek5": "Gözlerim bulanık görüyor"
+  },
+  "contact": {
+    "baslik": "İletişim",
+    "giris": "Medagama ile ilgili sorularınız, önerileriniz veya iş birliği talepleriniz için bize ulaşabilirsiniz. Hasta, doktor veya klinik olun; ekibimiz size yardımcı olmaktan memnuniyet duyar.",
+    "konuBaslik": "Hangi konuda yardım gerekiyor?",
+    "hastalarMetin": "Doktor/klinik bulma, randevu ve telehealth hakkında destek için",
+    "hastalarIcinBag": "Hastalar için",
+    "sayfayaBakin": "sayfasına bakın.",
+    "kliniklerMetin": "Platforma katılım ve profil yönetimi için",
+    "kliniklerIcinBag": "Klinikler için",
+    "sayfayiInceleyin": "sayfasını inceleyin.",
+    "gizlilikMetin": "Verileriniz KVKK ve GDPR ilkelerine uygun işlenir; talepleriniz için bize yazın.",
+    "nasilBaslik": "Medagama nasıl yardımcı olur?",
+    "nasilMetin": "Medagama, uzman doktor ve klinikleri tek platformda bulmanızı, online doktor randevusu almanızı ve telehealth görüşmesi planlamanızı sağlar. Çok dilli yapısıyla sağlık turizmi süreçlerini de destekler. Aradığınız hizmete hızlıca ulaşmak için",
+    "aramaYapin": "arama yapın",
+    "branslariKesfedin": "branşları keşfedin",
+    "veya": "veya",
+    "dahaFazlaBilgi": "Platform hakkında daha fazla bilgi için",
+    "hakkimizdaBag": "Hakkımızda",
+    "ziyaretEdin": "sayfasını ziyaret edebilirsiniz.",
+    "sssBaslik": "Sık Sorulan Sorular",
+    "sss1Soru": "Ne kadar sürede dönüş alırım?",
+    "sss1Cevap": "E-posta ile gelen talepleri en kısa sürede yanıtlamaya çalışıyoruz. Lütfen talebinizi mümkün olduğunca ayrıntılı iletin.",
+    "sss2Soru": "Klinik olarak nasıl katılırım?",
+    "sss2CevapBas": "Katılım sürecini başlatmak için bize yazın veya",
+    "sss3CevapBas": "Kişisel verilerinizle ilgili talepleriniz için",
+    "sss3CevapSon": "adresinden bize ulaşabilirsiniz."
   }
 }

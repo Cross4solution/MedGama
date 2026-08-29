@@ -953,5 +953,32 @@
     "ornek3": "Chest tightness and palpitations",
     "ornek4": "Constant headaches and dizziness",
     "ornek5": "My vision is blurry"
+  },
+  "contact": {
+    "baslik": "Contact",
+    "giris": "Get in touch with any questions, suggestions or partnership enquiries about Medagama. Whether you are a patient, a doctor or a clinic, our team is glad to help.",
+    "konuBaslik": "What do you need help with?",
+    "hastalarMetin": "For help finding a doctor or clinic, booking and telehealth, see",
+    "hastalarIcinBag": "For patients",
+    "sayfayaBakin": ".",
+    "kliniklerMetin": "For joining the platform and managing your profile, see",
+    "kliniklerIcinBag": "For clinics",
+    "sayfayiInceleyin": ".",
+    "gizlilikMetin": "Your data is processed in line with KVKK and GDPR principles; write to us with any requests.",
+    "nasilBaslik": "How does Medagama help?",
+    "nasilMetin": "Medagama lets you find specialist doctors and clinics on one platform, book an online appointment and schedule a telehealth consultation. Being multilingual, it also supports medical-tourism journeys. To reach what you need quickly, run a",
+    "aramaYapin": "search",
+    "branslariKesfedin": "explore specialties",
+    "veya": "or",
+    "dahaFazlaBilgi": "For more about the platform, visit",
+    "hakkimizdaBag": "About",
+    "ziyaretEdin": ".",
+    "sssBaslik": "Frequently asked questions",
+    "sss1Soru": "How quickly will I hear back?",
+    "sss1Cevap": "We try to answer email enquiries as quickly as possible. Please include as much detail as you can.",
+    "sss2Soru": "How do I join as a clinic?",
+    "sss2CevapBas": "Write to us to start the process, or see",
+    "sss3CevapBas": "For requests about your personal data, reach us at",
+    "sss3CevapSon": "."
   }
 }
