@@ -4756,5 +4756,25 @@
       "amacHata": "Error monitoring",
       "sentryOpsiyonel": "Sentry (optional)"
     }
+  },
+  "telehealthRandevu": {
+    "girisGerekli": "Please sign in to book an appointment.",
+    "doktorSecin": "Please select a doctor.",
+    "saatSecin": "Please select a time slot.",
+    "saatDoldu": "This time slot has just been taken. Please choose another time.",
+    "yetkiYok": "You do not have permission to create this appointment.",
+    "olusturulamadi": "The appointment could not be created. Please try again."
+  },
+  "rolGirisi": {
+    "epostaSifreGirin": "Please enter your email and password.",
+    "kimlikHatali": "Email or password is incorrect. Please try again.",
+    "bilgilerdeHata": "There is a problem with the details you entered.",
+    "beklenmeyenHata": "Something went wrong.",
+    "klinikGirisi": "Clinic sign-in",
+    "doktorGirisi": "Doctor sign-in"
+  },
+  "emoji": {
+    "yuzIfadeleri": "Smileys",
+    "elIsaretleri": "Gestures"
   }
 }

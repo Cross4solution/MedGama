@@ -116,7 +116,7 @@ const DoctorLogin = () => {
     setLoading(true);
     setError('');
     if (!formData.email || !formData.password) {
-      setError('Lütfen e-posta ve şifrenizi girin.');
+      setError(t('rolGirisi.epostaSifreGirin'));
       setLoading(false);
       return;
     }
@@ -129,9 +129,9 @@ const DoctorLogin = () => {
       const backendErrors = err?.errors || err?.data?.errors;
       if (backendErrors?.email) setError(Array.isArray(backendErrors.email) ? backendErrors.email[0] : backendErrors.email);
       else if (backendErrors?.password) setError(Array.isArray(backendErrors.password) ? backendErrors.password[0] : backendErrors.password);
-      else if (err?.status === 401) setError('E-posta veya şifre hatalı. Lütfen tekrar deneyin.');
-      else if (err?.status === 422) setError(err?.message || 'Girdiğiniz bilgilerde hata var.');
-      else setError(err?.message || 'Beklenmeyen bir hata oluştu.');
+      else if (err?.status === 401) setError(t('rolGirisi.kimlikHatali'));
+      else if (err?.status === 422) setError(err?.message || t('rolGirisi.bilgilerdeHata'));
+      else setError(err?.message || t('rolGirisi.beklenmeyenHata'));
     } finally {
       setLoading(false);
     }
@@ -152,7 +152,7 @@ const DoctorLogin = () => {
 
   return (
     <>
-    <SEOHead title="Doktor Girişi" canonical="/doctor-login" noIndex />
+    <SEOHead title=t('rolGirisi.doktorGirisi') canonical="/doctor-login" noIndex />
     <div className="min-h-screen w-full flex relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-teal-600 via-teal-700 to-cyan-800" />

@@ -318,9 +318,9 @@ export default function TelehealthAppointmentPage() {
   }, [selectedDate, todayStr]);
 
   const handleSubmit = async () => {
-    if (!user) { setError('Randevu oluşturmak için lütfen giriş yapın.'); return; }
-    if (!selectedDoctor) { setError('Lütfen bir doktor seçin.'); return; }
-    if (!selectedTime) { setError('Lütfen bir saat dilimi seçin.'); return; }
+    if (!user) { setError(t('telehealthRandevu.girisGerekli')); return; }
+    if (!selectedDoctor) { setError(t('telehealthRandevu.doktorSecin')); return; }
+    if (!selectedTime) { setError(t('telehealthRandevu.saatSecin')); return; }
     setSubmitting(true);
     setError('');
     try {
@@ -364,9 +364,9 @@ export default function TelehealthAppointmentPage() {
         const dtIdx = STEPS.findIndex(s => s.key === 'datetime');
         if (dtIdx >= 0) { setStep(dtIdx); setSelectedTime(''); }
       } else if (err?.status === 403) {
-        setError('Bu randevuyu oluşturma yetkiniz bulunmuyor.');
+        setError(t('telehealthRandevu.yetkiYok'));
       } else {
-        const msg = err?.errors?.appointment_date?.[0] || err?.errors?.doctor_id?.[0] || err?.message || 'Randevu oluşturulamadı. Lütfen tekrar deneyin.';
+        const msg = err?.errors?.appointment_date?.[0] || err?.errors?.doctor_id?.[0] || err?.message || t('telehealthRandevu.olusturulamadi');
         setError(msg);
       }
     } finally {

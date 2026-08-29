@@ -4696,5 +4696,25 @@
       "amacHata": "Hata izleme",
       "sentryOpsiyonel": "Sentry (opsiyonel)"
     }
+  },
+  "telehealthRandevu": {
+    "girisGerekli": "Randevu oluşturmak için lütfen giriş yapın.",
+    "doktorSecin": "Lütfen bir doktor seçin.",
+    "saatSecin": "Lütfen bir saat dilimi seçin.",
+    "saatDoldu": "Bu saat dilimi az önce doldu. Lütfen başka bir saat seçin.",
+    "yetkiYok": "Bu randevuyu oluşturma yetkiniz bulunmuyor.",
+    "olusturulamadi": "Randevu oluşturulamadı. Lütfen tekrar deneyin."
+  },
+  "rolGirisi": {
+    "epostaSifreGirin": "Lütfen e-posta ve şifrenizi girin.",
+    "kimlikHatali": "E-posta veya şifre hatalı. Lütfen tekrar deneyin.",
+    "bilgilerdeHata": "Girdiğiniz bilgilerde hata var.",
+    "beklenmeyenHata": "Beklenmeyen bir hata oluştu.",
+    "klinikGirisi": "Klinik Girişi",
+    "doktorGirisi": "Doktor Girişi"
+  },
+  "emoji": {
+    "yuzIfadeleri": "Yüz İfadeleri",
+    "elIsaretleri": "El İşaretleri"
   }
 }
