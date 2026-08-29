@@ -588,7 +588,7 @@ export default function ExploreTimeline() {
     <div className={`min-h-screen ${focused ? 'pt-0' : 'pt-2 sm:pt-8'}`}>
       <SEOHead
         title={t('ortak.medstreamBaslik')}
-        description="Doktorlar, klinikler ve hastaneler tarafından paylaşılan güncel sağlık içerikleri. Medagama MedStream akışını keşfedin."
+        description={t('ortak.medstreamAciklama')}
         canonical="/medstream"
         alternates
       />
