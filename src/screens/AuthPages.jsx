@@ -72,30 +72,30 @@ const AuthPages = () => {
     const newErrors = {};
 
     if (!formData.email) {
-      newErrors.email = 'E-posta adresi gereklidir.';
+      newErrors.email = t('auth.dogrulama.epostaGerekli');
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Geçerli bir e-posta adresi girin.';
+      newErrors.email = t('auth.dogrulama.epostaGecersiz');
     }
 
     if (!formData.password) {
-      newErrors.password = 'Şifre gereklidir.';
+      newErrors.password = t('auth.dogrulama.sifreGerekli');
     } else if (formData.password.length < 8) {
-      newErrors.password = 'Şifre en az 8 karakter olmalıdır.';
+      newErrors.password = t('auth.dogrulama.sifreKisa');
     }
 
     if (currentPage === 'register') {
-      if (!formData.confirmPassword) newErrors.confirmPassword = 'Şifre tekrarı gereklidir.';
-      if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Şifreler eşleşmiyor.';
-      if (!formData.acceptTerms) newErrors.acceptTerms = 'Kullanım Koşullarını kabul etmelisiniz.';
-      if (!formData.acceptPrivacy) newErrors.acceptPrivacy = 'Gizlilik Politikasını kabul etmelisiniz.';
+      if (!formData.confirmPassword) newErrors.confirmPassword = t('auth.dogrulama.sifreTekrarGerekli');
+      if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = t('auth.dogrulama.sifrelerUyusmuyor');
+      if (!formData.acceptTerms) newErrors.acceptTerms = t('auth.dogrulama.kosullarKabul');
+      if (!formData.acceptPrivacy) newErrors.acceptPrivacy = t('auth.dogrulama.gizlilikKabul');
       // KVKK Md. 6 / GDPR Art. 9 — hasta için sağlık verisi açık rızası zorunlu.
       if ((formData.role || 'patient') === 'patient' && !formData.acceptHealthData) {
-        newErrors.acceptHealthData = 'Sağlık verilerinizin işlenmesine açık rıza vermelisiniz.';
+        newErrors.acceptHealthData = t('auth.dogrulama.saglikRizasi');
       }
       // KVKK / GDPR Art. 8 — patient must provide birth_date; minors require guardian_email.
       if ((formData.role || 'patient') === 'patient') {
         if (!formData.birthDate) {
-          newErrors.birthDate = 'Doğum tarihi zorunludur.';
+          newErrors.birthDate = t('auth.dogrulama.dogumTarihiGerekli');
         } else {
           const dob = new Date(formData.birthDate);
           if (!Number.isNaN(dob.getTime())) {
@@ -105,11 +105,11 @@ const AuthPages = () => {
             if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
             if (age < 18) {
               if (!formData.guardianEmail) {
-                newErrors.guardianEmail = '18 yaş altı kayıt için veli e-postası gereklidir.';
+                newErrors.guardianEmail = t('auth.dogrulama.veliEpostaGerekli');
               } else if (!/\S+@\S+\.\S+/.test(formData.guardianEmail)) {
-                newErrors.guardianEmail = 'Geçerli bir veli e-posta adresi giriniz.';
+                newErrors.guardianEmail = t('auth.dogrulama.veliEpostaGecersiz');
               } else if (formData.guardianEmail.toLowerCase() === (formData.email || '').toLowerCase()) {
-                newErrors.guardianEmail = 'Veli e-postası kullanıcının e-postasından farklı olmalıdır.';
+                newErrors.guardianEmail = t('auth.dogrulama.veliEpostaFarkli');
               }
             }
           }
@@ -126,7 +126,7 @@ const AuthPages = () => {
     const currentErrors = validateForm();
     if (Object.keys(currentErrors).length) {
       const firstKey = Object.keys(currentErrors)[0];
-      const msg = firstKey ? (currentErrors[firstKey] || 'Lütfen işaretli alanları düzeltin.') : 'Lütfen işaretli alanları düzeltin.';
+      const msg = firstKey ? (currentErrors[firstKey] || t('auth.dogrulama.alanlariDuzeltin')) : t('auth.dogrulama.alanlariDuzeltin');
       notify({ type: 'error', message: msg });
       return;
     }
@@ -135,7 +135,7 @@ const AuthPages = () => {
       if (currentPage === 'login') {
         const res = await login(formData.email, formData.password, !!formData.rememberMe, (formData.role || 'patient'));
         // Login never requires email verification — verification is register-only for patients/doctors
-        notify({ type: 'success', message: 'Giriş başarılı!' });
+        notify({ type: 'success', message: t('auth.dogrulama.girisBasarili') });
         navigate(getRedirectFromLoginResult(res, '/medstream'));
       } else if (currentPage === 'register') {
         const roleId = formData.role === 'clinic' ? 'clinicOwner' : formData.role;
@@ -169,14 +169,14 @@ const AuthPages = () => {
         // Only patient and doctor need email verification — clinic/hospital/admin are auto-verified
         const roleNeedsVerify = ['patient', 'doctor'].includes(roleId);
         if (needsVerification === false || !roleNeedsVerify) {
-          notify({ type: 'success', message: 'Kayıt başarılı! E-posta adresiniz otomatik olarak doğrulandı.' });
+          notify({ type: 'success', message: t('auth.dogrulama.kayitDogrulandi') });
           navigate(redirectTo);
         } else {
-          notify({ type: 'success', message: 'Kayıt başarılı! Lütfen e-posta adresinizi doğrulayın.' });
+          notify({ type: 'success', message: t('auth.dogrulama.kayitDogrulamaBekliyor') });
           navigate('/verify-email');
         }
       } else {
-        notify({ type: 'info', message: 'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.' });
+        notify({ type: 'info', message: t('auth.dogrulama.sifreSifirlamaGonderildi') });
       }
     } catch (err) {
       // Extract message from various error shapes
@@ -184,9 +184,9 @@ const AuthPages = () => {
       const message = err?.message || err?.data?.message || '';
 
       if (status === 401) {
-        notify({ type: 'error', message: 'E-posta veya şifre hatalı. Lütfen tekrar deneyin.' });
+        notify({ type: 'error', message: t('auth.dogrulama.kimlikHatali') });
       } else if (status === 403) {
-        notify({ type: 'error', message: 'Bu işlemi gerçekleştirme yetkiniz bulunmuyor.' });
+        notify({ type: 'error', message: t('auth.dogrulama.yetkiYok') });
       } else if (status === 422) {
         const backendErrors = err?.errors || err?.data?.errors;
         if (backendErrors && typeof backendErrors === 'object') {
@@ -199,13 +199,13 @@ const AuthPages = () => {
           });
           setErrors((prev) => ({ ...prev, ...fieldErrors }));
         }
-        notify({ type: 'error', message: message || 'Lütfen işaretli alanları düzeltin.' });
+        notify({ type: 'error', message: message || t('auth.dogrulama.alanlariDuzeltin') });
       } else if (status === 429) {
-        notify({ type: 'error', message: 'Çok fazla deneme yaptınız. Lütfen biraz bekleyin.' });
+        notify({ type: 'error', message: t('auth.dogrulama.cokFazlaDeneme') });
       } else if (!status || status === 0) {
-        notify({ type: 'error', message: 'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.' });
+        notify({ type: 'error', message: t('auth.dogrulama.sunucuyaUlasilamiyor') });
       } else {
-        notify({ type: 'error', message: message || 'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.' });
+        notify({ type: 'error', message: message || t('auth.dogrulama.beklenmeyenHata') });
       }
     } finally {
       setSubmitting(false);
@@ -214,7 +214,7 @@ const AuthPages = () => {
 
   return (
     <div className="min-h-screen w-full flex relative overflow-hidden">
-      <SEOHead title="Giriş / Kayıt" canonical="/auth" noIndex />
+      <SEOHead title=t('auth.dogrulama.girisKayit') canonical="/auth" noIndex />
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-teal-600 via-teal-700 to-cyan-800" />
       <div className="absolute inset-0 opacity-[0.03]" style={{backgroundImage:'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")'}} />
