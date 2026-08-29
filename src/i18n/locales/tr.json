@@ -4737,6 +4737,16 @@
     "gelmediOnay": "Bu randevuyu \"Gelmedi\" olarak işaretlemek istediğinizden emin misiniz?",
     "gelmediIsaretle": "Hasta gelmedi olarak işaretle",
     "medstreamBaslik": "MedStream — Sağlık Akışı",
-    "medstreamAciklama": "Doktorlar, klinikler ve hastaneler tarafından paylaşılan güncel sağlık içerikleri."
+    "medstreamAciklama": "Doktorlar, klinikler ve hastaneler tarafından paylaşılan güncel sağlık içerikleri.",
+    "birSeylerTersGitti": "Bir şeyler ters gitti.",
+    "sayfayiYenileyin": "Sayfayı yenilemeyi deneyin. Sorun devam ederse lütfen daha sonra tekrar deneyin.",
+    "dogrulanmisHesapGerek": "Bu işlem için hesabınızın doğrulanmış olması gerekiyor.",
+    "islemTamamlanamadi": "İşlem tamamlanamadı. Lütfen tekrar deneyin.",
+    "bildiriminizYok": "Şu anda bildiriminiz yok.",
+    "randevuDurumDagilimi": "Randevu Durum Dağılımı",
+    "son30GunTrend": "Son 30 Gün Randevu Trendi",
+    "yurtdisiAktarim": "Yurtdışı Veri Aktarımı (KVKK Md. 9)",
+    "kvkkIletisim": "KVKK İletişim:",
+    "henuzSorulmadi": "henüz sorulmadı"
   }
 }

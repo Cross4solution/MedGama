@@ -344,7 +344,7 @@ const CRMReports = () => {
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
               <div className="flex items-center gap-2 mb-4">
                 <CalendarDays className="w-4 h-4 text-gray-400" />
-                <h2 className="text-sm font-bold text-gray-900">Randevu Durum Dağılımı</h2>
+                <h2 className="text-sm font-bold text-gray-900">{t('ortak.randevuDurumDagilimi')}</h2>
               </div>
               {apptHasData ? (
                 <ResponsiveContainer width="100%" height={260}>
@@ -367,7 +367,7 @@ const CRMReports = () => {
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
               <div className="flex items-center gap-2 mb-4">
                 <Activity className="w-4 h-4 text-gray-400" />
-                <h2 className="text-sm font-bold text-gray-900">Son 30 Gün Randevu Trendi</h2>
+                <h2 className="text-sm font-bold text-gray-900">{t('ortak.son30GunTrend')}</h2>
               </div>
               {apptSeriesHasData ? (
                 <ResponsiveContainer width="100%" height={260}>

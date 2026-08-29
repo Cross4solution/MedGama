@@ -28,7 +28,7 @@ const COOKIE_CATEGORIES = [
   },
   {
     key: 'crossBorder',
-    label: 'Yurtdışı Veri Aktarımı (KVKK Md. 9)',
+    label: t('ortak.yurtdisiAktarim'),
     description: 'Bazı bulut hizmet sağlayıcılarımız (TiDB Cloud, Render, Vercel, Google Maps) verileri Türkiye ve AEA dışında işleyebilir. Bu seçeneği işaretlemek, KVKK Md. 9 kapsamında yurtdışına veri aktarımına açık rızanız anlamına gelir. Geri alabilirsiniz.',
   },
 ];

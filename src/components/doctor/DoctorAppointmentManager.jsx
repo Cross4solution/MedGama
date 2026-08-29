@@ -71,8 +71,8 @@ export default function DoctorAppointmentManager() {
       const status = err?.status;
       setActionError(
         status === 403
-          ? 'Bu işlem için hesabınızın doğrulanmış olması gerekiyor.'
-          : (err?.data?.message || 'İşlem tamamlanamadı. Lütfen tekrar deneyin.')
+          ? t('ortak.dogrulanmisHesapGerek')
+          : (err?.data?.message || t('ortak.islemTamamlanamadi'))
       );
       fetchAppointments();
     } finally {

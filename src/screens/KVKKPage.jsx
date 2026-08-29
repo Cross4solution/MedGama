@@ -146,7 +146,7 @@ export default function KVKKPage() {
           </h3>
           <div className="space-y-2 text-sm text-gray-600">
             <p><strong>{t('kVKKPage.veriSorumlusu', "Veri Sorumlusu:")}</strong> Medagama Sağlık Teknolojileri A.Ş.</p>
-            <p><strong>KVKK İletişim:</strong>{' '}
+            <p><strong>{t('ortak.kvkkIletisim')}</strong>{' '}
               <a href="mailto:kvkk@medgama.com" className="text-teal-600 underline underline-offset-2">{t('kVKKPage.kvkkMedgamaCom', "kvkk@medgama.com")}</a>
             </p>
             <p><strong>Veri Koruma Görevlisi (DPO):</strong>{' '}

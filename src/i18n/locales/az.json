@@ -4837,6 +4837,16 @@
     "gelmediOnay": "Are you sure you want to mark this appointment as a no-show?",
     "gelmediIsaretle": "Mark patient as no-show",
     "medstreamBaslik": "MedStream — health feed",
-    "medstreamAciklama": "Up-to-date health content shared by doctors, clinics and hospitals."
+    "medstreamAciklama": "Up-to-date health content shared by doctors, clinics and hospitals.",
+    "birSeylerTersGitti": "Something went wrong.",
+    "sayfayiYenileyin": "Try refreshing the page. If the problem continues, please try again later.",
+    "dogrulanmisHesapGerek": "Your account must be verified for this action.",
+    "islemTamamlanamadi": "The action could not be completed. Please try again.",
+    "bildiriminizYok": "You have no notifications right now.",
+    "randevuDurumDagilimi": "Appointment status breakdown",
+    "son30GunTrend": "Appointment trend, last 30 days",
+    "yurtdisiAktarim": "Cross-border data transfer (KVKK Art. 9)",
+    "kvkkIletisim": "KVKK contact:",
+    "henuzSorulmadi": "not asked yet"
   }
 }

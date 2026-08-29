@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 
 // Basit hasta bildirim listesi (demo)
 // Gerçek entegrasyon yerine örnek veri kullanır. Doktor tarafındaki notify görünümüne benzer sade bir kart listesi.
 export default function PatientNotify({ items = null }) {
+  const { t } = useTranslation();
   const sample = items || [
     { id: 1, title: 'Appointment confirmed', text: 'Your appointment on Sep 15 at 10:30 has been confirmed.', time: '2 hours ago' },
     { id: 2, title: 'New message', text: 'Dr. A. Yılmaz has shared a file with you.', time: '5 hours ago' },
@@ -23,7 +25,7 @@ export default function PatientNotify({ items = null }) {
         </li>
       ))}
       {sample.length === 0 && (
-        <li className="px-5 py-3 text-sm text-gray-500">Şu anda bildiriminiz yok.</li>
+        <li className="px-5 py-3 text-sm text-gray-500">{t('ortak.bildiriminizYok')}</li>
       )}
     </ul>
   );
