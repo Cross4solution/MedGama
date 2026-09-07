@@ -129,6 +129,8 @@ Route::prefix('auth')->middleware('auth:sanctum')->group(function () {
     Route::middleware('health.consent')->group(function () {
         Route::get('/profile/medical-history', [AuthController::class, 'getMedicalHistory']);
         Route::put('/profile/medical-history', [AuthController::class, 'updateMedicalHistory']);
+        // HL7 FHIR R4 dışa aktarma (sözleşme madde 4.3): hasta verisi standart Bundle olarak.
+        Route::get('/profile/fhir', [AuthController::class, 'fhirExport']);
     });
     Route::get('/profile/notification-preferences', [AuthController::class, 'getNotificationPrefs']);
     Route::put('/profile/notification-preferences', [AuthController::class, 'updateNotificationPrefs']);

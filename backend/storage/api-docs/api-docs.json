@@ -3211,6 +3211,29 @@
                 ]
             }
         },
+        "/api/auth/profile/fhir": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Export patient data as an HL7 FHIR R4 Bundle",
+                "description": "Patient, Condition, MedicationStatement, Immunization and DocumentReference resources for the authenticated patient. Content-Type: application/fhir+json.",
+                "operationId": "a47491526641203580d3333881e04a24",
+                "responses": {
+                    "200": {
+                        "description": "FHIR R4 Bundle (type: collection)"
+                    },
+                    "403": {
+                        "description": "Only patients can export their own record"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/auth/profile/medical-history": {
             "get": {
                 "tags": [

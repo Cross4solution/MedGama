@@ -367,6 +367,36 @@ class AuthController extends Controller
     }
 
     #[OA\Get(
+        path: '/auth/profile/fhir',
+        summary: 'Export patient data as an HL7 FHIR R4 Bundle',
+        description: 'Patient, Condition, MedicationStatement, Immunization and DocumentReference resources for the authenticated patient. Content-Type: application/fhir+json.',
+        security: [['sanctum' => []]],
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(response: 200, description: 'FHIR R4 Bundle (type: collection)'),
+            new OA\Response(response: 403, description: 'Only patients can export their own record'),
+        ]
+    )]
+    public function fhirExport(Request $request): \Illuminate\Http\Response
+    {
+        if ($request->user()->role_id !== 'patient') {
+            return response('{"message":"FHIR export is only available for patients."}', 403)
+                ->header('Content-Type', 'application/json');
+        }
+
+        $demet = \App\Support\Fhir::demet($request->user());
+
+        \App\Models\AuditLog::log(
+            action: 'fhir_export',
+            resourceType: 'user',
+            resourceId: $request->user()->id,
+        );
+
+        return response(json_encode($demet, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), 200)
+            ->header('Content-Type', 'application/fhir+json; fhirVersion=4.0');
+    }
+
+    #[OA\Get(
         path: '/auth/profile/medical-history',
         summary: 'Get medical history (encrypted at rest — AES-256-CBC)',
         security: [['sanctum' => []]],

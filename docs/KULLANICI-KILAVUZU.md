@@ -128,6 +128,7 @@ tutanağı Bölüm 3.1).
 **Profil** menüsü: ad, fotoğraf, ülke / şehir, **tercih edilen dil** (alt
 yazı çevirisi bu dile yapılır), "içerikler benim dilimde görünsün"
 anahtarı, takvim aboneliği (bkz. 3.4), hesap kapatma ve veri indirme.
+Tıbbi kaydınız HL7 FHIR R4 standardında da alınabilir (API: `/auth/profile/fhir`).
 
 ---
 
