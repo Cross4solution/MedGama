@@ -47,6 +47,8 @@ class GocGeriAlinabilirligiTest extends TestCase
         '2026_08_26_120000_dogrulama_basvurusuna_bilgi_istendi_durumu',
         '2026_08_27_090000_indeks_temizligi_ve_denetim_indeksi',
         '2026_08_27_110000_iletisim_mesaji_govdesini_sifrele',
+        // Demo kayıtlara örnek fiyat: veri, şema değil; geri alınacak şey yok.
+        '2026_09_07_140000_demo_kayitlarina_ornek_fiyat',
     ];
 
     /** @return array<string,string> göç adı → down() gövdesi */
