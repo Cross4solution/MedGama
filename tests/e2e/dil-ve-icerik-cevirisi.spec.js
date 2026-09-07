@@ -46,6 +46,18 @@ test.describe('Dil ve içerik çevirisi', () => {
     await page.goto(`/${dil}/profile`);
     await cerezBandiniKapat(page);
     await expect(anahtar(page), 'çeviri anahtarı ekranda yok').toBeVisible({ timeout: 20_000 });
+    // Anahtar, sunucudaki tercih gelene kadar kilitli (aria-busy). Kilit
+    // kalkmadan okunan durum varsayılan "kapalı"dır, sunucudaki değil —
+    // başlangıç durumu ondan okununca test yanlış yöne tıklıyor, sonra
+    // "sunucu hâlâ açık diyor" diye düşüyordu. Üç koşuda iki kez ölçüldü.
+    await expect(anahtar(page), 'tercih yüklenmedi').toBeEnabled({ timeout: 20_000 });
+  };
+
+  // Başlangıç durumunu geri koyarken sunucuya YAZILMASI beklenir: sayfa
+  // kapanırken uçuşta kalan bir kayıt sonraki teste sızıyordu.
+  const geriKoy = async (page, hedef) => {
+    await anahtar(page).click();
+    await expect.poll(async () => (await durumOku(page))?.enabled, { timeout: 15_000 }).toBe(hedef);
   };
 
   test('anahtar açık kaldığında sunucuda da açık', async ({ page }) => {
@@ -79,7 +91,7 @@ test.describe('Dil ve içerik çevirisi', () => {
     await expect(anahtar(page)).toHaveAttribute('aria-pressed', 'true', { timeout: 20_000 });
 
     if (!baslangic) {
-      await anahtar(page).click();
+      await geriKoy(page, false);
     }
   });
 
@@ -101,7 +113,7 @@ test.describe('Dil ve içerik çevirisi', () => {
     }).toBe(false);
 
     if (baslangic) {
-      await anahtar(page).click();
+      await geriKoy(page, true);
     }
   });
 
