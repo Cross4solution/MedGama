@@ -6,14 +6,11 @@ oradan üretilir (`pandoc → docx → LibreOffice`), elle düzenlenmez.
 | Dosya | Ne | Sayfa |
 |-------|----|------|
 | `TESLIM-TUTANAGI.pdf` | "Kısaca" özet; sözleşme kalemi → durum; müşteriden beklenen 6 girdi, her biri "ne, ne için, ne zaman istendi" ile (§3) | 5 |
-| `DONUS-YAPILMAYANLAR.pdf` | Dönüş yapılmayanlar: 7 kalem, tek sayfa | 1 |
 | `KULLANICI-KILAVUZU.pdf` | Hasta / doktor / klinik / hastane için kullanım | 6 |
 | `YONETICI-REHBERI.pdf` | Yönetim paneli ve işletme | 4 |
 | `TEST-RAPORU.pdf` | "Kısaca" özet; modül → ne sınandı; canlı doğrulamalar; test dosyaları ekte | 8 |
 
-`Daha Once Gonderilen Belgeler/` — Müşteri'ye Temmuz–Ağustos 2026'da gönderilen
-7 karar belgesi (turizm, kapora, e-posta, dosya saklama, alt yazı,
-arşiv paylaşımı, hasta deneyimi). "Dönüş Yapılmayanlar" bu klasöre atıf yapar.
+`2/` - sözleşme kalemlerine dayanak iki karar belgesi (turizm, kapora).
 
 `Medagama-Kaynak-Kod-2026-09-07.zip` — sözleşme kapsamındaki modüllerin kaynak
 kodu (ek geliştirmeler çıkarılmış; canlı site bunları içermeye devam eder).

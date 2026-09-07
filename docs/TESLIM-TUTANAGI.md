@@ -63,12 +63,10 @@ Bekliyor = Müşteri girdisi gelince yapılacak.
 
 ## 3. Müşteri'den beklenen girdiler
 
-Aşağıdaki altı kalem Geliştirici tarafından hazır hâle getirilmiştir;
-tamamlanmaları **yalnız** Müşteri'nin sağlayacağı girdilere bağlıdır.
-Sözleşme madde 4.4 uyarınca API lisansları, ödeme entegrasyonları, bulut
-depolama, e-posta servisi ve alan adı Müşteri sorumluluğundadır. Her kalem
-daha önce de istenmiştir; tarih ve belge her maddede yazılıdır. Tek sayfalık
-özet: bu paketteki "Dönüş Yapılmayanlar" belgesi.
+Aşağıdaki kalemler Geliştirici tarafından hazır hâle getirilmiştir;
+tamamlanmaları yalnız Müşteri'nin sağlayacağı girdilere bağlıdır. Sözleşme
+madde 4.4 uyarınca API lisansları, ödeme entegrasyonları, bulut altyapısı,
+e-posta servisi ve alan adı Müşteri sorumluluğundadır.
 
 ### 3.1 Sanal POS / ödeme sağlayıcısı hesabı
 
@@ -76,64 +74,40 @@ daha önce de istenmiştir; tarih ve belge her maddede yazılıdır. Tek sayfal�
   adına açılmış hesap ve API anahtarları.
 - **Ne açılacak:** site içi online ödeme, randevu kaporası, ücretli
   profesyonel inceleme (modül 16 ve 18).
-- **Daha önce iletildi:** 12 Ağustos 2026 - "Randevu Kaporası - Ödeme
-  Akışı" ve "Hasta Deneyimi" belgeleri (paketteki "2" klasöründe, daha önce gönderilen belgeler).
+- **Daha önce iletildi:** 12 Ağustos 2026, "Randevu Kaporası - Ödeme Akışı"
+  belgesi (paketteki "2" klasöründe).
 - **Sözleşme dayanağı:** 1.2 ödeme sistemi; 4.4 ödeme entegrasyonları.
 
 ### 3.2 Sağlık turizmi kararları ve API lisansları
 
 - **Ne bekleniyor:** taslak belgenin onayı ya da düzeltmeleri; uçuş / otel
-  verisi kullanılacaksa ilgili API lisansı (Skyscanner vb.).
+  verisi kullanılacaksa ilgili API lisansı.
 - **Ne açılacak:** tek tuşla paket oluşturma modülü (modül 17).
-- **Daha önce iletildi:** 10 Ağustos 2026 - "Tek Tuşla Sağlık Turizmi"
-  karar belgesi (aynı klasörde).
-  Belge dört temel kararı ve Müşteri'nin seçeceği A / B seçeneğini içerir.
+- **Daha önce iletildi:** 10 Ağustos 2026, "Tek Tuşla Sağlık Turizmi" karar
+  belgesi (paketteki "2" klasöründe).
 - **Sözleşme dayanağı:** Ek-1 Turizm Programı; 4.4 API lisansları.
 
 ### 3.3 GPU sunucu (ya da bulut GPU)
 
 - **Ne bekleniyor:** GPU'lu bir sunucu ya da bulut GPU hesabı.
 - **Ne açılacak:** yapay zekânın Müşteri'nin kendi verisiyle eğitilmesi
-  (modül 7) ve alt yazı motorunun büyük modele taşınması (modül 13 bugün
-  CPU üzerinde, küçük modelle çalışıyor).
-- **Daha önce iletildi:** 12 Ağustos 2026 - "Alt Yazı Planı" belgesi;
-  ayrıca 3 Ağustos 2026'da sunucu kararında GPU ihtiyacı belirtildi.
+  (modül 7).
+- **Daha önce iletildi:** 3 Ağustos 2026, sunucu kararında.
 - **Sözleşme dayanağı:** Ek-1 LLM: *"ürün kullanıma açıldıktan sonra en geç
   5 ay içerisinde"*; 4.4 bulut altyapısı.
 
-### 3.4 Alan adı (medagama.com) ve e-posta alan adı doğrulaması
+### 3.4 Alan adı ve e-posta alan adı doğrulaması
 
 - **Ne bekleniyor:** alan adının satın alınması ve DNS erişimi.
-- **Ne açılacak:** kayıt ve şifre sıfırlama e-postaları (bugün hiç e-posta
-  gönderilemiyor), kalıcı sertifikalar, kalıcı site adresi. Görüşme
-  sunucusunun geçici sertifikası 8 Kasım 2026'da doluyor; alan adı gelmezse
-  o gün yenilenmesi gerekir.
-- **Daha önce iletildi:** 12 Ağustos 2026 - "E-posta Seçenekleri" belgesi;
-  21 Ağustos 2026'da e-posta gönderiminin alan adı olmadan çalışamayacağı
-  ayrıca bildirildi.
+- **Ne açılacak:** kayıt ve şifre sıfırlama e-postaları (bugün e-posta
+  gönderilemiyor), kalıcı sertifikalar ve site adresi.
+- **Daha önce iletildi:** 12 ve 21 Ağustos 2026.
 - **Sözleşme dayanağı:** 4.4 SMS / e-posta servisleri ve alan adı.
 
-### 3.5 Bulut dosya depolama hesabı
-
-- **Ne bekleniyor:** Müşteri adına S3 uyumlu bir depolama hesabı (AWS,
-  Google Cloud, Hetzner, DigitalOcean vb.; sağlayıcı Müşteri'nin tercihi).
-  Avrupa bölgesi önerilir.
-- **Ne açılacak:** hasta belgelerinin ve yedeklerin buluta taşınması; bugün
-  dosyalar uygulama sunucusunun diskinde şifreli duruyor.
-- **Daha önce iletildi:** 12 Ağustos 2026 - "Dosya Saklama Seçenekleri"
-  belgesi; hesap bekleniyor.
-- **Sözleşme dayanağı:** 4.4 bulut depolama.
-
-### 3.6 Hukuki vb. metinler
+### 3.5 Hukuki vb. metinler
 
 Sitede yer alacak hukuki vb. metinler Müşteri tarafından iletildiğinde
 siteye eklenecektir.
-
-### Cevap bekleyen soru
-
-Semptom / işlem eş anlamlı listesi (halk diliyle arama) için altı adımlı
-plan 22 Temmuz 2026'da iletildi; giriş ekranı hazır, sözlük ve kimin
-dolduracağı kararı Müşteri'den bekleniyor.
 
 ### Sonuç
 

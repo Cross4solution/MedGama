@@ -65,7 +65,7 @@ Sürüm 1.1, Eylül 2026, Sözleşme madde 2.2 kapsamında teslim edilen belge
 | Veritabanı | TiDB Cloud (MySQL uyumlu) | Yerelde PostgreSQL / MySQL, testte SQLite |
 | Görüşme sinyal + TURN | OVH sunucu `57.128.27.244` | soketi (Docker) + coturn, TLS |
 | Alt yazı motoru + çeviri | OVH sunucu, Docker | `deploy/stt/README.md` |
-| Hasta dosyaları | Arka uç diski, şifreli | Buluta taşınması depolama hesabına bağlı (tutanak Bölüm 3.5) |
+| Hasta dosyaları | Arka uç diski, şifreli | |
 
 ### B.2 Yayın (deploy)
 - Ön yüz: `git push origin <dal>:main` > Vercel derler (2-4 dk). Push
@@ -97,7 +97,7 @@ php artisan yonetici:olustur inceleyen@alanadi.com --salt-okunur
 
 ### B.5 Yedek ve geri yükleme
 `docs/YEDEK-VE-GERI-YUKLEME.md` ve `docs/RPO-RTO.md`. Veritabanı yedeği
-TiDB Cloud'da; dosya yedeği bulut depolama bağlanınca tamamlanır.
+TiDB Cloud'da; dosya yedeği aynı belgede anlatılır.
 
 ### B.6 İleride yapılacaklar
 
@@ -105,8 +105,6 @@ TiDB Cloud'da; dosya yedeği bulut depolama bağlanınca tamamlanır.
 |--|--|
 | Alan adı bağlanınca | Vercel'e alan adı; e-posta servisinde alan adı doğrulaması (`docs/Medagama_Eposta_Secenekleri.pdf`); OVH sertifikası ve `REVERB_HOST` / `TURN_URLS` / `CAPTIONS_WHISPER_URL` / `LIBRETRANSLATE_URL` yeni alan adına |
 | 8 Kasım 2026'dan önce | Alan adı hâlâ yoksa OVH geçici sertifikasını yenileyin |
-| GPU sunucu gelince | Alt yazı motorunu büyük modele taşıyın (`deploy/stt/README.md`) |
-| Bulut depolama hesabı gelince | Hasta dosyalarını ve yedekleri buluta taşıyın (`docs/PRODUCTION_DEPLOYMENT.md`) |
 
 ### B.7 Sağlık kontrolleri
 ```bash
