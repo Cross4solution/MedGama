@@ -129,7 +129,7 @@ daha önce de istenmiştir; tarih ve belge her maddede yazılıdır. Tek sayfal�
 Sitede yer alacak hukuki vb. metinler Müşteri tarafından iletildiğinde
 siteye eklenecektir.
 
-### Cevap bekleyen soru (teslimi engellemez)
+### Cevap bekleyen soru
 
 Semptom / işlem eş anlamlı listesi (halk diliyle arama) için altı adımlı
 plan 22 Temmuz 2026'da iletildi; giriş ekranı hazır, sözlük ve kimin
