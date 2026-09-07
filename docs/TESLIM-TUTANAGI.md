@@ -109,13 +109,6 @@ e-posta servisi ve alan adı Müşteri sorumluluğundadır.
 Sitede yer alacak hukuki vb. metinler Müşteri tarafından iletildiğinde
 siteye eklenecektir.
 
-### Sonuç
-
-Bu girdiler Müşteri tarafından iletildiği takdirde ilgili modüller
-**karşılıklı olarak en makul şekilde ve ayrı bir iş planıyla** projeye
-eklenecektir. Girdiler iletilmediği sürece söz konusu kalemler bu tutanakla
-askıya alınmış sayılır ve teslimin tamamlanmasına engel oluşturmaz.
-
 ## 4. Teslim sonrası
 
 - Kaynak kod ve fikri haklar: madde 5.2 uyarınca son ödeme ve bu tutanağın
