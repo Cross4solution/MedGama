@@ -2,7 +2,7 @@
 
 Sözleşme: Yazılım Geliştirme ve Hizmet Sözleşmesi (imza 25.08.2025) ve Ek-1
 
-Tarih: ___ / ___ / 2026
+7 Eylül 2026
 
 ## Kısaca
 
@@ -16,8 +16,7 @@ Bu tutanakla birlikte teslim edilenler: kaynak kod, kullanıcı kılavuzu,
 yönetici rehberi, test raporu ve API dokümanı (Bölüm 2). Teslim edilen kaynak
 kod sözleşme kapsamındaki modülleri içerir. Canlı sitede sözleşme kapsamı
 dışında ek geliştirmeler de bulunmaktadır; bunlar bu teslimin kapsamı
-dışındadır. Sözleşme madde 5.2
-gereği hakların devri bu tutanağın imzasıyla başlar.
+dışındadır.
 
 Durum sütunu: ✓ = bitti ve yayında; Kısmen = bitti, son adımı Müşteri girdisine bağlı;
 Bekliyor = Müşteri girdisi gelince yapılacak.
@@ -108,8 +107,3 @@ e-posta servisi ve alan adı Müşteri sorumluluğundadır.
 
 Sitede yer alacak hukuki vb. metinler Müşteri tarafından iletildiğinde
 siteye eklenecektir.
-
-## 4. Teslim sonrası
-
-- Kaynak kod ve fikri haklar: madde 5.2 uyarınca son ödeme ve bu tutanağın
-  imzasıyla Müşteri'ye geçer.
