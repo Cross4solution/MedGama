@@ -2937,7 +2937,13 @@
     "addMore": "Aggiungi altro...",
     "clear": "Cancella",
     "connectionErrorTitle": "Impossibile caricare i risultati",
-    "connectionErrorHint": "Server non raggiungibile. Controlla la connessione e riprova — la ricerca non è vuota."
+    "connectionErrorHint": "Server non raggiungibile. Controlla la connessione e riprova — la ricerca non è vuota.",
+    "sortPriceAsc": "Prezzo: crescente",
+    "sortPriceDesc": "Prezzo: decrescente",
+    "priceFilter": "Prezzo",
+    "currency": "Valuta",
+    "priceMin": "Min.",
+    "priceMax": "Max."
   },
   "doctorProfile": {
     "about": "Informazioni",
@@ -3205,7 +3211,10 @@
     "prepareBody": "Controlla la videocamera e il microfono. La barra deve muoversi quando parli.",
     "prepareTitle": "Pronto a partecipare?",
     "reconnecting": "Riconnessione…",
-    "waitingPeer": "In attesa dell'altra persona…"
+    "waitingPeer": "In attesa dell'altra persona…",
+    "captionYou": "Tu",
+    "captionEngineDown": "Servizio sottotitoli non raggiungibile; la chiamata continua.",
+    "captionMicBusy": "Impossibile ascoltare il microfono per i sottotitoli."
   },
   "onboarding": {
     "title": "Completa il Tuo Profilo",

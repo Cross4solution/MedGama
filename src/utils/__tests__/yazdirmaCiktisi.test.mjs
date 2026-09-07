@@ -66,14 +66,7 @@ test('arayüz kabuğunun tamamı yazdırmada gizli', () => {
   }
 });
 
-test('atlama bağlantısı kâğıda basılmıyor', () => {
-  // `position: fixed` olduğu için gizlenmezse ilk sayfanın tepesine düşebilir.
-  assert.match(
-    kabuk,
-    /className="no-print fixed/,
-    '"İçeriğe geç" bağlantısı yazdırmada gizlenmiyor',
-  );
-});
+// (Atlama bağlantısı ölçütü kaldırıldı: bağlantı 7 Eylül 2026'da müşteri isteğiyle silindi.)
 
 test('kâğıt A4 ve kenar boşlukları tanımlı', () => {
   const blok = yazdirmaBlogu();

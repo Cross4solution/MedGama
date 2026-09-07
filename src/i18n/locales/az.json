@@ -2977,7 +2977,13 @@
     "addMore": "Daha çox əlavə et...",
     "clear": "Təmizlə",
     "connectionErrorTitle": "Nəticələr yüklənə bilmədi",
-    "connectionErrorHint": "Serverə çıxmaq mümkün olmadı. Bağlantınızı yoxlayıb yenidən cəhd edin — axtarış boş deyil."
+    "connectionErrorHint": "Serverə çıxmaq mümkün olmadı. Bağlantınızı yoxlayıb yenidən cəhd edin — axtarış boş deyil.",
+    "sortPriceAsc": "Qiymət: artan",
+    "sortPriceDesc": "Qiymət: azalan",
+    "priceFilter": "Qiymət",
+    "currency": "Valyuta",
+    "priceMin": "Min.",
+    "priceMax": "Maks."
   },
   "doctorProfile": {
     "about": "Haqqında",
@@ -3245,7 +3251,10 @@
     "prepareBody": "Kameranızı və mikrofonunuzu yoxlayın. Danışdıqda zolaq hərəkət etməlidir.",
     "prepareTitle": "Qoşulmağa hazırsınız?",
     "reconnecting": "Bağlantı yenidən qurulur...",
-    "waitingPeer": "Qarşı tərəf gözlənilir..."
+    "waitingPeer": "Qarşı tərəf gözlənilir...",
+    "captionYou": "Siz",
+    "captionEngineDown": "Altyazı xidmətinə çatmaq olmur; zəng davam edir.",
+    "captionMicBusy": "Altyazı üçün mikrofon dinlənilə bilmir."
   },
   "onboarding": {
     "title": "Profilinizi Tamamlayın",

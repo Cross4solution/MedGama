@@ -2937,7 +2937,13 @@
     "addMore": "Añadir más...",
     "clear": "Borrar",
     "connectionErrorTitle": "No se pudieron cargar los resultados",
-    "connectionErrorHint": "No se pudo contactar con el servidor. Comprueba tu conexión e inténtalo de nuevo: la búsqueda no está vacía."
+    "connectionErrorHint": "No se pudo contactar con el servidor. Comprueba tu conexión e inténtalo de nuevo: la búsqueda no está vacía.",
+    "sortPriceAsc": "Precio: de menor a mayor",
+    "sortPriceDesc": "Precio: de mayor a menor",
+    "priceFilter": "Precio",
+    "currency": "Moneda",
+    "priceMin": "Mín.",
+    "priceMax": "Máx."
   },
   "doctorProfile": {
     "about": "Acerca de",
@@ -3205,7 +3211,10 @@
     "prepareBody": "Compruebe su cámara y su micrófono. La barra debe moverse cuando habla.",
     "prepareTitle": "¿Listo para unirse?",
     "reconnecting": "Reconectando…",
-    "waitingPeer": "Esperando a la otra persona…"
+    "waitingPeer": "Esperando a la otra persona…",
+    "captionYou": "Usted",
+    "captionEngineDown": "Servicio de subtítulos no disponible; la llamada continúa.",
+    "captionMicBusy": "No se puede escuchar el micrófono para los subtítulos."
   },
   "onboarding": {
     "title": "Completa tu perfil",

@@ -36,7 +36,7 @@ import resolveStorageUrl from '@/utils/resolveStorageUrl';
 // tekrar eden menü; klavye ya da ekran okuyucu kullanan biri okumak
 // istediği metne varmak için her seferinde o menünün tamamını geçecek.
 //
-// `<main id="icerik">` işaretlemesi DURUYOR: ekran okuyucular ana bölgeye
+// main#icerik işaretlemesi DURUYOR: ekran okuyucular ana bölgeye
 // oradan atlayabiliyor, geri getirmek istenirse bağlantının hedefi hazır.
 
 function DemoTokenGate() {

@@ -12070,6 +12070,43 @@
                 ]
             }
         },
+        "/api/telehealth/{appointmentId}/caption-session": {
+            "get": {
+                "summary": "TelehealthController::captionSession",
+                "tags": [
+                    "telehealth"
+                ],
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Başarılı"
+                    },
+                    "401": {
+                        "description": "Oturum yok ya da jeton geçersiz"
+                    },
+                    "404": {
+                        "description": "Kayıt bulunamadı"
+                    },
+                    "429": {
+                        "description": "Hız sınırı aşıldı"
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "appointmentId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            }
+        },
         "/api/telehealth/{appointmentId}/session": {
             "get": {
                 "summary": "TelehealthController::session",

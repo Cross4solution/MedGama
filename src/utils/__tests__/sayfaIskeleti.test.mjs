@@ -5,7 +5,8 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 /**
- * Her sayfanın taşıması gereken iki şey: ana içerik alanı ve ona atlama yolu.
+ * Her sayfanın taşıması gereken şey: ana içerik alanı (`<main id="icerik">`).
+ * (Atlama bağlantısı müşteri isteğiyle kaldırıldı — dosyanın sonundaki not.)
  *
  * Ölçüldü: altı sayfanın hiçbirinde `<main>` yoktu ve hiçbirinde atlama
  * bağlantısı yoktu. Ana sayfada 160 odaklanabilir denetim var ve büyük kısmı
@@ -54,42 +55,7 @@ test('ana içerik alanı odak alabiliyor', () => {
   assert.equal(odaklanabilir, DAL_SAYISI, 'bir dalda <main> odak alamıyor');
 });
 
-test('atlama bağlantısı iki dalda da render ediliyor', () => {
-  assert.equal(
-    [...kabuk.matchAll(/<IcerigeGec\s*\/>/g)].length,
-    DAL_SAYISI,
-    'bir dalda atlama bağlantısı yok',
-  );
-});
-
-test('atlama bağlantısı odak sırasının başında', () => {
-  // Menüden SONRA gelirse hiçbir işe yaramıyor: zaten menüyü geçmiş olmak
-  // gerekiyor. Her dalda ilk render edilen şey olmalı.
-  for (const dal of ['<IcerigeGec />']) {
-    const yer = kabuk.indexOf(dal);
-    const header = kabuk.indexOf('<Header />');
-
-    assert.ok(yer !== -1, 'atlama bağlantısı yok');
-    assert.ok(yer < header, 'atlama bağlantısı başlıktan SONRA render ediliyor');
-  }
-});
-
-test('atlama bağlantısı odaklanınca görünür oluyor', () => {
-  // Görünürlük `sr-only`/`not-sr-only` ikilisine bırakılamıyor: ölçüldü,
-  // `focus:not-sr-only` bu kurulumda üretilmiyor ve bağlantı odaklanınca da
-  // 1x1 kalıyordu. Konum temelli çözüm ve odak kuralının baskın olması
-  // birlikte gerekiyor — ikisi de aynı özgüllükte ve kapalı konum sonra
-  // geliyordu.
-  assert.match(kabuk, /-translate-y-\[200%\]/, 'bağlantı ekran dışına alınmıyor');
-  assert.match(kabuk, /focus:!translate-y-0/, 'odak kuralı baskın değil: bağlantı görünmez kalır');
-});
-
-test('atlama metni dokuz dilde de var', () => {
-  // Eksik anahtar sessiz: i18next yedeğe düşer, Türk kullanıcı ekran
-  // okuyucudan İngilizce duyar.
-  for (const dil of ['tr', 'en', 'de', 'fr', 'ar', 'ru', 'es', 'it', 'az']) {
-    const sozluk = JSON.parse(readFileSync(path.join(kok, `src/i18n/locales/${dil}.json`), 'utf8'));
-
-    assert.ok(sozluk.a11y?.skipToContent, `${dil}.json içinde a11y.skipToContent yok`);
-  }
-});
+// Atlama bağlantısı ("İçeriğe geç") 7 Eylül 2026'da MÜŞTERİ İSTEĞİYLE
+// kaldırıldı (a1eb711). Ona ait dört ölçüt de silindi; `<main id="icerik">`
+// ölçütleri duruyor — ekran okuyucunun "ana içeriğe git" komutu ve bağlantı
+// geri gelirse hedefi hâlâ bu. Bedeli: WCAG 2.4.1 karşılanmıyor.

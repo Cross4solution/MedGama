@@ -2937,7 +2937,13 @@
     "addMore": "Ajouter plus...",
     "clear": "Effacer",
     "connectionErrorTitle": "Impossible de charger les résultats",
-    "connectionErrorHint": "Le serveur est injoignable. Vérifiez votre connexion et réessayez — la recherche n'est pas vide."
+    "connectionErrorHint": "Le serveur est injoignable. Vérifiez votre connexion et réessayez — la recherche n'est pas vide.",
+    "sortPriceAsc": "Prix : croissant",
+    "sortPriceDesc": "Prix : décroissant",
+    "priceFilter": "Prix",
+    "currency": "Devise",
+    "priceMin": "Min.",
+    "priceMax": "Max."
   },
   "doctorProfile": {
     "about": "À propos",
@@ -3205,7 +3211,10 @@
     "prepareBody": "Vérifiez votre caméra et votre micro. La barre doit bouger lorsque vous parlez.",
     "prepareTitle": "Prêt à rejoindre ?",
     "reconnecting": "Reconnexion…",
-    "waitingPeer": "En attente de votre interlocuteur…"
+    "waitingPeer": "En attente de votre interlocuteur…",
+    "captionYou": "Vous",
+    "captionEngineDown": "Service de sous-titres injoignable ; l'appel continue.",
+    "captionMicBusy": "Impossible d'écouter le micro pour les sous-titres."
   },
   "onboarding": {
     "title": "Complétez votre profil",

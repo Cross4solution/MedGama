@@ -2189,7 +2189,13 @@
     "addMore": "Mehr hinzufügen...",
     "clear": "Zurücksetzen",
     "connectionErrorTitle": "Ergebnisse konnten nicht geladen werden",
-    "connectionErrorHint": "Der Server ist nicht erreichbar. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut — die Suche ist nicht leer."
+    "connectionErrorHint": "Der Server ist nicht erreichbar. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut — die Suche ist nicht leer.",
+    "sortPriceAsc": "Preis: aufsteigend",
+    "sortPriceDesc": "Preis: absteigend",
+    "priceFilter": "Preis",
+    "currency": "Währung",
+    "priceMin": "Min.",
+    "priceMax": "Max."
   },
   "doctorProfile": {
     "about": "Über",
@@ -2457,7 +2463,10 @@
     "prepareBody": "Prüfen Sie Kamera und Mikrofon. Der Balken sollte sich bewegen, wenn Sie sprechen.",
     "prepareTitle": "Bereit zum Beitreten?",
     "reconnecting": "Verbindung wird wiederhergestellt …",
-    "waitingPeer": "Warten auf die andere Person …"
+    "waitingPeer": "Warten auf die andere Person …",
+    "captionYou": "Sie",
+    "captionEngineDown": "Untertitel-Dienst nicht erreichbar; das Gespräch läuft weiter.",
+    "captionMicBusy": "Mikrofon kann für Untertitel nicht abgehört werden."
   },
   "onboarding": {
     "title": "Vervollständigen Sie Ihr Profil",
