@@ -47,7 +47,7 @@ Atlama gerekçesi her testin içinde yazılıdır; koşulu sağlanınca koşarla
 
 ## 3. Bu koşuların bulduğu ve düzeltilen
 
-Rapor için paketler baştan koşulduğunda dört bulgu çıktı; hepsi bu
+Rapor için paketler baştan koşulduğunda beş bulgu çıktı; hepsi bu
 teslimden önce düzeltildi ve yeniden koşuldu:
 
 | Bulgu | Nerede yakalandı | Sonuç |
@@ -56,6 +56,7 @@ teslimden önce düzeltildi ve yeniden koşuldu:
 | Yeni uç OpenAPI belgesinde yoktu | arka uç `ApiBelgesi` | Belge yeniden üretildi |
 | 9 yeni çeviri anahtarı 7 dilde eksikti | ön yüz `ceviriAnahtarlari` | Çeviriler eklendi |
 | Kaldırılan "içeriğe geç" bağlantısının eski ölçütleri | ön yüz + uçtan uca | Ölçütler kaldırıldı, ana içerik ölçütleri korundu |
+| Fiyata göre sıralamada **profili hiç olmayan** doktorlar listenin başına geliyordu (yalnız canlı veritabanında görüldü) | canlı API kontrolü | Sorgu düzeltildi; test profilsiz doktorla genişletildi, canlıda yeniden doğrulandı |
 
 İki uçtan uca test tam koşuda kararsızdı ve ikisi de ölçülerek çözüldü:
 
@@ -89,6 +90,7 @@ teslimden önce düzeltildi ve yeniden koşuldu:
 | Canlı site rotaları | 20 rota × tr/en/de/ar | Hepsi 200, hata sınırı yok |
 | Mobil düzen (canlı) | 320/375/390/768 px | Yatay kayma 0, kart/iskelet/ortalama ölçümleri raporlandı |
 | Vasco AI | Şikâyet metniyle uç | Branş + hekim listesi; belirsizde ek soru |
+| Doktor/klinik fiyat sıralama ve süzgeci | Canlı API, TRY/EUR/USD | Artan/azalan doğru, fiyatsızlar sonda, süzgeç yalnız seçili birimde |
 | API sağlığı | `/api/health`, `/stt/health`, `/lt/languages` | ok |
 
 ## 6. Yeniden koşma
