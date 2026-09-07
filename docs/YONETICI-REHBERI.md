@@ -120,7 +120,6 @@ Olay yönetimi: `docs/SECURITY_INCIDENT_RUNBOOK.md`.
 ```bash
 cd backend && php artisan test                 # arka uç
 npm run test:unit                               # ön yüz birim ölçütleri
-E2E_BASE_URL=... E2E_API_ORIGIN=... E2E_DEMO_KEY=... npx playwright test   # tarayıcı
 ```
 Ayrıntı ve son sonuçlar: `TEST-RAPORU.pdf`. API dokümanı:
 `backend/docs/openapi.yaml`.
