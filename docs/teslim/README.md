@@ -15,6 +15,9 @@ oradan üretilir (`pandoc → docx → LibreOffice`), elle düzenlenmez.
 10 karar belgesi (turizm, kapora, e-posta, dosya saklama, mevzuat, alt yazı,
 arşiv paylaşımı, hasta deneyimi). "Dönüş Yapılmayanlar" bu klasöre atıf yapar.
 
+`Medagama-Kaynak-Kod-2026-09-07.zip` — sözleşme kapsamındaki modüllerin kaynak
+kodu (ek geliştirmeler çıkarılmış; canlı site bunları içermeye devam eder).
+
 Zip: `Medagama-Teslim-2026-09-07.zip` (PDF'ler + bu klasör).
 
 Teslimle birlikte: Render'da `DEMO_ADMIN_AUTO_LOGIN` kaldırılır (tutanak §4).

@@ -13,7 +13,10 @@ onay ve lisanslara bağlı. Bu girdiler ne oldukları, ne için gerektikleri ve
 daha önce ne zaman istendikleriyle birlikte §3'te tek tek yazılıdır.
 
 Bu tutanakla birlikte teslim edilenler: kaynak kod, kullanıcı kılavuzu,
-yönetici rehberi, test raporu ve API dokümanı (§2). Sözleşme madde 5.2
+yönetici rehberi, test raporu ve API dokümanı (§2). Teslim edilen kaynak
+kod sözleşme kapsamındaki modülleri içerir. Canlı sitede sözleşme kapsamı
+dışında ek geliştirmeler de bulunmaktadır; bunlar bu teslimin kapsamı
+dışındadır. Sözleşme madde 5.2
 gereği hakların devri bu tutanağın imzasıyla başlar.
 
 İşaretler: ✅ bitti ve yayında · ◐ bitti, son adımı Müşteri girdisine bağlı ·
@@ -52,7 +55,7 @@ gereği hakların devri bu tutanağın imzasıyla başlar.
 | Mobil uyumlu tasarım | ✅ | Telefon, tablet ve masaüstü genişliklerinde ölçüldü; otomatik testleri var |
 | REST API altyapısı | ✅ | Arka uç kodunda; dokümanı aşağıda |
 | Güvenli veri şifreleme | ✅ | Hasta dosyaları şifreli; tüm bağlantılar TLS; görüşme uçtan uca şifreli |
-| Kaynak kodları (tüm dosyalar) | ✅ | Git deposu `github.com/Cross4solution/Medagama` |
+| Kaynak kodları (tüm dosyalar) | ✅ | Bu paketteki kod arşivi (zip); sözleşme kapsamındaki modüller. Canlı sitedeki ek geliştirmeler kapsam dışıdır |
 | Kapsamlı teknik dokümantasyon | ✅ | Depoda `docs/` klasörü: mimari, dağıtım, yedek, olay yönetimi, uyum |
 | Kullanıcı kılavuzu ve yönetici rehberi | ✅ | Bu paketteki `KULLANICI-KILAVUZU.pdf`, `YONETICI-REHBERI.pdf` |
 | API dokümantasyonu | ✅ | Depoda `backend/docs/openapi.yaml` |
