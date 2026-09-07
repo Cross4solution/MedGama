@@ -36,61 +36,16 @@ test.describe('Tarayıcı uyumu', () => {
     }
   });
 
-  test('içeriğe geç bağlantısı ilk sırada ve hedefi var', async ({ page, browserName }) => {
-    // Odak sırası ve `tabIndex={-1}` ile odaklanabilir `<main>`: ikisi de
-    // motora göre farklı davranabiliyor.
+  test('ana içerik alanı var ve odaklanabilir', async ({ page, browserName }) => {
+    // `tabIndex={-1}` ile odaklanabilir `<main>`: motora göre farklı
+    // davranabiliyor. (Atlama bağlantısı 7 Eylül 2026'da müşteri isteğiyle
+    // kaldırıldı; ölçütü de kaldırıldı. Ana içerik işaretlemesi duruyor.)
     await page.goto('/tr');
     await cerezBandiniKapat(page);
-
-    const atlama = page.locator('a[href="#icerik"]');
-    await expect(atlama, 'atlama bağlantısı yok').toHaveCount(1);
 
     const ana = page.locator('main#icerik');
     await expect(ana, 'ana içerik alanı yok').toHaveCount(1);
     await expect(ana).toHaveAttribute('tabindex', '-1');
-
-    // Sekme sırasının başında mı?
-    //
-    // Safari'de Tab varsayılan olarak BAĞLANTILARA uğramıyor, yalnız form
-    // denetimleri arasında geziniyor (macOS'ta "Tab ile her ögeyi vurgula"
-    // kapalı gelir). Bu bir platform davranışı, uygulama kusuru değil — o
-    // yüzden sekme sırası yalnız bağlantıları odaklayan motorlarda ölçülüyor.
-
-    // Ölçümün ön koşulu AÇIKÇA kuruluyor: odak belgenin başında olmalı.
-    // Çerez bandını kapatmak bir düğmeye tıklıyor ve düğme kaldırılınca odak
-    // gövdeye düşüyor — ama bant hâlâ çıkış animasyonundayken ilk Tab başka
-    // bir yere gidebiliyordu. Test tam koşuda kararsızdı, tek başına
-    // geçiyordu; sebebi uygulama değil, varsayılan bir ön koşuldu.
-    await expect(page.locator('a[href="#icerik"]')).toBeVisible();
-    await page.evaluate(() => {
-      document.activeElement instanceof HTMLElement && document.activeElement.blur();
-    });
-
-    // Tab BASILDI ama işlenmemiş olabilir.
-    //
-    // Sayfa hidrasyondayken sentetik tuş bazen belgeye hiç ulaşmıyor ve odak
-    // `body`de kalıyor. Ölçüldü: onda bir. Aranan şey "tarayıcı tuşu anında
-    // işledi mi" değil, "ilk durak atlama bağlantısı mı" — o yüzden odak
-    // gövdeden ayrılana kadar yeniden deneniyor.
-    await expect.poll(async () => {
-      await page.keyboard.press('Tab');
-      return page.evaluate(() => document.activeElement?.tagName);
-    }, { timeout: 10_000, message: 'Tab odağı hiç taşımadı' }).not.toBe('BODY');
-
-    const ilkOdak = await page.evaluate(() => document.activeElement?.getAttribute('href'));
-
-    if (browserName === 'webkit') {
-      // Safari'de aranan şey, bağlantının programlı olarak odaklanabilmesi:
-      // ekran okuyucular ve klavye ayarı açık kullanıcılar oraya ulaşıyor.
-      const odaklandi = await page.evaluate(() => {
-        const a = document.querySelector('a[href="#icerik"]');
-        a?.focus();
-        return document.activeElement === a;
-      });
-      expect(odaklandi, 'atlama bağlantısı odak alamıyor').toBe(true);
-    } else {
-      expect(ilkOdak, 'ilk sekme atlama bağlantısına gitmiyor').toBe('#icerik');
-    }
   });
 
   test('arapça sağdan sola render ediliyor', async ({ page }) => {

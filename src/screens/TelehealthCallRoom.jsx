@@ -144,6 +144,33 @@ export default function TelehealthCallRoom() {
     analyserRef.current = null;
   };
 
+  const cleanup = useCallback((updateStatus = false) => {
+    stopTimers();
+    durdurRef.current();
+    try { pcRef.current?.close(); } catch {}
+    pcRef.current = null;
+    releaseMedia();
+    try {
+      if (channelRef.current) {
+        channelRef.current.stopListeningForWhisper?.('signal');
+        echoRef.current?.leave?.(`telehealth.${appointmentId}`);
+      }
+    } catch {}
+    channelRef.current = null;
+    if (updateStatus) {
+      telehealthAPI.updateStatus(appointmentId, 'completed').catch(() => {});
+    }
+  }, [appointmentId]);
+
+  const send = useCallback((payload) => {
+    try { channelRef.current?.whisper('signal', payload); } catch {}
+  }, []);
+
+  // Bu blok `send`'den SONRA durmak zorunda: bağımlılık listesinde `send`
+  // var ve `const` ile tanımlı. Üstündeyken üretim derlemesinde (modern
+  // hedef, `const` korunur) ilk çizimde "cannot access before initialization"
+  // fırlıyor ve oda hata sınırına düşüyordu; geliştirme derlemesi `var`a
+  // çevirdiği için orada görünmedi. Uçtan uca paket yakaladı.
   // ── Canlı alt yazı: dinlemeyi başlat / durdur ─────────────────────────────
   const altYaziDinlemeyiDurdur = useCallback(() => {
     captionSessionRef.current = null;
@@ -239,27 +266,6 @@ export default function TelehealthCallRoom() {
     else durdurRef.current();
   }, [captionState]);
 
-  const cleanup = useCallback((updateStatus = false) => {
-    stopTimers();
-    durdurRef.current();
-    try { pcRef.current?.close(); } catch {}
-    pcRef.current = null;
-    releaseMedia();
-    try {
-      if (channelRef.current) {
-        channelRef.current.stopListeningForWhisper?.('signal');
-        echoRef.current?.leave?.(`telehealth.${appointmentId}`);
-      }
-    } catch {}
-    channelRef.current = null;
-    if (updateStatus) {
-      telehealthAPI.updateStatus(appointmentId, 'completed').catch(() => {});
-    }
-  }, [appointmentId]);
-
-  const send = useCallback((payload) => {
-    try { channelRef.current?.whisper('signal', payload); } catch {}
-  }, []);
 
   // ── Hazırlık: cihazları aç, önizleme ve mikrofon seviyesi ────────────────
   // Kullanıcı görüşmeye girmeden önce kendini görebilmeli ve mikrofonunun

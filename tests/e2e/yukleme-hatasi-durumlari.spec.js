@@ -59,6 +59,11 @@ for (const { rol, rota, yanlisIddia } of DURUMLAR) {
     test.use({ storageState: oturumDosyasi(rol) });
 
     test('yükleme düşünce hata söylüyor, yokluk iddia etmiyor', async ({ page }) => {
+      // Yönetici oturumu ortam değişkeni ister; yoksa eski bir oturum
+      // dosyasıyla giriş sayfası ölçülür ve test yanlış sebeple kırmızı yanar.
+      if (rol === 'yonetici' && !process.env.E2E_ADMIN_EMAIL) {
+        test.skip(true, 'E2E_ADMIN_EMAIL tanımlı değil; yönetici oturumu güvenilir değil.');
+      }
       const cokmeler = [];
       page.on('pageerror', (e) => cokmeler.push(String((e && e.message) || e)));
 
