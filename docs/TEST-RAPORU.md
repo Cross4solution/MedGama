@@ -4,7 +4,7 @@ Sürüm 1.0 · 7 Eylül 2026 · Teslim tutanağının eki
 
 Bu rapor, sözleşme Ek-1'deki her modülün hangi otomatik testlerle sınandığını
 ve son koşunun sonucunu gösterir. Sayılar bu raporun yazıldığı gün, teslim
-edilen kaynak kod üzerinde koşularak alınmıştır; komutlar §5'te, herkes
+edilen kaynak kod üzerinde koşularak alınmıştır; komutlar §6'da, herkes
 yeniden koşabilir.
 
 ## 1. Özet
@@ -14,7 +14,7 @@ yeniden koşabilir.
 | Arka uç (Laravel, PHPUnit) — 184 dosya | API uçları, yetki sınırları, iş kuralları, veri güvenliği, göçler | **1197 geçti · 0 kırmızı · 21 atlandı** (3 346 doğrulama) |
 | Ön yüz birim (Node) — 68 dosya | Yardımcılar, çeviri kapsamı, güvenlik başlıkları, yapısal ölçütler | **375 geçti · 0 kırmızı** |
 | Uçtan uca (Playwright, Chromium) — 39 senaryo dosyası | Gerçek tarayıcıda, gerçek kayıt oluşturarak kullanıcı akışları; mobil düzen; erişilebilirlik | **{{E2E_SONUC}}** |
-| Elle / canlıda doğrulama | Görüntülü görüşme + alt yazı (iki tarayıcı), canlı site ölçümleri | §4 |
+| Elle / canlıda doğrulama | Görüntülü görüşme + alt yazı (iki tarayıcı), canlı site ölçümleri | §5 |
 
 **Atlanan 21 arka uç testi:** yalnız canlı ortamda ya da dış servisle
 anlamlı olanlar (gerçek e-posta gönderimi, Sentry, yönetici ortam
@@ -30,13 +30,13 @@ değişkeni gerektirenler). Atlama gerekçesi her testin içinde yazılıdır.
 | 4 | Gönderi tercümesi | CeviriDurumu, TopluCeviriButcesi, VideoSubtitle (10) | dil-ve-icerik-cevirisi, icerikCevirisiHedefDil, vtt |
 | 5 | Güvenli veri (HIPAA/GDPR/KVKK), belge transferi | HastaBelgesiPaylasim (14), HassasDosyaErisim, SohbetEkiBaglantisi, SohbetEkiGizliligi, IletisimEkiGizliligi, IletisimMesajiSifreleme, SaglikErisimKaydi, RizaEtkisi, KvkkHaklari, SilmeKapsami, SaklamaSuresiBudama, Compliance, Security (15), GuvenlikSertlestirme, SentryVeriTemizligi, VeritabaniBaglantiGuvenligi | arama-ve-arsiv, dogrulama-belgesi, guvenlikBasliklari, analitikMaskeleme |
 | 6 | Çok dilli | EpostaCevirileri | dil-ve-icerik-cevirisi, yazi-yonu-hizasi (RTL), ceviriAnahtarlari, ingilizceSizintisi, ceviriKapsami, hreflangTutarliligi, dilYonu |
-| 7 | LLM (Vasco) | VascoYonlendirme (9), DisServisZamanAsimi | — (canlıda elle, §4) |
+| 7 | LLM (Vasco) | VascoYonlendirme (9), DisServisZamanAsimi | — (canlıda elle, §5) |
 | 8 | Paneller ve hesap fonksiyonları | Auth, OturumYasamDongusu, PasswordChangeRevokesSessions, LogoutAllDevices, SifreSifirlama, EpostaDogrulama, KimlikHizSiniri, KullaniciAdiGeriDoldurma | giris, oturum-dusunce, profil, bildirimler |
 | 9 | CRM (lead, hasta, satış) | CrmAbonelikKapisi (16), CrmHastaListesiKapsami, CrmKayitKapsami, CrmKendiKendineAcma, AdayKapsam, SatisHatti, HastaEtiketi, HastaKaydiVeCrmKapsami, RaporVeSss, KlinikYonetimYazmalari, FinansDisaAktarim, GelirGrafigi, GelirIstatistikleri | crm-ekranlari, crm-randevular, muayene-ve-destek |
 | 10 | Randevu sistemi + takvim entegrasyonu | Appointment, BookingFlow, CiftRezervasyon, DoktorMusaitligi, TakvimSlotuYetki (12), TakvimAkisi (ICS), RandevuListesiKapsami, RandevuAnamnezErisimi, RetPenceresi, BaglantiSaatDilimi | randevu-yasam-dongusu, randevu-doktor-islemleri, randevu-eszamanlilik, randevular, mobil-randevu-takvimi, calendarLinks |
 | 11 | Değerlendirme + onaylı değerlendirme | DoktorDegerlendirme (17), DegerlendirilebilirRandevu, KlinikYorumu, YorumDenetimi, YorumDenetimSayaclari, IcerikSikayeti | degerlendirmeler |
 | 12 | SEO | SiteHaritasi, OnbellekBasligi | seoJsonLd, hreflangTutarliligi, icBaglantilar |
-| 13 | Telehealth: görüşme + alt yazı + tercüme | TelehealthKatilimci, TelesaglikDurumu, TelesaglikTranskripti, **CanliAltYazi (7)**, KanalYetkilendirme (11), YayinKesintisi | gorusme, telesaglikTranskripti, echo; iki tarayıcılı gerçek görüşme (§4) |
+| 13 | Telehealth: görüşme + alt yazı + tercüme | TelehealthKatilimci, TelesaglikDurumu, TelesaglikTranskripti, **CanliAltYazi (7)**, KanalYetkilendirme (11), YayinKesintisi | gorusme, telesaglikTranskripti, echo; iki tarayıcılı gerçek görüşme (§5) |
 | 14 | Mesajlaşma portalı | SohbetErisimSiniri (11), GercekZamanliSohbetSiniri (11), IletisimMesajiErisim, IletisimKutusuKapsami, ChatMedStream | sohbet-ve-canli-bildirim |
 | 15 | Fatura / finans | FaturaHesaplama (11), FaturaOdemeDurumu, HekimFaturalandirma, PatientInvoiceAccess, InvoiceAccessBoundary, Payment (14, sahte sağlayıcı) | faturalar, fatura-yasam-dongusu |
 | 16 | Yönetim paneli | YoneticiYuzeyiReddi, YoneticiYetkiDegisimi, YoneticiOkumalari, YoneticiKalanUclar, YoneticiOlustur, SaltOkunurHesap, DogrulamaBasvurusu, DogrulamaBelgesiGoruntuleme, KlinikDogrulama (14), KatalogYazmaUclari (14), DuyuruGorunurluk, DestekTalebi (13), DemoYoneticiGirisi | yonetim-paneli, dogrulama-belgesi |
@@ -44,7 +44,23 @@ değişkeni gerektirenler). Atlama gerekçesi her testin içinde yazılıdır.
 | 18 | REST API ve dokümantasyon (1.3, 2.2) | ApiBelgesi (uç ↔ OpenAPI eşleşmesi), ApiBelgelendirmesi, OnYuzApiYollari, UcSagligi, SorguYuku (N+1), SayfaBoyutuSiniri | ucParametreleri, yanitBicimi |
 | — | Yapısal korumalar | GocGeriAlinabilirligi, IndeksSagligi, TeshisUclari, InitDbUcu, VeritabaniYedegi (yedek + geri yükleme), TohumlamaTekrarlanabilir, TeslimHazirligi | genis-tarama (her ekran), istek-yogunlugu, erisilebilirlik, gizli-odak-tuzagi, hata-yolu-uyarilari, yukleme-hatasi-durumlari |
 
-## 3. Yöntem
+## 3. Bu koşuların bulduğu ve düzeltilen
+
+Rapor için paketler baştan koşulduğunda dört bulgu çıktı; hepsi bu
+teslimden önce düzeltildi ve yeniden koşuldu:
+
+| Bulgu | Nerede yakalandı | Sonuç |
+|-------|-----------------|-------|
+| Görüşme odası **üretim derlemesinde** açılmıyordu (geliştirme derlemesinde görünmeyen bir tanım sırası hatası) | uçtan uca `gorusme` | Düzeltildi; iki tarayıcıda üretim derlemesine karşı yeniden doğrulandı |
+| Yeni uç OpenAPI belgesinde yoktu | arka uç `ApiBelgesi` | Belge yeniden üretildi |
+| 9 yeni çeviri anahtarı 7 dilde eksikti | ön yüz `ceviriAnahtarlari` | Çeviriler eklendi |
+| Kaldırılan "içeriğe geç" bağlantısının eski ölçütleri | ön yüz + uçtan uca | Ölçütler kaldırıldı, ana içerik ölçütleri korundu |
+
+Bir uçtan uca test (sohbet okunmamış sayacı) tam koşuda iki kez kırmızı
+yandı; ölçüldü, uygulama doğruydu (API'den 0 → 1), testin kendisi
+yarışıyordu. Test düzeltildi.
+
+## 4. Yöntem
 
 - **Arka uç** testleri her koşuda boş bir veritabanıyla başlar; dış servisler
   (ödeme, çeviri, alt yazı motoru, e-posta) sahte uygulamalarla değiştirilir
@@ -56,7 +72,7 @@ değişkeni gerektirenler). Atlama gerekçesi her testin içinde yazılıdır.
   kırmızıya döndüğü görülmüştür (örn. sıralama, fiyat süzgeci, alt yazı
   jetonu, mobil takvim).
 
-## 4. Elle ve canlıda doğrulananlar
+## 5. Elle ve canlıda doğrulananlar
 
 | Konu | Nasıl | Sonuç |
 |------|-------|-------|
@@ -67,7 +83,7 @@ değişkeni gerektirenler). Atlama gerekçesi her testin içinde yazılıdır.
 | Vasco AI | Şikâyet metniyle uç | Branş + hekim listesi; belirsizde ek soru |
 | API sağlığı | `/api/health`, `/stt/health`, `/lt/languages` | ok |
 
-## 5. Yeniden koşma
+## 6. Yeniden koşma
 
 ```bash
 # Arka uç

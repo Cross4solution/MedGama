@@ -131,16 +131,27 @@ export default function Profile() {
   // saklanıyor; kullanıcı açısından ise bir DİL ayarı olduğu için burada.
   const [translateContent, setTranslateContent] = useState(false);
   const [translateSaving, setTranslateSaving] = useState(false);
+  // Sunucudaki tercih gelene kadar anahtar KİLİTLİ.
+  //
+  // Açılışta tercih arka planda okunuyor; okuma bitmeden basılan bir tıklama
+  // varsayılan `false`tan yola çıkıp yanlış yöne yazıyor, sonra gelen okuma
+  // ekrandaki durumu eziyordu — "açtım, kendi kendine kapandı". Uçtan uca
+  // paket bunu üç koşuda ikisinde yakaladı: sunucu "açık" diyor, ekran
+  // "kapalı". Tercih gelmeden tıklama yok; gelen okuma da kullanıcı dokunduysa
+  // artık üzerine yazmıyor.
+  const [tercihYuklendi, setTercihYuklendi] = useState(false);
+  const kullaniciDokundu = useRef(false);
 
   useEffect(() => {
     let iptal = false;
     authAPI.getNotificationPrefs()
       .then((r) => {
-        if (iptal) return;
+        if (iptal || kullaniciDokundu.current) return;
         const p = r?.data?.preferences ?? r?.preferences ?? {};
         setTranslateContent(Boolean(p.translate_content));
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => { if (!iptal) setTercihYuklendi(true); });
     return () => { iptal = true; };
   }, []);
 
@@ -156,8 +167,9 @@ export default function Profile() {
   const ceviriKaydiUcusta = useRef(false);
 
   const handleTranslateToggle = async () => {
-    if (ceviriKaydiUcusta.current) return;
+    if (ceviriKaydiUcusta.current || !tercihYuklendi) return;
     ceviriKaydiUcusta.current = true;
+    kullaniciDokundu.current = true;
 
     const yeni = !translateContent;
     setTranslateContent(yeni);          // önce ekranda göster
@@ -706,7 +718,8 @@ export default function Profile() {
                     <button
                       type="button"
                       onClick={handleTranslateToggle}
-                      disabled={translateSaving}
+                      disabled={translateSaving || !tercihYuklendi}
+                      aria-busy={!tercihYuklendi || undefined}
                       aria-pressed={translateContent}
                       aria-label={t('profile.translateContent', 'Gönderi ve mesajlar da benim dilimde görünsün')}
                       className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${
