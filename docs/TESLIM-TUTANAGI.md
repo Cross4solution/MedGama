@@ -54,7 +54,8 @@ Bekliyor = Müşteri girdisi gelince yapılacak.
 | Mobil uyumlu tasarım | ✓ | Telefon, tablet ve masaüstü genişliklerinde ölçüldü; otomatik testleri var |
 | REST API altyapısı | ✓ | Arka uç kodunda; dokümanı aşağıda |
 | Güvenli veri şifreleme | ✓ | Hasta dosyaları şifreli; tüm bağlantılar TLS; görüşme uçtan uca şifreli |
-| Kaynak kodları (tüm dosyalar) | ✓ | Bu paketteki kod arşivi `Medagama-Kaynak-Kod-2026-09-07.zip`; sözleşme kapsamındaki modüller. Canlı sitedeki ek geliştirmeler kapsam dışıdır. SHA-256: `eda33c34a8409a3cb5e4e0ca6916fd312bae010bf181199956f6b6b48b8f5ff4` (5 718 437 bayt) |
+| Tıbbi veri protokolleri HL7 / FHIR (madde 4.3) | ✓ | Hasta kaydı HL7 FHIR R4 Bundle olarak dışa aktarılır (Patient, Condition, MedicationStatement, Immunization, DocumentReference); API: `/auth/profile/fhir` |
+| Kaynak kodları (tüm dosyalar) | ✓ | Bu paketteki kod arşivi `Medagama-Kaynak-Kod-2026-09-07.zip`; sözleşme kapsamındaki modüller. Canlı sitedeki ek geliştirmeler kapsam dışıdır. SHA-256: `e138180b6ddf2f3a7f47a405779432d7b43b21328f51b93f180868f581e9ecee` (5 736 600 bayt) |
 | Kapsamlı teknik dokümantasyon | ✓ | Depoda `docs/` klasörü: mimari, dağıtım, yedek, olay yönetimi, uyum |
 | Kullanıcı kılavuzu ve yönetici rehberi | ✓ | Bu paketteki `KULLANICI-KILAVUZU.pdf`, `YONETICI-REHBERI.pdf` |
 | API dokümantasyonu | ✓ | Depoda `backend/docs/openapi.yaml` |

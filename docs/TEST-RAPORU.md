@@ -10,7 +10,7 @@ alındı:
 
 | | Test sayısı | Sonuç |
 |--|--|--|
-| Sunucu tarafı (API, yetki, iş kuralları, veri güvenliği) | 1 071 | **hepsi geçti** |
+| Sunucu tarafı (API, yetki, iş kuralları, veri güvenliği) | 1 075 | **hepsi geçti** |
 | Arayüz birim ölçütleri (çeviri kapsamı, güvenlik başlıkları, yapı) | 355 | **hepsi geçti** |
 | Gerçek tarayıcıda kullanıcı akışları (randevu, fatura, yorum, mobil) - canlı site üzerinde | 194 | **hepsi geçti** |
 | Elle, canlı sitede (görüntülü görüşme + alt yazı, mobil, fiyat sıralaması) | - | **doğrulandı** (Bölüm 3) |
@@ -47,7 +47,7 @@ adları Ek'te.
 | 2 | Kullanıcı tipleri ve panelleri | Her rol yalnız kendi ekranlarına girebiliyor (19 yetki senaryosu); hastane şubelerini görüyor, klinik yalnız kendini; yetki yükseltme denemeleri reddediliyor | ✓ |
 | 3 | Medikal sosyal ağ | Gönderi yayınlama, düzenleme, silme yalnız sahibine; beğeni, yorum, kaydet, takip; ülke ve branş süzgeci; kullanıcı adı güvenliği; indirme güvenliği | ✓ |
 | 4 | Gönderi tercümesi | Çevir düğmesi, hedef dil kullanıcının seçtiği dil, çeviri bütçesi | ✓ |
-| 5 | Güvenli veri (HIPAA / GDPR / KVKK), belge transferi | Hasta belgesi yalnız hastanın açtığı doktora, yalnız randevu süresince; ekler şifreli ve süreli bağlantıyla; erişim kaydı tutuluyor; KVKK hakları (indirme, silme); güvenlik başlıkları; hata izlemeye kişisel veri sızmıyor | ✓ |
+| 5 | Güvenli veri (HIPAA / GDPR / KVKK), belge transferi | Hasta belgesi yalnız hastanın açtığı doktora, yalnız randevu süresince; ekler şifreli ve süreli bağlantıyla; erişim kaydı tutuluyor; KVKK hakları (indirme, silme); HL7 FHIR R4 dışa aktarma (kaynak türleri, yalnız hastanın kendisi, rıza çekilince kapalı); güvenlik başlıkları; hata izlemeye kişisel veri sızmıyor | ✓ |
 | 6 | Çok dilli | 22 dilde eksik çeviri yok; İngilizce sızıntısı yok; sağdan sola dillerde hizalama; arama motoru için dil etiketleri tutarlı | ✓ |
 | 7 | Yapay zekâ (Vasco) | Şikâyet > branş yönlendirmesi (9 senaryo); dış servis yanıt vermezse zaman aşımı | ✓ |
 | 8 | Hesap fonksiyonları | Giriş, çıkış, tüm cihazlardan çıkış, şifre değişince eski oturumlar düşüyor, şifre sıfırlama, e-posta doğrulama, deneme sınırı | ✓ |
@@ -97,7 +97,7 @@ birim testleri `src/**/__tests__/` ve `tests/unit/` altında.
 | 2 | Permissions, KayitRolKurallari, RolListesiHizalamasi, RolSabitleriKaymasi, HastaneKapsami, KlinikYoneticisiKapisi, YetkiYukseltme | - |
 | 3 | MedStreamYayinVeSahiplik, MedStreamEtkilesim, MedStreamAkisSayilari, SosyalFavori, SosyalGecisler, UlkeSuzgeci, AkistaHandle, HandleGuvenligi, KaydedilenGonderiler, MedStreamIndirmeGuvenligi | - |
 | 4 | CeviriDurumu, TopluCeviriButcesi | icerikCevirisiHedefDil |
-| 5 | HastaBelgesiPaylasim, HassasDosyaErisim, SohbetEkiBaglantisi, SohbetEkiGizliligi, IletisimEkiGizliligi, IletisimMesajiSifreleme, SaglikErisimKaydi, RizaEtkisi, KvkkHaklari, SilmeKapsami, SaklamaSuresiBudama, Compliance, Security, GuvenlikSertlestirme, SentryVeriTemizligi, VeritabaniBaglantiGuvenligi | guvenlikBasliklari, analitikMaskeleme |
+| 5 | FhirDisaAktarim, HastaBelgesiPaylasim, HassasDosyaErisim, SohbetEkiBaglantisi, SohbetEkiGizliligi, IletisimEkiGizliligi, IletisimMesajiSifreleme, SaglikErisimKaydi, RizaEtkisi, KvkkHaklari, SilmeKapsami, SaklamaSuresiBudama, Compliance, Security, GuvenlikSertlestirme, SentryVeriTemizligi, VeritabaniBaglantiGuvenligi | guvenlikBasliklari, analitikMaskeleme |
 | 6 | EpostaCevirileri | ceviriAnahtarlari, ingilizceSizintisi, ceviriKapsami, hreflangTutarliligi, dilYonu |
 | 7 | VascoYonlendirme, DisServisZamanAsimi | - |
 | 8 | Auth, OturumYasamDongusu, PasswordChangeRevokesSessions, LogoutAllDevices, SifreSifirlama, EpostaDogrulama, KimlikHizSiniri, KullaniciAdiGeriDoldurma | - |
