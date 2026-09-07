@@ -27,7 +27,7 @@ Sözleşme madde 5.2 gereği hakların devri bu tutanağın imzasıyla başlar.
 | 10 | Entegre randevu sistemi; klinik takvimleriyle entegrasyon | ✅ | Randevu (yüz yüze / görüntülü), Akıllı Takvim, ICS aboneliği (Google/Apple/Outlook) |
 | 11 | Değerlendirme + onaylı değerlendirme (yalnız sistemden randevu alan) | ✅ | Yalnız *tamamlanmış* randevusu olan hasta yorum yazabilir; moderasyon paneli |
 | 12 | Gelişmiş SEO | ✅ | sitemap, robots, sayfa başına meta/canonical, çok dilli adresler |
-| 13 | Telehealth: entegre görüntülü görüşme + simultane altyazı + tercüme | ✅ | Kendi sunucumuzda WebRTC (uçtan uca şifreli) + canlı alt yazı + karşı tarafın diline çeviri. Motor bugün CPU'da küçük model (**asgari kalite**); GPU sunucu gelince aynı arayüzle büyük model — bkz. §3 |
+| 13 | Telehealth: entegre görüntülü görüşme + simultane altyazı + tercüme | ✅ | Kendi sunucumuzda WebRTC (uçtan uca şifreli); canlı alt yazı ve karşı tarafın diline çeviri kurulu ve çalışır durumda |
 | 14 | Mesajlaşma portalı (son kullanıcı ↔ klinik) | ✅ | `/doctor-chat`, CRM Mesajlar, İletişim Mesajları |
 | 15 | Hasta röntgen/tahlil güvenli transfer (HTTPS) | ✅ | Madde 5 ile aynı altyapı |
 | 16 | Profesyonel inceleme (ücretli, hekim profilinde) | ◐ | Akış kartı ve profil gösterimi hazır; **ücretli talep** ödeme sağlayıcısına bağlı — bkz. §3 |
@@ -58,7 +58,7 @@ bulut depolama, e-posta servisleri ve alan adı Müşteri sorumluluğundadır.
 |----------|----------|--------|
 | **Sanal POS / ödeme sağlayıcısı** hesabı (iyzico, PayTR, Stripe vb.) | Online ödeme, kapora tahsilatı, ücretli profesyonel inceleme | 1.2 ödeme sistemi; 4.4 ödeme entegrasyonları |
 | **Sağlık turizmi kararları** (taslak PDF onayı) + uçak/otel API lisansları (Skyscanner vb.) | Tek tuşla paket oluşturma modülü | Ek-1 Turizm Programı; 4.4 API lisansları |
-| **GPU sunucu** (ya da bulut GPU) | LLM'in kendi verisiyle eğitimi; alt yazı motorunun büyük modele geçişi | Ek-1 LLM: *"ürün kullanıma açıldıktan sonra en geç 5 ay içerisinde"*; 4.4 bulut |
+| **GPU sunucu** (ya da bulut GPU) | LLM'in kendi verisiyle eğitimi; alt yazı motorunun GPU'ya taşınması | Ek-1 LLM: *"ürün kullanıma açıldıktan sonra en geç 5 ay içerisinde"*; 4.4 bulut |
 | **Alan adı** (medagama.com) + e-posta alan adı doğrulaması | Kayıt/şifre e-postaları, sertifikalar, adresler | 4.4 SMS/e-posta servisleri |
 | **AWS / bulut depolama** hesabı | PHI dosyalarının ve yedeklerin buluta taşınması | 4.4 bulut depolama |
 | **Hukuki metinler** (KVKK aydınlatma, kullanım şartları — hukuk onaylı) | Son metinlerin siteye konması | 4.2 yasal uyumluluk müşteride |
