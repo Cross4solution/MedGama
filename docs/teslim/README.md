@@ -18,6 +18,5 @@ arşiv paylaşımı, hasta deneyimi). "Dönüş Yapılmayanlar" bu klasöre atı
 `Medagama-Kaynak-Kod-2026-09-07.zip` — sözleşme kapsamındaki modüllerin kaynak
 kodu (ek geliştirmeler çıkarılmış; canlı site bunları içermeye devam eder).
 
-Zip: `Medagama-Teslim-2026-09-07.zip` (PDF'ler + bu klasör).
 
 Teslimle birlikte: Render'da `DEMO_ADMIN_AUTO_LOGIN` kaldırılır (tutanak §4).
