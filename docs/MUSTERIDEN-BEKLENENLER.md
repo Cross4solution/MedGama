@@ -1,46 +1,19 @@
-# Medagama — Müşteri'den Beklenenler
+# Medagama — Sizden Beklediklerimiz
 
-7 Eylül 2026 · Teslim tutanağının eki
+7 Eylül 2026
 
-## Kısaca
+Aşağıdaki konuları daha önce sormuştuk, henüz dönüş alamadık. Her biri
+geldiğinde ilgili işe hemen başlayabiliriz.
 
-Aşağıdaki kalemlerin hepsi daha önce Müşteri'ye yazılı olarak iletildi ve
-bugüne kadar dönüş gelmedi. İki gruba ayrılıyor:
-
-- **A. Teslimi bekleten girdiler (6 kalem):** hesap, onay ya da lisans
-  gelmeden ilgili modül tamamlanamıyor. Geliştirme tarafı hazır.
-- **B. Cevap bekleyen soru (1 kalem):** cevap gelmediği için makul bir
-  varsayımla ilerlendi; cevap gelince o yönde değiştirilebilir.
-
-Her kalemde ne istendiği, ne için gerektiği ve ne zaman hangi belgeyle
-istendiği yazılı. Belgelerin kendileri teslim paketinde.
-
----
-
-## A. Teslimi bekleten girdiler
-
-| # | Ne bekleniyor | Ne için gerekli | Ne zaman, hangi belgeyle istendi | Durum |
-|--|--|--|--|--|
-| 1 | **Sanal POS / ödeme sağlayıcısı hesabı** (iyzico, PayTR, Stripe vb.) ve API anahtarları | Site içi online ödeme, randevu kaporası, ücretli profesyonel inceleme | 12 Ağustos 2026 — "Randevu Kaporası — Ödeme Akışı" ve "Hasta Deneyimi" belgeleri | Dönüş yok |
-| 2 | **Sağlık turizmi taslağının onayı ya da düzeltmeleri**; A / B seçeneğinden biri; uçuş / otel verisi istenirse API lisansı | Tek tuşla sağlık turizmi paketi modülü | 10 Ağustos 2026 — "Tek Tuşla Sağlık Turizmi" karar belgesi | Dönüş yok |
-| 3 | **GPU sunucu** ya da bulut GPU hesabı | Yapay zekânın Müşteri verisiyle eğitilmesi; alt yazı motorunun büyük modele taşınması | 3 Ağustos 2026 sunucu kararında; 12 Ağustos 2026 "Alt Yazı Planı" belgesi | Dönüş yok |
-| 4 | **Alan adı** (medagama.com) satın alınması ve DNS erişimi | Kayıt ve şifre sıfırlama e-postaları (bugün hiç e-posta gidemiyor), kalıcı sertifika ve site adresi | 12 Ağustos 2026 "E-posta Seçenekleri" belgesi; 21 Ağustos 2026 e-posta engelinin bildirimi | Dönüş yok |
-| 5 | **AWS hesabı** (Frankfurt bölgesi) | Hasta belgelerinin ve yedeklerin buluta taşınması | 12 Ağustos 2026 "Dosya Saklama Seçenekleri" belgesi; aynı gün Frankfurt kararı teyit edildi | Karar verildi, hesap açılmadı |
-| 6 | **Hukuk onaylı metinler:** KVKK aydınlatma, kullanım şartları, çerez politikası; belge türüne göre yasal saklama süreleri | Son metinlerin siteye konması; saklama sürelerinin sistemde uygulanması | 3 Ağustos 2026 pazar kararıyla; 12 Ağustos 2026 "Mevzuat Uyumu: İletilmesi Gerekenler" ve "Saklama Süresi" belgeleri | Dönüş yok |
-
-Sözleşme dayanağı: madde 4.4 (API lisansları, ödeme entegrasyonları, bulut
-depolama, e-posta servisi ve alan adı Müşteri sorumluluğunda); madde 4.2
-(yasal uyumluluk Müşteri'de); Ek-1 LLM maddesi (GPU eğitimi "yayından sonra
-en geç 5 ay içinde").
-
-## B. Cevap bekleyen soru
-
-| # | Soru | Ne zaman soruldu | Bugünkü durum |
+| | Ne gerekiyor | Ne için | Ne zaman sormuştuk |
 |--|--|--|--|
-| 1 | Semptom ve işlem eş anlamlı listesi (halk diliyle arama: "burun estetiği", "nose job" gibi) için altı adımlı plan onaylanıyor mu? Listeyi kim girecek? | 22 Temmuz 2026 | Yönetim panelinde eş anlamlı giriş ekranı hazır (Katalog Yönetimi). Halk dili sözlüğü ve kimin dolduracağı kararı Müşteri'den bekleniyor; o gelene kadar arama katalogdaki adlarla ve Vasco AI ile çalışıyor |
+| 1 | **Sanal POS hesabı** (iyzico, PayTR, Stripe vb.) | Site içinden kartla ödeme, randevu kaporası, ücretli profesyonel inceleme | 12 Ağustos 2026 |
+| 2 | **Sağlık turizmi taslağına onay** ya da düzeltme; A / B seçeneğinden biri | Tek tuşla sağlık turizmi paketi | 10 Ağustos 2026 |
+| 3 | **GPU sunucu** ya da bulut GPU hesabı | Yapay zekânın kendi verinizle eğitilmesi; alt yazının büyük modele geçmesi | 3 ve 12 Ağustos 2026 |
+| 4 | **Alan adı** (medagama.com) | Kayıt ve şifre e-postaları (bugün e-posta gönderilemiyor), kalıcı site adresi | 12 ve 21 Ağustos 2026 |
+| 5 | **AWS hesabı** | Hasta belgelerinin ve yedeklerin bulutta saklanması | 12 Ağustos 2026 |
+| 6 | **Hukuk onaylı metinler:** KVKK aydınlatma, kullanım şartları, çerez politikası, saklama süreleri | Site metinlerinin son hâline gelmesi | 3 ve 12 Ağustos 2026 |
+| 7 | **Semptom eş anlamlı listesi** için karar: plan uygun mu, listeyi kim girecek? | Halk diliyle arama ("burun estetiği", "nose job") | 22 Temmuz 2026 |
 
-## Sonuç
-
-Bu kalemler iletildiğinde ilgili işler karşılıklı olarak en makul şekilde
-ve ayrı bir iş planıyla projeye eklenecektir. İletilmediği sürece teslimin
-tamamlanmasına engel oluşturmaz.
+Bu konularla ilgili gönderdiğimiz belgeler bu pakette
+(`Medagama_Kapora_Akisi.pdf`, `Medagama_Tek_Tusla_Saglik_Turizmi.pdf`).
