@@ -68,7 +68,11 @@ test.describe('Sohbet ve canlı bildirim', () => {
     test.skip(!sohbetId, 'Sohbet açılmadı');
 
     await rolIle(browser, 'hasta', async (page) => {
-      await page.goto('/tr/doctor-chat');
+      // Sayaç sorulmadan önce SOHBET SAYFASI AÇILMAMALI: /doctor-chat en son
+      // sohbeti kendiliğinden açıp okundu işaretliyor, sayaç 0'a düşüyor ve
+      // test uygulamada olmayan bir hatayı bildiriyordu (tam koşuda iki kez
+      // kırmızı, tek başına yeşil — yarış). Ölçüldü: API'den doğrudan 0 → 1.
+      await page.goto('/tr/notifications');
       await cerezBandiniKapat(page);
 
       const { http, govde } = await apiIstek(page, '/api/chat/unread-count');
