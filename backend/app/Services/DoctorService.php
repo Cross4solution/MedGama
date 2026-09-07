@@ -37,7 +37,7 @@ class DoctorService
             ->where('role_id', 'doctor')
             ->where('is_active', true)
             ->with([
-                'doctorProfile:id,user_id,clinic_id,title,specialty,specialty_id,sub_specialties,experience_years,address,online_consultation,bio,languages,prices,min_price,avg_rating,review_count',
+                'doctorProfile:id,user_id,clinic_id,title,specialty,specialty_id,sub_specialties,experience_years,address,online_consultation,bio,languages,prices,min_price,price_currency,avg_rating,review_count',
                 'doctorProfile.specialtyRelation:id,name',
                 // address brief listede şehir join'ine gerek bırakmaz (Round 4 landing)
                 'clinic:id,name,codename,avatar,address',
@@ -176,6 +176,19 @@ class DoctorService
             $query->where('clinic_id', $clinicId);
         }
 
+        // ── Fiyat aralığı (seçilen para biriminde) ──
+        // Birimler karıştırılmaz: 500 TRY aralığına EUR giren doktor düşmez.
+        $fiyatMin = $filters['price_min'] ?? null;
+        $fiyatMax = $filters['price_max'] ?? null;
+        if (is_numeric($fiyatMin) || is_numeric($fiyatMax)) {
+            $birim = \App\Support\Fiyat::birim($filters['currency'] ?? 'TRY');
+            $query->whereHas('doctorProfile', function ($pq) use ($fiyatMin, $fiyatMax, $birim) {
+                $pq->where('price_currency', $birim)->whereNotNull('min_price');
+                if (is_numeric($fiyatMin)) $pq->where('min_price', '>=', (float) $fiyatMin);
+                if (is_numeric($fiyatMax)) $pq->where('min_price', '<=', (float) $fiyatMax);
+            });
+        }
+
         // ── Verified only ──
         if (isset($filters['verified'])) {
             $query->where('is_verified', filter_var($filters['verified'], FILTER_VALIDATE_BOOLEAN));
@@ -191,9 +204,12 @@ class DoctorService
         $profilSutunu = fn (string $sutun) => DoctorProfile::select($sutun)
             ->whereColumn('doctor_profiles.user_id', 'users.id')
             ->limit(1);
-        // Fiyatı olmayanlar en sona: `NULL` önce/sonra davranışı veritabanına
-        // göre değişir, açıkça yazılıyor.
-        $fiyatsizSona = DoctorProfile::selectRaw('CASE WHEN min_price IS NULL THEN 1 ELSE 0 END')
+        // Fiyat sıralamasında birimler karıştırılmaz: önce seçilen birimdekiler
+        // (varsayılan TRY), sonra diğer birimler, en sonda fiyatsızlar.
+        // `NULL` önce/sonra davranışı veritabanına göre değişir; açıkça yazılıyor.
+        $birim = \App\Support\Fiyat::birim($filters['currency'] ?? 'TRY');
+        $fiyatsizSona = DoctorProfile::selectRaw(
+                'CASE WHEN price_currency = ? THEN 0 WHEN min_price IS NULL THEN 2 ELSE 1 END', [$birim])
             ->whereColumn('doctor_profiles.user_id', 'users.id')
             ->limit(1);
 

@@ -70,9 +70,31 @@ class ClinicController extends Controller
             ->when($request->treatment_tag_id, function ($q, $v) {
                 $q->whereHas('treatmentTags', fn ($tq) => $tq->where('treatment_tags.id', $v));
             })
+            // ── Fiyat aralığı (seçilen para biriminde; birimler karıştırılmaz) ──
+            ->when(is_numeric($request->price_min) || is_numeric($request->price_max), function ($q) use ($request) {
+                $q->where('price_currency', \App\Support\Fiyat::birim($request->currency ?? 'TRY'))
+                  ->whereNotNull('min_price');
+                if (is_numeric($request->price_min)) $q->where('min_price', '>=', (float) $request->price_min);
+                if (is_numeric($request->price_max)) $q->where('min_price', '<=', (float) $request->price_max);
+            })
             // brief response: specialties eklendi (frontend join'e gerek kalmaz)
-            ->select('id', 'name', 'codename', 'fullname', 'avatar', 'address', 'specialties', 'is_verified', 'avg_rating', 'review_count')
-            ->paginate($request->per_page ?? 20);
+            ->select('id', 'name', 'codename', 'fullname', 'avatar', 'address', 'specialties', 'is_verified', 'avg_rating', 'review_count', 'min_price', 'price_currency');
+
+        // ── Sıralama ──
+        // Fiyata göre sıralarken birimler karıştırılmaz: önce seçilen
+        // birimdekiler (varsayılan TRY) kendi içinde, sonra diğer birimler,
+        // en sonda fiyatsızlar. Aksi hâlde 700 EUR, 1500 TRY'nin önüne geçer.
+        $birim = \App\Support\Fiyat::birim($request->currency ?? 'TRY');
+        $birimOnce = 'CASE WHEN price_currency = ? THEN 0 WHEN min_price IS NULL THEN 2 ELSE 1 END';
+        match ($request->sort) {
+            'rating'     => $clinics->orderByDesc('avg_rating')->orderByDesc('review_count')->orderBy('name'),
+            'price_asc'  => $clinics->orderByRaw($birimOnce, [$birim])->orderBy('min_price')->orderBy('name'),
+            'price_desc' => $clinics->orderByRaw($birimOnce, [$birim])->orderByDesc('min_price')->orderBy('name'),
+            'name'       => $clinics->orderBy('name'),
+            default      => null, // mevcut davranış: doğal sıra
+        };
+
+        $clinics = $clinics->paginate($request->per_page ?? 20);
 
         return response()->json($clinics);
     }

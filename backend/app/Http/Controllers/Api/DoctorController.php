@@ -24,6 +24,7 @@ class DoctorController extends Controller
         'search_text', 'specialty_id', 'city_id', 'language',
         'min_rating', 'gender', 'online_only', 'clinic_id',
         'verified', 'city', 'search', 'specialty',
+        'price_min', 'price_max', 'currency',
     ];
 
     public function index(Request $request): JsonResponse

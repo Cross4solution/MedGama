@@ -220,6 +220,7 @@ class DatabaseSeeder extends Seeder
                     'phone'     => '+905001234568',
                     'biography' => 'Modern sağlık hizmetleri sunan çok branşlı klinik.',
                     'specialties'=> ['Genel Cerrahi', 'İç Hastalıkları', 'Kardiyoloji'],
+                    'price_ranges' => [['service' => 'Muayene', 'min' => 1500, 'max' => 3000, 'currency' => 'TRY'], ['service' => 'Kardiyoloji Paketi', 'min' => 12000, 'max' => 25000, 'currency' => 'TRY']],
                     'hospital_index' => 0, // Medipol
                 ],
             ],
@@ -236,6 +237,7 @@ class DatabaseSeeder extends Seeder
                     'phone'     => '+902423456789',
                     'biography' => 'İmplant, ortodonti ve estetik diş hekimliğinde uzmanlık. 20 yıllık tecrübesiyle Antalya\'nın en güvenilir diş kliniği.',
                     'specialties'=> ['Diş Hekimliği', 'Ortodonti', 'İmplant', 'Estetik Diş'],
+                    'price_ranges' => [['service' => 'İmplant', 'min' => 700, 'max' => 1200, 'currency' => 'EUR'], ['service' => 'Diş Beyazlatma', 'min' => 250, 'max' => 400, 'currency' => 'EUR']],
                     'hospital_index' => null,
                 ],
             ],
@@ -252,6 +254,7 @@ class DatabaseSeeder extends Seeder
                     'phone'     => '+902242129999',
                     'biography' => 'Excimer lazer, katarakt ve retina tedavisinde öncü göz merkezi. Avrupa standartlarında teknoloji ile net görüş.',
                     'specialties'=> ['Göz Hastalıkları', 'Lazer Göz', 'Katarakt'],
+                    'price_ranges' => [['service' => 'Göz Muayenesi', 'min' => 900, 'max' => 1800, 'currency' => 'TRY'], ['service' => 'Lazer', 'min' => 25000, 'max' => 45000, 'currency' => 'TRY']],
                     'hospital_index' => 2, // Memorial
                 ],
             ],
@@ -268,6 +271,7 @@ class DatabaseSeeder extends Seeder
                     'phone'     => '+903122232323',
                     'biography' => 'Spor yaralanmaları, diz ve omuz cerrahisi, protez uygulamalarında uzmanlaşmış Ankara\'nın önde gelen ortopedi kliniği.',
                     'specialties'=> ['Ortopedi', 'Spor Hekimliği', 'Fizik Tedavi'],
+                    'price_ranges' => [['service' => 'Ortopedi Muayene', 'min' => 2000, 'max' => 3500, 'currency' => 'TRY']],
                     'hospital_index' => 4, // Bayındır
                 ],
             ],
@@ -284,6 +288,7 @@ class DatabaseSeeder extends Seeder
                     'phone'     => '+902325501010',
                     'biography' => 'Kardiyak görüntüleme, anjiyografi ve aritmoloji alanlarında öncü. İzmir\'in en kapsamlı kardiyoloji merkezi.',
                     'specialties'=> ['Kardiyoloji', 'Kalp Damar Cerrahisi', 'Girişimsel Kardiyoloji'],
+                    'price_ranges' => [['service' => 'Check-up', 'min' => 400, 'max' => 900, 'currency' => 'USD']],
                     'hospital_index' => null,
                 ],
             ],

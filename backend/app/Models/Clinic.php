@@ -24,7 +24,7 @@ class Clinic extends Model
         'address', 'phone', 'biography', 'map_coordinates', 'latitude', 'longitude', 'website', 'is_verified',
         'is_crm_active', 'crm_expires_at', 'specialties', 'certifications',
         'onboarding_completed', 'onboarding_step',
-        'verification_status', 'price_ranges', 'packages', 'services', 'gallery',
+        'verification_status', 'price_ranges', 'min_price', 'price_currency', 'packages', 'services', 'gallery',
         // Randevu saatlerinin ait olduğu IANA saat dilimi adı (ör. Europe/Istanbul).
         'timezone',
     ];
@@ -42,6 +42,7 @@ class Clinic extends Model
             'price_ranges'   => 'array',
             'packages'       => 'array',
             'services'       => 'array',
+            'min_price'      => 'float',
             'gallery'        => 'array',
             'onboarding_completed' => 'boolean',
             'verification_status' => 'string',
@@ -160,5 +161,18 @@ class Clinic extends Model
         return $this->belongsToMany(TreatmentTag::class, 'clinic_treatment_tag')
             ->where('treatment_tags.is_active', true)
             ->withTimestamps();
+    }
+
+    protected static function booted(): void
+    {
+        // Fiyat süzgeci/sıralaması için `price_ranges` JSON'undan en düşük
+        // fiyat ve birimi; her kayıtta yeniden hesaplanır.
+        static::saving(function (self $klinik) {
+            if ($klinik->isDirty('price_ranges') || $klinik->min_price === null) {
+                $f = \App\Support\Fiyat::asgari($klinik->price_ranges);
+                $klinik->min_price = $f['min'];
+                $klinik->price_currency = $f['currency'];
+            }
+        });
     }
 }

@@ -147,6 +147,9 @@ export default function SearchResults() {
   const [online, setOnline] = useState(sp.get('online_only') === '1');
   const [verified, setVerified] = useState(sp.get('verified') === '1');
   const [sort, setSort] = useState(sp.get('sort') || '');
+  const [currency, setCurrency] = useState(sp.get('currency') || 'TRY');
+  const [priceMin, setPriceMin] = useState(sp.get('price_min') || '');
+  const [priceMax, setPriceMax] = useState(sp.get('price_max') || '');
   const [mobileFilter, setMobileFilter] = useState(false);
 
   // suggestions ("did you mean?")
@@ -178,6 +181,9 @@ export default function SearchResults() {
         online_only: online ? '1' : undefined,
         verified: verified ? '1' : undefined,
         sort: sort || undefined,
+        currency: (priceMin || priceMax) ? currency : undefined,
+        price_min: priceMin || undefined,
+        price_max: priceMax || undefined,
         page,
         per_page: 20,
       });
@@ -205,17 +211,17 @@ export default function SearchResults() {
     } finally {
       setLoading(false);
     }
-  }, [searchText, specId, cityId, lang, minRating, online, verified, sort, page]);
+  }, [searchText, specId, cityId, lang, minRating, online, verified, sort, currency, priceMin, priceMax, page]);
 
   useEffect(() => { fetch(); }, [fetch]);
 
   // sync URL
   const syncUrl = useCallback((overrides = {}) => {
     const p = new URLSearchParams();
-    const vals = { q: searchText, specialty_id: specId, city_id: cityId, language: lang, min_rating: minRating, online_only: online ? '1' : '', verified: verified ? '1' : '', sort, ...overrides };
+    const vals = { q: searchText, specialty_id: specId, city_id: cityId, language: lang, min_rating: minRating, online_only: online ? '1' : '', verified: verified ? '1' : '', sort, currency: (priceMin || priceMax) ? currency : '', price_min: priceMin, price_max: priceMax, ...overrides };
     Object.entries(vals).forEach(([k, v]) => { if (v) p.set(k, v); });
     setSp(p);
-  }, [searchText, specId, cityId, lang, minRating, online, verified, sort, setSp]);
+  }, [searchText, specId, cityId, lang, minRating, online, verified, sort, currency, priceMin, priceMax, setSp]);
 
   // hero submit
   const heroSubmit = (e) => {
@@ -292,6 +298,17 @@ export default function SearchResults() {
           <option value="price_asc">{t('search.sortPriceAsc')}</option>
           <option value="price_desc">{t('search.sortPriceDesc')}</option>
         </select>
+      </div>
+      {/* Fiyat aralığı — seçilen para biriminde; birimler karıştırılmaz */}
+      <div>
+        <label htmlFor="suzgec-para-birimi" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('search.priceFilter')}</label>
+        <div className="grid grid-cols-[auto_1fr_1fr] gap-2">
+          <select id="suzgec-para-birimi" aria-label={t('search.currency')} value={currency} onChange={e => setCurrency(e.target.value)} className="min-w-0 border border-gray-200 rounded-lg px-2 py-2 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400">
+            {['TRY', 'EUR', 'USD', 'GBP'].map(b => <option key={b} value={b}>{b}</option>)}
+          </select>
+          <input id="suzgec-fiyat-min" type="number" min="0" inputMode="numeric" value={priceMin} onChange={e => setPriceMin(e.target.value)} placeholder={t('search.priceMin')} aria-label={t('search.priceMin')} className="min-w-0 w-full border border-gray-200 rounded-lg px-2 py-2 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400" />
+          <input id="suzgec-fiyat-max" type="number" min="0" inputMode="numeric" value={priceMax} onChange={e => setPriceMax(e.target.value)} placeholder={t('search.priceMax')} aria-label={t('search.priceMax')} className="min-w-0 w-full border border-gray-200 rounded-lg px-2 py-2 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400" />
+        </div>
       </div>
       {/* Toggles */}
       <div className="space-y-3">

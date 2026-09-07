@@ -109,6 +109,10 @@ export default function BrowseClinics() {
   const [clinics, setClinics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [sort, setSort] = useState('');
+  const [currency, setCurrency] = useState('TRY');
+  const [priceMin, setPriceMin] = useState('');
+  const [priceMax, setPriceMax] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [baglantiHatasi, setBaglantiHatasi] = useState(false);
@@ -121,7 +125,13 @@ export default function BrowseClinics() {
       // yazılırsa yazılsın tam liste dönüyordu. Ölçüldü: "zzzqqqxyz" araması
       // on üç kliniğin hepsini gösteriyordu, üstelik boş sonuç ekranı
       // "farklı bir arama deneyin" diyordu — hiç süzmeyen bir süzgeç için.
-      const res = await clinicAPI.list({ per_page: 20, page: pg, name: search || undefined });
+      const res = await clinicAPI.list({
+        per_page: 20, page: pg, name: search || undefined,
+        sort: sort || undefined,
+        currency: (priceMin || priceMax) ? currency : undefined,
+        price_min: priceMin || undefined,
+        price_max: priceMax || undefined,
+      });
       const list = res?.data || [];
       if (pg === 1) {
         setClinics(list);
@@ -137,7 +147,7 @@ export default function BrowseClinics() {
       if (pg === 1) { setClinics([]); setBaglantiHatasi(true); }
     }
     setLoading(false);
-  }, [search]);
+  }, [search, sort, currency, priceMin, priceMax]);
 
   useEffect(() => { setPage(1); fetchClinics(1); }, [fetchClinics]);
 
@@ -175,6 +185,29 @@ export default function BrowseClinics() {
             aria-label={t('browse.searchClinics', 'Search clinics by name, city, or specialty...')}
             className="w-full ps-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
           />
+        </div>
+
+        {/* Sıralama + fiyat aralığı (seçilen para biriminde) */}
+        <div className="mb-6 flex flex-wrap items-end gap-3">
+          <div>
+            <label htmlFor="klinik-siralama" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{t('search.sortBy')}</label>
+            <select id="klinik-siralama" value={sort} onChange={(e) => setSort(e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400">
+              <option value="">{t('search.sortName')}</option>
+              <option value="rating">{t('search.sortRating')}</option>
+              <option value="price_asc">{t('search.sortPriceAsc')}</option>
+              <option value="price_desc">{t('search.sortPriceDesc')}</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="klinik-para-birimi" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{t('search.priceFilter')}</label>
+            <div className="flex gap-2">
+              <select id="klinik-para-birimi" aria-label={t('search.currency')} value={currency} onChange={(e) => setCurrency(e.target.value)} className="border border-gray-200 rounded-lg px-2 py-2 text-sm bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400">
+                {['TRY', 'EUR', 'USD', 'GBP'].map((b) => <option key={b} value={b}>{b}</option>)}
+              </select>
+              <input id="klinik-fiyat-min" type="number" min="0" inputMode="numeric" value={priceMin} onChange={(e) => setPriceMin(e.target.value)} placeholder={t('search.priceMin')} aria-label={t('search.priceMin')} className="w-24 border border-gray-200 rounded-lg px-2 py-2 text-sm bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400" />
+              <input id="klinik-fiyat-max" type="number" min="0" inputMode="numeric" value={priceMax} onChange={(e) => setPriceMax(e.target.value)} placeholder={t('search.priceMax')} aria-label={t('search.priceMax')} className="w-24 border border-gray-200 rounded-lg px-2 py-2 text-sm bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400" />
+            </div>
+          </div>
         </div>
 
         {/* Grid */}

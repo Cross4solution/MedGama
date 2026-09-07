@@ -15,7 +15,7 @@ Sözleşme madde 5.2 gereği hakların devri bu tutanağın imzasıyla başlar.
 
 | # | Sözleşme kalemi | Durum | Nerede / nasıl |
 |--|------------|---|--------------|
-| 1 | Klinik / hasta / doktor profil yönetimi; foto-video galeri, fiyatlandırma, değerlendirme, sıralama | ✅ | `/clinic/<ad>` (Galeri, Fiyatlar, Yorumlar sekmeleri), `/doctor/<ad>`, `/search` sıralama: puan, deneyim, fiyat |
+| 1 | Klinik / hasta / doktor profil yönetimi; foto-video galeri, fiyatlandırma, değerlendirme, sıralama | ✅ | `/clinic/<ad>` (Galeri, Fiyatlar, Yorumlar sekmeleri), `/doctor/<ad>`, `/search` ve `/browse/clinics`: puan / deneyim / fiyat sıralaması, para birimine göre fiyat aralığı süzgeci |
 | 2 | Kullanıcı tipleri: hastane/klinik grubu, klinik, doktor, hasta; panelleri ve hesap fonksiyonları | ✅ | 4 rol + yönetici; her rolün paneli ve menüsü (Kullanıcı Kılavuzu §2–4) |
 | 3 | Medikal sosyal ağ: feed, klinik hesapları, klinik doktor sayfaları, takip, filtreleme/arama, beğeni, ülke ve kategori seçimi | ✅ | Medstream `/medstream`; "Doktora Sor" sözleşmede *opsiyonel* — Vasco AI ve mesajlaşma bu ihtiyacı karşılar |
 | 4 | Gönderi tercümesi (3. parti API) | ✅ | Her gönderide **Çevir**; çeviri artık kendi sunucumuzdaki LibreTranslate ile (veri dışarı çıkmaz) |

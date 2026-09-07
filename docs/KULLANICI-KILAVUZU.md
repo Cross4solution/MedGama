@@ -30,10 +30,13 @@ değişir (`/tr/…`, `/en/…`).
 ### 1.3 Arama
 - **Ana sayfa araması:** ülke → şehir → branş → şikâyet/işlem adımlarıyla.
 - **Doktor arama:** `/search`. Sol panelde branş, şehir, dil, en az puan,
-  yalnız online, yalnız doğrulanmış süzgeçleri ve **Sırala**: isim, puan,
-  deneyim, fiyat (düşükten yükseğe / yüksekten düşüğe).
-- **Klinik arama:** `/browse/clinics`; **tedaviler:** `/browse/treatments` ve
-  `/tedaviler/<branş>/<şehir>` sayfaları.
+  yalnız online, yalnız doğrulanmış süzgeçleri; **Sırala**: isim, puan,
+  deneyim, fiyat (düşükten yükseğe / yüksekten düşüğe); **Fiyat**: para
+  birimi seçip en az / en çok yazın — yalnız o birimde fiyat giren doktorlar
+  karşılaştırılır (kur çevirisi yapılmaz).
+- **Klinik arama:** `/browse/clinics` — ad/şehir/branş araması, sıralama
+  (isim, puan, fiyat) ve aynı fiyat aralığı süzgeci; **tedaviler:**
+  `/browse/treatments` ve `/tedaviler/<branş>/<şehir>` sayfaları.
 - **Branşlar:** `/doctors-departments`.
 
 ### 1.4 Vasco AI (şikâyet → uzman)
@@ -163,7 +166,8 @@ zaman açık; klinikte CRM paketine bağlı.
 
 ### 4.1 Klinik profili
 `/clinic-edit`: ad, açıklama, adres/harita, fotoğraf/video galerisi,
-**hizmetler ve fiyat listesi** (işlem, fiyat aralığı), önce/sonra, SSS,
+**hizmetler ve fiyat listesi** (işlem, en az / en çok, para birimi — klinik
+listesindeki fiyat sıralaması ve süzgeci buradan beslenir), önce/sonra, SSS,
 akreditasyonlar, çalışma saatleri. Profil `/clinic/<ad>` adresinde
 sekmelerle görünür: Genel Bakış, Doktorlar, Hizmetler, Fiyatlar, Galeri,
 Yorumlar, Konum.

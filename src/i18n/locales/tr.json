@@ -2223,7 +2223,11 @@
     "connectionErrorTitle": "Sonuçlar yüklenemedi",
     "connectionErrorHint": "Sunucuya ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin — arama sonucu boş olduğu için değil.",
     "sortPriceAsc": "Fiyat: düşükten yükseğe",
-    "sortPriceDesc": "Fiyat: yüksekten düşüğe"
+    "sortPriceDesc": "Fiyat: yüksekten düşüğe",
+    "priceFilter": "Fiyat",
+    "priceMin": "En az",
+    "priceMax": "En çok",
+    "currency": "Para birimi"
   },
   "doctorProfile": {
     "about": "Hakkında",
