@@ -124,7 +124,33 @@ siteye eklenecektir.
 - Site içi kartla ödeme ve kapora, sanal POS bağlanana kadar kapalıdır
   (Bölüm 3.1).
 
-## 5. Teslim
+## 5. Canlı sistem, hesaplar ve veri
+
+Canlı site aşağıdaki hizmetler üzerinde çalışır. Hesaplar bugün Geliştirici
+adınadır.
+
+| Hizmet | Ne için | Hesap |
+|--------------------------|------------------------------------|-------------|
+| Vercel | Web arayüzü | Geliştirici |
+| Render | Uygulama sunucusu (API) | Geliştirici |
+| TiDB Cloud | Veritabanı | Geliştirici |
+| OVH sunucu | Görüntülü görüşme, alt yazı, çeviri | Geliştirici |
+| GitHub | Kaynak kod deposu | Geliştirici |
+| Sentry | Hata izleme | Geliştirici |
+
+- Canlı sistem, Müşteri kendi hesaplarını açana kadar bu hesaplarda
+  çalışmaya devam eder. Bu süre boyunca Geliştirici, sistemi çalıştırmak
+  için gereken kod ve yapılandırma kopyasını yalnız bu amaçla tutar
+  (madde 5.2).
+- Müşteri yazılı talep ettiğinde kod, veritabanı yedeği, hasta dosyaları ve
+  alan / sunucu ayarları Müşteri'nin hesaplarına taşınır. Taşıma tamamlanınca
+  Geliştirici'deki kopyalar silinir.
+- Canlı veritabanının yedeği ve hasta dosyaları, talep hâlinde şifreli
+  olarak Müşteri'ye verilir.
+- Bu hizmetlerin ücretleri ve sürekliliği, sözleşme madde 4.1 ve 4.4
+  uyarınca teslimden sonra Müşteri sorumluluğundadır.
+
+## 6. Teslim
 
 Bu tutanak ve ekleri 7 Eylül 2026 tarihinde Müşteri'ye elektronik
 ortamda iletilmiştir.
