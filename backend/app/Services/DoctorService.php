@@ -207,11 +207,12 @@ class DoctorService
         // Fiyat sıralamasında birimler karıştırılmaz: önce seçilen birimdekiler
         // (varsayılan TRY), sonra diğer birimler, en sonda fiyatsızlar.
         // `NULL` önce/sonra davranışı veritabanına göre değişir; açıkça yazılıyor.
+        // Profili HİÇ olmayan doktorda alt sorgu NULL döner ve MySQL NULL'u
+        // artan sırada öne koyar — canlıda iki profilsiz doktor listenin en
+        // başına çıktı. COALESCE ile "fiyatsız" sınıfına (2) düşürülüyor.
         $birim = \App\Support\Fiyat::birim($filters['currency'] ?? 'TRY');
-        $fiyatsizSona = DoctorProfile::selectRaw(
-                'CASE WHEN price_currency = ? THEN 0 WHEN min_price IS NULL THEN 2 ELSE 1 END', [$birim])
-            ->whereColumn('doctor_profiles.user_id', 'users.id')
-            ->limit(1);
+        $fiyatsizSona = 'COALESCE((SELECT CASE WHEN price_currency = ? THEN 0 WHEN min_price IS NULL THEN 2 ELSE 1 END'
+            . ' FROM doctor_profiles WHERE doctor_profiles.user_id = users.id LIMIT 1), 2)';
 
         $sort = $filters['sort'] ?? 'name';
         match ($sort) {
@@ -223,10 +224,10 @@ class DoctorService
                                     DoctorProfile::selectRaw(Sorgu::sayiIfadesi('experience_years'))
                                         ->whereColumn('doctor_profiles.user_id', 'users.id')->limit(1))
                                   ->orderBy('fullname'),
-            'price_asc'  => $query->orderBy($fiyatsizSona)
+            'price_asc'  => $query->orderByRaw($fiyatsizSona, [$birim])
                                   ->orderBy($profilSutunu('min_price'))
                                   ->orderBy('fullname'),
-            'price_desc' => $query->orderBy($fiyatsizSona)
+            'price_desc' => $query->orderByRaw($fiyatsizSona, [$birim])
                                   ->orderByDesc($profilSutunu('min_price'))
                                   ->orderBy('fullname'),
             default      => $query->orderByDesc('is_verified')->orderBy('fullname'),

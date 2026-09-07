@@ -56,6 +56,10 @@ class DoktorSiralamaTest extends TestCase
         $this->doktor('Mehmet Deneyimli', ['avg_rating' => 3.0, 'review_count' => 2, 'experience_years' => 20,
             'prices' => [['label' => 'Muayene', 'min' => 300, 'currency' => 'TRY'], ['label' => 'Kontrol', 'min' => 150]]]);
         $this->doktor('Ayşe Fiyatsız', ['avg_rating' => null, 'experience_years' => null, 'prices' => null]);
+        // Profili HİÇ olmayan doktor: alt sorgu NULL döner. Canlıda iki böyle
+        // doktor fiyat sıralamasının EN BAŞINA çıktı; yerel testte bu durum
+        // yoktu. Her sıralamada en sonda olmalı.
+        User::factory()->create(['role_id' => 'doctor', 'fullname' => 'Bekir Profilsiz', 'is_active' => true, 'is_verified' => true]);
     }
 
     public function test_fiyat_sutunu_var_ve_json_ile_birlikte_guncelleniyor(): void
@@ -75,29 +79,29 @@ class DoktorSiralamaTest extends TestCase
 
     public function test_puana_gore(): void
     {
-        $this->assertSame(['Zeynep Yüksek Puan', 'Mehmet Deneyimli', 'Ayşe Fiyatsız'], $this->siraliAdlar('rating'));
+        $this->assertSame(['Zeynep Yüksek Puan', 'Mehmet Deneyimli', 'Ayşe Fiyatsız', 'Bekir Profilsiz'], $this->siraliAdlar('rating'));
     }
 
     public function test_deneyime_gore(): void
     {
-        $this->assertSame(['Mehmet Deneyimli', 'Zeynep Yüksek Puan', 'Ayşe Fiyatsız'], $this->siraliAdlar('experience'));
+        $this->assertSame(['Mehmet Deneyimli', 'Zeynep Yüksek Puan', 'Ayşe Fiyatsız', 'Bekir Profilsiz'], $this->siraliAdlar('experience'));
     }
 
     public function test_fiyata_gore_artan_fiyatsizlar_sonda(): void
     {
-        $this->assertSame(['Mehmet Deneyimli', 'Zeynep Yüksek Puan', 'Ayşe Fiyatsız'], $this->siraliAdlar('price_asc'));
+        $this->assertSame(['Mehmet Deneyimli', 'Zeynep Yüksek Puan', 'Ayşe Fiyatsız', 'Bekir Profilsiz'], $this->siraliAdlar('price_asc'));
     }
 
     public function test_fiyata_gore_azalan_fiyatsizlar_yine_sonda(): void
     {
         // Azalan sıralamada NULL'un başa gelmesi klasik hata; fiyatı olmayan
         // doktor "en pahalı" gibi listelenirdi.
-        $this->assertSame(['Zeynep Yüksek Puan', 'Mehmet Deneyimli', 'Ayşe Fiyatsız'], $this->siraliAdlar('price_desc'));
+        $this->assertSame(['Zeynep Yüksek Puan', 'Mehmet Deneyimli', 'Ayşe Fiyatsız', 'Bekir Profilsiz'], $this->siraliAdlar('price_desc'));
     }
 
     public function test_varsayilan_ada_gore(): void
     {
-        $this->assertSame(['Ayşe Fiyatsız', 'Mehmet Deneyimli', 'Zeynep Yüksek Puan'], $this->siraliAdlar('name'));
+        $this->assertSame(['Ayşe Fiyatsız', 'Bekir Profilsiz', 'Mehmet Deneyimli', 'Zeynep Yüksek Puan'], $this->siraliAdlar('name'));
     }
 
     public function test_bilinmeyen_siralama_varsayilana_duser(): void
