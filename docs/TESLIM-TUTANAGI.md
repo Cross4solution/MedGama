@@ -131,15 +131,11 @@ daha önce de istenmiştir; tarih ve belge her maddede yazılıdır. Tek sayfal�
   kararıyla birlikte istendi.
 - **Sözleşme dayanağı:** 4.2 yasal uyumluluk Müşteri'de.
 
-### Cevap bekleyen sorular (teslimi engellemez)
+### Cevap bekleyen soru (teslimi engellemez)
 
-Aşağıdakiler için de Müşteri'nin cevabı bekleniyor; gelmediği için bugün
-makul varsayımlarla çalışıyor:
-
-- Semptom / işlem eş anlamlı listesi (halk diliyle arama) için altı adımlı
-  plan — 22 Temmuz 2026'da iletildi, yazılı onay bekleniyor.
-- Klinik randevusunda görüntülü görüşme seçeneği olsun mu; randevu saat
-  dilimi modeli — 11 Ağustos 2026'da soruldu.
+Semptom / işlem eş anlamlı listesi (halk diliyle arama) için altı adımlı
+plan 22 Temmuz 2026'da iletildi; giriş ekranı hazır, sözlük ve kimin
+dolduracağı kararı Müşteri'den bekleniyor.
 
 ### Sonuç
 
