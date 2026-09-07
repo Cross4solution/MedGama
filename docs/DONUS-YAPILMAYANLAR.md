@@ -15,4 +15,4 @@ Daha önce sorulan, cevap alınmayan konular.
 | 7 | **Semptom eş anlamlı listesi** için karar: plan uygun mu, listeyi kim girecek? | Halk diliyle arama ("burun estetiği", "nose job") |
 
 Bu konularla ilgili daha önce gönderdiğimiz belgelerin hepsi bu paketteki
-**"Daha Önce Gönderilen Belgeler"** klasöründe.
+**"2"** klasöründe.

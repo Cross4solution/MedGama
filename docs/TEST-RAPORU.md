@@ -41,27 +41,27 @@ sağlanınca kendiliğinden koşarlar.
 Her satırda modülün hangi açılardan sınandığı yazılı. Test dosyalarının
 adları Ek'te.
 
-| # | Sözleşme modülü | Ne sınandı | Sonuç |
-|---|----------------|-----------|--|
-| 1 | Profiller, galeri, fiyat, değerlendirme, sıralama | Profil sayfaları herkese doğru açılıyor; yalnız sahibi düzenleyebiliyor; puan / deneyim / fiyat sıralaması doğru sırada; fiyat süzgeci yalnız seçilen para biriminde çalışıyor; fiyatı olmayanlar listenin sonunda | Tamam |
-| 2 | Kullanıcı tipleri ve panelleri | Her rol yalnız kendi ekranlarına girebiliyor (19 yetki senaryosu); hastane şubelerini görüyor, klinik yalnız kendini; yetki yükseltme denemeleri reddediliyor | Tamam |
-| 3 | Medikal sosyal ağ | Gönderi yayınlama, düzenleme, silme yalnız sahibine; beğeni, yorum, kaydet, takip; ülke ve branş süzgeci; kullanıcı adı güvenliği; indirme güvenliği | Tamam |
-| 4 | Gönderi tercümesi | Çevir düğmesi, hedef dil kullanıcının seçtiği dil, çeviri bütçesi | Tamam |
-| 5 | Güvenli veri (HIPAA / GDPR / KVKK), belge transferi | Hasta belgesi yalnız hastanın açtığı doktora, yalnız randevu süresince; ekler şifreli ve süreli bağlantıyla; erişim kaydı tutuluyor; KVKK hakları (indirme, silme); güvenlik başlıkları; hata izlemeye kişisel veri sızmıyor | Tamam |
-| 6 | Çok dilli | 22 dilde eksik çeviri yok; İngilizce sızıntısı yok; sağdan sola dillerde hizalama; arama motoru için dil etiketleri tutarlı | Tamam |
-| 7 | Yapay zekâ (Vasco) | Şikâyet > branş yönlendirmesi (9 senaryo); dış servis yanıt vermezse zaman aşımı | Tamam |
-| 8 | Hesap fonksiyonları | Giriş, çıkış, tüm cihazlardan çıkış, şifre değişince eski oturumlar düşüyor, şifre sıfırlama, e-posta doğrulama, deneme sınırı | Tamam |
-| 9 | CRM | CRM paketi olmayan giremiyor (16 senaryo); lead hunisi, hasta kartı, etiket, satışçı; raporlar ve dışa aktarma; gelir grafiği | Tamam |
-| 10 | Randevu ve takvim | Randevu alma, kabul, red, iptal; aynı saate iki randevu alınamıyor (eşzamanlı deneme); müsaitlik; takvim aboneliği (ICS); saat dilimi; mobilde takvim seçilebilir | Tamam |
-| 11 | Değerlendirme | Yalnız tamamlanmış randevusu olan hasta yorum yazabiliyor (17 senaryo); moderasyon; şikâyet | Tamam |
-| 12 | SEO | Site haritası, yapısal veri, iç bağlantılar, dil etiketleri | Tamam |
-| 13 | Telehealth: görüşme + alt yazı + tercüme | Görüşmeye yalnız randevunun iki tarafı girebiliyor; alt yazı oturumu yetkisiz kişiye kapalı, süresi dolan anahtar reddediliyor (7 senaryo); yayın kesilince davranış; iki tarayıcılı gerçek görüşme (Bölüm 3) | Tamam |
-| 14 | Mesajlaşma | Sohbete yalnız tarafları erişebiliyor (11 senaryo); canlı bildirim gerçekten ulaşıyor; okunmamış sayacı | Tamam |
-| 15 | Fatura / finans | Fatura hesabı (KDV, kısmi ödeme), hastanın yalnız kendi faturasını görmesi, ödeme akışı (sahte sağlayıcıyla, 14 senaryo) | Tamam |
-| 16 | Yönetim paneli | Yönetici olmayan giremiyor; doğrulama onay / red; katalog düzenleme; salt-okunur hesap hiçbir şey değiştiremiyor | Tamam |
-| 17 | Mobil uyumlu tasarım (madde 1.3) | 320 / 375 / 768 px'te yatay kayma yok; pencereler ekrana sığıyor; açılır listeler taşmıyor; dokunma hedefleri yeterli büyüklükte | Tamam |
-| 18 | REST API ve dokümantasyon | Her API ucu OpenAPI belgesinde; belge ile kod eşleşiyor; sayfa boyutu sınırı; gereksiz sorgu (N+1) yok | Tamam |
-| - | Yapısal korumalar | Göçler geri alınabilir; veritabanı yedeği alınıp geri yüklenebiliyor; her ekran hatasız açılıyor; erişilebilirlik; klavye odak tuzağı yok | Tamam |
+| # | Sözleşme modülü | Ne sınandı | Durum |
+|----|--------------------|----------------------------------------|---------|
+| 1 | Profiller, galeri, fiyat, değerlendirme, sıralama | Profil sayfaları herkese doğru açılıyor; yalnız sahibi düzenleyebiliyor; puan / deneyim / fiyat sıralaması doğru sırada; fiyat süzgeci yalnız seçilen para biriminde çalışıyor; fiyatı olmayanlar listenin sonunda | ✓ |
+| 2 | Kullanıcı tipleri ve panelleri | Her rol yalnız kendi ekranlarına girebiliyor (19 yetki senaryosu); hastane şubelerini görüyor, klinik yalnız kendini; yetki yükseltme denemeleri reddediliyor | ✓ |
+| 3 | Medikal sosyal ağ | Gönderi yayınlama, düzenleme, silme yalnız sahibine; beğeni, yorum, kaydet, takip; ülke ve branş süzgeci; kullanıcı adı güvenliği; indirme güvenliği | ✓ |
+| 4 | Gönderi tercümesi | Çevir düğmesi, hedef dil kullanıcının seçtiği dil, çeviri bütçesi | ✓ |
+| 5 | Güvenli veri (HIPAA / GDPR / KVKK), belge transferi | Hasta belgesi yalnız hastanın açtığı doktora, yalnız randevu süresince; ekler şifreli ve süreli bağlantıyla; erişim kaydı tutuluyor; KVKK hakları (indirme, silme); güvenlik başlıkları; hata izlemeye kişisel veri sızmıyor | ✓ |
+| 6 | Çok dilli | 22 dilde eksik çeviri yok; İngilizce sızıntısı yok; sağdan sola dillerde hizalama; arama motoru için dil etiketleri tutarlı | ✓ |
+| 7 | Yapay zekâ (Vasco) | Şikâyet > branş yönlendirmesi (9 senaryo); dış servis yanıt vermezse zaman aşımı | ✓ |
+| 8 | Hesap fonksiyonları | Giriş, çıkış, tüm cihazlardan çıkış, şifre değişince eski oturumlar düşüyor, şifre sıfırlama, e-posta doğrulama, deneme sınırı | ✓ |
+| 9 | CRM | CRM paketi olmayan giremiyor (16 senaryo); lead hunisi, hasta kartı, etiket, satışçı; raporlar ve dışa aktarma; gelir grafiği | ✓ |
+| 10 | Randevu ve takvim | Randevu alma, kabul, red, iptal; aynı saate iki randevu alınamıyor (eşzamanlı deneme); müsaitlik; takvim aboneliği (ICS); saat dilimi; mobilde takvim seçilebilir | ✓ |
+| 11 | Değerlendirme | Yalnız tamamlanmış randevusu olan hasta yorum yazabiliyor (17 senaryo); moderasyon; şikâyet | ✓ |
+| 12 | SEO | Site haritası, yapısal veri, iç bağlantılar, dil etiketleri | ✓ |
+| 13 | Telehealth: görüşme + alt yazı + tercüme | Görüşmeye yalnız randevunun iki tarafı girebiliyor; alt yazı oturumu yetkisiz kişiye kapalı, süresi dolan anahtar reddediliyor (7 senaryo); yayın kesilince davranış; iki tarayıcılı gerçek görüşme (Bölüm 3) | ✓ |
+| 14 | Mesajlaşma | Sohbete yalnız tarafları erişebiliyor (11 senaryo); canlı bildirim gerçekten ulaşıyor; okunmamış sayacı | ✓ |
+| 15 | Fatura / finans | Fatura hesabı (KDV, kısmi ödeme), hastanın yalnız kendi faturasını görmesi, ödeme akışı (sahte sağlayıcıyla, 14 senaryo) | ✓ |
+| 16 | Yönetim paneli | Yönetici olmayan giremiyor; doğrulama onay / red; katalog düzenleme; salt-okunur hesap hiçbir şey değiştiremiyor | ✓ |
+| 17 | Mobil uyumlu tasarım (madde 1.3) | 320 / 375 / 768 px'te yatay kayma yok; pencereler ekrana sığıyor; açılır listeler taşmıyor; dokunma hedefleri yeterli büyüklükte | ✓ |
+| 18 | REST API ve dokümantasyon | Her API ucu OpenAPI belgesinde; belge ile kod eşleşiyor; sayfa boyutu sınırı; gereksiz sorgu (N+1) yok | ✓ |
+| - | Yapısal korumalar | Göçler geri alınabilir; veritabanı yedeği alınıp geri yüklenebiliyor; her ekran hatasız açılıyor; erişilebilirlik; klavye odak tuzağı yok | ✓ |
 
 ## 3. Elle ve canlı sitede doğrulananlar
 
@@ -92,7 +92,7 @@ Teknik okuyucu için. Sunucu testleri `backend/tests/Feature/`, arayüz
 birim testleri `src/**/__tests__/` ve `tests/unit/` altında.
 
 | # | Sunucu testleri | Arayüz birim testleri |
-|---|-----------------|-------------------|
+|----|--------------------------------------|------------------------|
 | 1 | HerkeseAcikProfil, DoktorProfiliKapisi, DoktorSuzgecleri, DoktorSiralama, FiyatAraligiSuzgeci, AcikDoktorListesi, DoktorListesiOnbellek | klinikSayfasiVerisi, paraBirimiSecimi |
 | 2 | Permissions, KayitRolKurallari, RolListesiHizalamasi, RolSabitleriKaymasi, HastaneKapsami, KlinikYoneticisiKapisi, YetkiYukseltme | - |
 | 3 | MedStreamYayinVeSahiplik, MedStreamEtkilesim, MedStreamAkisSayilari, SosyalFavori, SosyalGecisler, UlkeSuzgeci, AkistaHandle, HandleGuvenligi, KaydedilenGonderiler, MedStreamIndirmeGuvenligi | - |
