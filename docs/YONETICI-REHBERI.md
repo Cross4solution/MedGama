@@ -1,14 +1,14 @@
-# Medagama — Yönetici Rehberi
+# Medagama - Yönetici Rehberi
 
-Sürüm 1.1 · Eylül 2026 · Sözleşme madde 2.2 kapsamında teslim edilen belge
+Sürüm 1.1, Eylül 2026, Sözleşme madde 2.2 kapsamında teslim edilen belge
 
 ## Kısaca
 
 İki okuyucu için iki bölüm:
 
-- **A. Yönetim paneli** — platformu günlük işleten kişi için: doktor
+- **A. Yönetim paneli** - platformu günlük işleten kişi için: doktor
   doğrulama, kullanıcılar, yorum denetimi, katalog. Teknik bilgi gerekmez.
-- **B. İşletme** — sunucuları ve yayını yöneten teknik kişi için: nerede ne
+- **B. İşletme** - sunucuları ve yayını yöneten teknik kişi için: nerede ne
   çalışıyor, nasıl yayınlanır, yedek, sağlık kontrolü.
 
 ---
@@ -32,7 +32,7 @@ Sürüm 1.1 · Eylül 2026 · Sözleşme madde 2.2 kapsamında teslim edilen bel
 | | **Finans** | Fatura ve gelir özeti, dönem raporu, dışa aktar |
 | Moderasyon | **Yorum Moderasyonu** | Bekleyen / onaylı / reddedilen / gizli; doktor ve klinik yorumları ayrı |
 | | **İçerik Moderasyonu** | Şikâyet edilen gönderi ve yorumlar: gizle, sil, şikâyeti kapat |
-| Sistem | **Katalog Yönetimi** | Branşlar, tedaviler, semptom eş anlamlıları (halk dili → branş), şehir / ülke |
+| Sistem | **Katalog Yönetimi** | Branşlar, tedaviler, semptom eş anlamlıları (halk dili > branş), şehir / ülke |
 | | **Denetim Kayıtları** | Kim, ne zaman, neyi değiştirdi; tarih ve kullanıcıya göre süz |
 
 ### A.3 Roller
@@ -60,17 +60,17 @@ Sürüm 1.1 · Eylül 2026 · Sözleşme madde 2.2 kapsamında teslim edilen bel
 
 | Bileşen | Yer | Not |
 |--------|--------|--------|
-| Ön yüz (Next.js) | Vercel — `med-gama.vercel.app` | `main` dalına push → otomatik yayın |
-| Arka uç (Laravel 11) | Render — `medagama-backend.onrender.com` | Docker; ortam değişkenleri Render panelinden |
+| Ön yüz (Next.js) | Vercel - `med-gama.vercel.app` | `main` dalına push > otomatik yayın |
+| Arka uç (Laravel 11) | Render - `medagama-backend.onrender.com` | Docker; ortam değişkenleri Render panelinden |
 | Veritabanı | TiDB Cloud (MySQL uyumlu) | Yerelde PostgreSQL / MySQL, testte SQLite |
 | Görüşme sinyal + TURN | OVH sunucu `57.128.27.244` | soketi (Docker) + coturn, TLS |
 | Alt yazı motoru + çeviri | OVH sunucu, Docker | `deploy/stt/README.md` |
-| Hasta dosyaları | Arka uç diski, şifreli | Buluta taşınması depolama hesabına bağlı (tutanak §3.5) |
+| Hasta dosyaları | Arka uç diski, şifreli | Buluta taşınması depolama hesabına bağlı (tutanak Bölüm 3.5) |
 
 ### B.2 Yayın (deploy)
-- Ön yüz: `git push origin <dal>:main` → Vercel derler (2–4 dk). Push
+- Ön yüz: `git push origin <dal>:main` > Vercel derler (2-4 dk). Push
   öncesi yerelde `npm run build` yeşil olmalı.
-- Arka uç: aynı push Render'ı tetikler (derleme 5–10 dk); konteyner
+- Arka uç: aynı push Render'ı tetikler (derleme 5-10 dk); konteyner
   açılışında göçler koşar. Göç gerekiyorsa Render konsolundan
   `php artisan migrate --force`.
 - Geri alma: `docs/GERI-ALMA-PLANI.md`.
@@ -87,7 +87,7 @@ LIBRETRANSLATE_URL=https://57-128-27-244.sslip.io/lt
 ```
 
 ### B.4 Yönetici hesabı açma
-Render → servis → Shell (ya da yerel):
+Render > servis > Shell (ya da yerel):
 ```bash
 php artisan yonetici:olustur yonetici@alanadi.com            # tam yetki
 php artisan yonetici:olustur inceleyen@alanadi.com --salt-okunur
