@@ -41,7 +41,15 @@ export default function TelehealthCallRoom() {
   const [captionCfg, setCaptionCfg] = useState(null);   // {available, language, requires_consent, stored}
   const [captionState, setCaptionState] = useState('kapali');
   const [captionAsk, setCaptionAsk] = useState(false);  // karşı taraf izin istedi
-  const [captionLines, setCaptionLines] = useState([]); // ekranda akan son satırlar
+  const [captionLines, setCaptionLines] = useState([]); // ekranda akan son satırlar: {text, own}
+  const [captionNote, setCaptionNote] = useState('');   // şeritte gösterilen kısa uyarı
+  // Canlı alt yazı: mikrofon 4 sn'lik parçalar hâlinde KENDİ sunucumuza
+  // gönderilir (deploy/stt). Parça bellekte çevrilir, metin karşı tarafa
+  // sinyal kanalından gider; ses de metin de hiçbir yerde saklanmaz.
+  const captionRecRef = useRef(null);      // etkin MediaRecorder
+  const captionTimerRef = useRef(null);    // 4 sn'lik döngü
+  const captionSessionRef = useRef(null);  // {url, token, language} — null ise dinleme kapalı
+  const captionCfgRef = useRef(null);      // karşı tarafın dili için
 
   // Hazırlık ekranı
   const [cams, setCams] = useState([]);
@@ -136,8 +144,104 @@ export default function TelehealthCallRoom() {
     analyserRef.current = null;
   };
 
+  // ── Canlı alt yazı: dinlemeyi başlat / durdur ─────────────────────────────
+  const altYaziDinlemeyiDurdur = useCallback(() => {
+    captionSessionRef.current = null;
+    if (captionTimerRef.current) { clearInterval(captionTimerRef.current); captionTimerRef.current = null; }
+    const rec = captionRecRef.current;
+    captionRecRef.current = null;
+    try { if (rec && rec.state !== 'inactive') rec.stop(); } catch {}
+  }, []);
+
+  const altYaziDinlemeyeBasla = useCallback(async () => {
+    const stream = localStreamRef.current;
+    if (!stream || !stream.getAudioTracks().length || typeof window.MediaRecorder === 'undefined') {
+      setCaptionNote(t('telehealth.captionMicBusy', 'Alt yazı için mikrofon dinlenemiyor.'));
+      return;
+    }
+
+    // Randevuya bağlı, süreli jeton. Motor düşmüşse 409 döner; görüşme sürer,
+    // yalnız alt yazı kapanır — arıza gibi görünmesin diye şeritte söyleniyor.
+    let oturum;
+    try {
+      oturum = await telehealthAPI.captionSession(appointmentId);
+    } catch {
+      setCaptionNote(t('telehealth.captionEngineDown', 'Alt yazı motoruna ulaşılamadı; görüşme sürüyor.'));
+      return;
+    }
+    if (!oturum?.url || !oturum?.token) return;
+    captionSessionRef.current = oturum;
+    setCaptionNote('');
+
+    const mime = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus']
+      .find((m) => { try { return window.MediaRecorder.isTypeSupported(m); } catch { return false; } }) || '';
+    const sesAkisi = new MediaStream(stream.getAudioTracks());
+
+    const parcaGonder = async (blob) => {
+      const o = captionSessionRef.current;
+      if (!o || !blob || blob.size < 1000) return;
+      // Mikrofon kapalıyken sessizlik gönderilmez; sunucu boşa çalışmasın.
+      if (!(stream.getAudioTracks()[0]?.enabled)) return;
+      const hedef = captionCfgRef.current?.peer_language || null;
+      const fd = new FormData();
+      fd.append('audio', blob, 'parca.webm');
+      fd.append('token', o.token);
+      fd.append('lang', o.language || 'auto');
+      if (hedef) fd.append('target', hedef);
+      try {
+        const r = await fetch(o.url, { method: 'POST', body: fd });
+        if (!r.ok) {
+          if (r.status === 401) setCaptionNote(t('telehealth.captionEngineDown', 'Alt yazı motoruna ulaşılamadı; görüşme sürüyor.'));
+          return;
+        }
+        const d = await r.json();
+        if (!d?.text || !captionSessionRef.current) return;
+        // Kendi satırımızı da görürüz (konuşmanın anlaşıldığını doğrular);
+        // karşı tarafa çevirisiyle birlikte gider, o kendi dilinde okur.
+        setCaptionLines((onceki) => [...onceki, { text: d.text, own: true }].slice(-3));
+        send({ kind: 'caption-line', text: d.text, translated: d.translated || null, lang: d.language || null });
+      } catch {
+        /* geçici ağ hatası: bu parça düşer, sonraki gelir */
+      }
+    };
+
+    const yeniKayit = () => {
+      let rec;
+      try {
+        rec = new window.MediaRecorder(sesAkisi, mime ? { mimeType: mime } : undefined);
+      } catch {
+        setCaptionNote(t('telehealth.captionMicBusy', 'Alt yazı için mikrofon dinlenemiyor.'));
+        return;
+      }
+      rec.ondataavailable = (e) => { if (e.data && e.data.size) parcaGonder(e.data); };
+      rec.start();
+      captionRecRef.current = rec;
+    };
+
+    yeniKayit();
+    // `timeslice` ile bölünen parçalar tek başına ÇÖZÜLEMEZ — konteyner
+    // başlığı yalnız ilk parçada olur. Her 4 sn'de durdurup yeniden
+    // başlatınca her parça kendi başına geçerli bir dosya olur.
+    captionTimerRef.current = setInterval(() => {
+      const eski = captionRecRef.current;
+      try { if (eski && eski.state === 'recording') eski.stop(); } catch {}
+      if (captionSessionRef.current) yeniKayit();
+    }, 4000);
+  }, [appointmentId, send, t]);
+
+  // Onay akışı `captionState`'i açık/kapalı yapar; dinleme ona bağlı.
+  const baslaRef = useRef(altYaziDinlemeyeBasla);
+  const durdurRef = useRef(altYaziDinlemeyiDurdur);
+  baslaRef.current = altYaziDinlemeyeBasla;
+  durdurRef.current = altYaziDinlemeyiDurdur;
+  useEffect(() => {
+    if (captionState === 'acik') baslaRef.current();
+    else durdurRef.current();
+  }, [captionState]);
+
   const cleanup = useCallback((updateStatus = false) => {
     stopTimers();
+    durdurRef.current();
     try { pcRef.current?.close(); } catch {}
     pcRef.current = null;
     releaseMedia();
@@ -285,6 +389,7 @@ export default function TelehealthCallRoom() {
     }
     setPeer(cfg.peer || null);
     setCaptionCfg(cfg.captions || null);
+    captionCfgRef.current = cfg.captions || null;
 
     const echo = getEcho();
     if (!echo) {
@@ -410,7 +515,9 @@ export default function TelehealthCallRoom() {
         } else if (msg.kind === 'caption-line') {
           // Motor bağlanınca metin buradan akacak. Saklanmıyor: yalnızca son
           // birkaç satır ekranda tutuluyor, görüşme bitince kayboluyor.
-          setCaptionLines((onceki) => [...onceki, msg.text].slice(-3));
+          // Konuşan taraf metni bizim dilimize çevirip yolluyor; çeviri
+          // gelmediyse (aynı dil ya da çeviri düşmüş) özgün metin gösterilir.
+          setCaptionLines((onceki) => [...onceki, { text: msg.translated || msg.text, own: false }].slice(-3));
         } else if (msg.kind === 'bye') {
           // Karşı taraf görüşmeyi sonlandırdı. Önceden hiç bildirilmiyordu;
           // bir taraf kapatınca diğerinin ekranı görüşme sürüyormuş gibi kalıyordu.
@@ -679,10 +786,13 @@ export default function TelehealthCallRoom() {
           </div>
         )}
 
-        {/* Alt yazı şeridi — motor bağlanınca metin buraya akacak. */}
+        {/* Alt yazı şeridi. Kendi satırlarımız "Siz:" ile, karşı tarafınki çevrilmiş. */}
         {captionState === 'acik' && (
           <div className="absolute inset-x-0 bottom-4 flex justify-center px-4 pointer-events-none">
             <div className="max-w-2xl w-full rounded-xl bg-black/70 px-4 py-3 text-center">
+              {captionNote && (
+                <p className="text-xs text-amber-300 mb-1">{captionNote}</p>
+              )}
               {captionLines.length === 0 ? (
                 <p className="text-sm text-gray-300">
                   {t('telehealth.captionWaiting', 'Alt yazı bekleniyor...')}
@@ -690,7 +800,8 @@ export default function TelehealthCallRoom() {
               ) : (
                 captionLines.map((satir, i) => (
                   <p key={i} className={`text-sm leading-snug ${i === captionLines.length - 1 ? 'text-white' : 'text-gray-400'}`}>
-                    {satir}
+                    {satir.own && <span className="text-teal-300/80 me-1">{t('telehealth.captionYou', 'Siz')}:</span>}
+                    {satir.text}
                   </p>
                 ))
               )}

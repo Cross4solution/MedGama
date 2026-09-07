@@ -817,6 +817,8 @@ export const telehealthAPI = {
   session: (appointmentId) => api.get(`/telehealth/${appointmentId}/session`),
   webrtc: (appointmentId) => api.get(`/telehealth/${appointmentId}/webrtc`),
   transcriptionToken: (appointmentId, lang = 'en') => api.get(`/telehealth/${appointmentId}/transcription-token`, { params: { lang } }),
+  // Canlı alt yazı oturumu: kendi sunucumuzdaki motorun adresi + randevuya bağlı jeton.
+  captionSession: (appointmentId) => api.get(`/telehealth/${appointmentId}/caption-session`),
   simulateTranscript: (appointmentId, count = 1) => api.get(`/telehealth/${appointmentId}/simulate-transcript`, { params: { count } }),
   updateStatus: (appointmentId, meetingStatus) => api.put(`/telehealth/${appointmentId}/status`, { meeting_status: meetingStatus }),
 };

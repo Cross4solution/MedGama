@@ -149,8 +149,13 @@ class TelehealthController extends Controller
      */
     public function webrtcConfig(Request $request, string $appointmentId): JsonResponse
     {
-        $appointment = Appointment::with(['doctor:id,fullname,avatar', 'patient:id,fullname,avatar'])
-            ->findOrFail($appointmentId);
+        // `preferred_language` da seçiliyor: alt yazı KARŞI TARAFIN diline
+        // çevrilir, konuşanın diline değil. Konuşanın tarayıcısı çeviriyi
+        // isterken hedef dili bilmek zorunda.
+        $appointment = Appointment::with([
+            'doctor:id,fullname,avatar,preferred_language',
+            'patient:id,fullname,avatar,preferred_language',
+        ])->findOrFail($appointmentId);
 
         $this->authorizeParticipant($request->user(), $appointment);
 
@@ -166,8 +171,7 @@ class TelehealthController extends Controller
         // Alt yazı: motor hazır mı ve kullanıcı hangi dilde görecek.
         // Arayüz bu bilgiye göre düğmeyi aktif/pasif gösterir.
         $motor = app(\App\Captions\TranscriptionEngine::class);
-        $kullaniciDili = $request->user()->preferred_language ?? 'en';
-        $destekli = in_array($kullaniciDili, (array) config('captions.languages', []), true);
+        $kullaniciDili = $this->altYaziDili($request->user()->preferred_language);
 
         return response()->json([
             'appointment' => [
@@ -178,12 +182,16 @@ class TelehealthController extends Controller
             'captions' => [
                 'available'       => $motor->kullanilabilir(),
                 // Dil kullanıcının profilinden gelir; görüşmede ayrıca sorulmaz.
-                'language'        => $destekli ? $kullaniciDili : 'en',
+                'language'        => $kullaniciDili,
                 // Karşı tarafın onayı olmadan açılamaz: birinin sesinin
                 // sunucuda işlenmesine diğeri tek başına karar veremez.
                 'requires_consent' => (bool) config('captions.require_peer_consent', true),
                 // Metin hiçbir yere yazılmaz; arayüz bunu kullanıcıya söyler.
                 'stored'          => (bool) config('captions.store_transcripts', false),
+                // Karşı tarafın dili: konuşanın satırı bu dile çevrilip gönderilir.
+                'peer_language'   => $this->altYaziDili(
+                    ($isDoctor ? $appointment->patient : $appointment->doctor)?->preferred_language
+                ),
             ],
             'channel'    => 'telehealth.' . $appointment->id, // private signaling channel
             'role'       => $isDoctor ? 'doctor' : 'patient',
@@ -227,6 +235,40 @@ class TelehealthController extends Controller
     /**
      * Ensure the authenticated user is the doctor or patient of this appointment.
      */
+    /**
+     * GET /api/telehealth/{id}/caption-session — canlı alt yazı oturumu.
+     *
+     * Tarayıcı, mikrofon parçalarını buradan dönen adrese, buradan dönen
+     * jetonla gönderir. Jeton RANDEVUYA bağlı ve süreli; motor `oturumAc`
+     * ile üretir. Motor yoksa 409: arayüz düğmeyi zaten pasif tutuyor, bu
+     * uç yalnız yarış durumunda (motor az önce düştüyse) devreye girer.
+     */
+    public function captionSession(Request $request, string $appointmentId): JsonResponse
+    {
+        $appointment = Appointment::findOrFail($appointmentId);
+        $this->authorizeParticipant($request->user(), $appointment);
+
+        if ($appointment->status !== 'confirmed') {
+            abort(403, 'This appointment is not active.');
+        }
+
+        $motor = app(\App\Captions\TranscriptionEngine::class);
+        if (!$motor->kullanilabilir()) {
+            return response()->json(['message' => 'Alt yazı motoru şu an kullanılamıyor.'], 409);
+        }
+
+        $dil = $this->altYaziDili($request->user()->preferred_language);
+
+        return response()->json($motor->oturumAc($appointment->id, $dil) + ['language' => $dil]);
+    }
+
+    /** Profil dili destekleniyorsa o, değilse İngilizce. */
+    private function altYaziDili(?string $dil): string
+    {
+        $dil = strtolower(substr((string) $dil, 0, 2)) ?: 'en';
+        return in_array($dil, (array) config('captions.languages', []), true) ? $dil : 'en';
+    }
+
     private function authorizeParticipant($user, Appointment $appointment): void
     {
         if ($user->id !== $appointment->doctor_id && $user->id !== $appointment->patient_id) {

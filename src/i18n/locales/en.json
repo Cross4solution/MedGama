@@ -2476,7 +2476,10 @@
     "captionAskBody": "The other person would like to use captions. If you accept, speech is transcribed on our server. The text is not stored and is deleted when the call ends.",
     "captionAccept": "Accept",
     "captionReject": "No",
-    "captionWaiting": "Waiting for captions..."
+    "captionWaiting": "Waiting for captions...",
+    "captionYou": "You",
+    "captionEngineDown": "Caption engine unreachable; the call continues.",
+    "captionMicBusy": "Cannot listen to the microphone for captions."
   },
   "onboarding": {
     "title": "Complete Your Profile",

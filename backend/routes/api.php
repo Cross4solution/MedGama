@@ -760,6 +760,8 @@ Route::prefix('telehealth')->middleware('auth:sanctum')->group(function () {
     Route::get('/{appointmentId}/session', [TelehealthController::class, 'session']);
     Route::get('/{appointmentId}/webrtc', [TelehealthController::class, 'webrtcConfig']);
     Route::get('/{appointmentId}/transcription-token', [TelehealthController::class, 'transcriptionToken']);
+    // Canlı alt yazı: kendi sunucumuzdaki motor için randevuya bağlı jeton.
+    Route::get('/{appointmentId}/caption-session', [TelehealthController::class, 'captionSession']);
     // Sahte transkript üretir; üretimde kapalı. Gerçek görüşmede uydurma
     // klinik cümleleri "kayıt" diye göstermek hekimi yanıltır.
     Route::get('/{appointmentId}/simulate-transcript', [TelehealthController::class, 'simulateTranscript'])

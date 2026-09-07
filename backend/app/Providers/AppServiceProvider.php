@@ -23,9 +23,10 @@ class AppServiceProvider extends ServiceProvider
         // gelene kadar UnavailableEngine devrede ve arayüz düğmeyi pasif tutar.
         $this->app->bind(\App\Captions\TranscriptionEngine::class, function () {
             return match (config('captions.engine')) {
-                // GPU sunucu gelince buraya tek satır, örn:
-                // 'whisper' => new \App\Captions\WhisperEngine(),
-                default => new \App\Captions\UnavailableEngine(),
+                // Kendi sunucumuzdaki Whisper (deploy/stt). CPU'da küçük model;
+                // GPU gelince servis büyür, bu satır aynı kalır.
+                'whisper' => new \App\Captions\WhisperEngine(),
+                default   => new \App\Captions\UnavailableEngine(),
             };
         });
 

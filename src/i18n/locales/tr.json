@@ -2489,7 +2489,10 @@
     "captionAskBody": "Karşı taraf alt yazı kullanmak istiyor. Kabul ederseniz konuşmalar sunucumuzda yazıya çevrilir. Metin kaydedilmez, görüşme bitince silinir.",
     "captionAccept": "Kabul et",
     "captionReject": "Hayır",
-    "captionWaiting": "Alt yazı bekleniyor..."
+    "captionWaiting": "Alt yazı bekleniyor...",
+    "captionYou": "Siz",
+    "captionEngineDown": "Alt yazı motoruna ulaşılamadı; görüşme sürüyor.",
+    "captionMicBusy": "Alt yazı için mikrofon dinlenemiyor."
   },
   "onboarding": {
     "title": "Profilinizi Tamamlayın",

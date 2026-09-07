@@ -13,6 +13,20 @@ return [
     'engine' => env('CAPTIONS_ENGINE'),
 
     /*
+     * Kendi sunucumuzdaki Whisper servisi (deploy/stt). `engine=whisper` iken
+     * kullanılır. Gizli anahtar servisle PAYLAŞILIR: canlı görüşme jetonunu
+     * Laravel bununla imzalar, servis bununla doğrular.
+     *
+     * Bugün CPU'da küçük model; GPU sunucu gelince servis tarafında model
+     * büyür, burada hiçbir şey değişmez.
+     */
+    'whisper' => [
+        'url'       => env('CAPTIONS_WHISPER_URL'),
+        'secret'    => env('CAPTIONS_WHISPER_SECRET'),
+        'token_ttl' => (int) env('CAPTIONS_TOKEN_TTL', 3600),
+    ],
+
+    /*
      * Çeviri motoru. Kendi sunucumuzda LibreTranslate planlanıyor.
      * Boşsa yalnızca konuşulan dilde alt yazı gösterilir, çeviri yapılmaz.
      */

@@ -35,6 +35,7 @@ class TelehealthKatilimciTest extends TestCase
         ['get', 'session'],
         ['get', 'webrtc'],
         ['get', 'transcription-token'],
+        ['get', 'caption-session'],   // canlı alt yazı jetonu — konuşmanın kendisi
         ['get', 'simulate-transcript'],
         ['put', 'status'],
     ];
