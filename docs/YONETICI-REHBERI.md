@@ -7,7 +7,7 @@ Sürüm 1.1 · Eylül 2026 · Sözleşme madde 2.2 kapsamında teslim edilen bel
 İki okuyucu için iki bölüm:
 
 - **A. Yönetim paneli** — platformu günlük işleten kişi için: doktor
-  doğrulama, kullanıcılar, yorum denetimi, duyurular. Teknik bilgi gerekmez.
+  doğrulama, kullanıcılar, yorum denetimi, katalog. Teknik bilgi gerekmez.
 - **B. İşletme** — sunucuları ve yayını yöneten teknik kişi için: nerede ne
   çalışıyor, nasıl yayınlanır, yedek, sağlık kontrolü.
 
@@ -26,17 +26,14 @@ Sürüm 1.1 · Eylül 2026 · Sözleşme madde 2.2 kapsamında teslim edilen bel
 
 | Bölüm | Ekran | Ne yapılır |
 |-----|-------|----------------|
-| Genel Bakış | **Kontrol Paneli** | Kullanıcı, randevu, gelir, bekleyen iş sayıları; acil uyarılar (doğrulama bekleyen doktor, şikâyet edilen içerik, açık destek talebi) |
+| Genel Bakış | **Kontrol Paneli** | Kullanıcı, randevu, gelir, bekleyen iş sayıları; acil uyarılar (doğrulama bekleyen doktor, şikâyet edilen içerik) |
 | Operasyon | **Doğrulama Merkezi** | Doktor ve klinik doğrulama başvuruları: belgeleri aç, **Onayla / Reddet** (gerekçe yazılır). Onaylanmayan doktora randevu alınamaz |
 | | **Kullanıcı Yönetimi** | Sekmeler: Tümü / Doktorlar / Hastalar / Klinikler. Ara, süz, **engelle / engeli kaldır**, **parolayı sıfırla**, rol ve doğrulama durumunu gör |
 | | **Finans** | Fatura ve gelir özeti, dönem raporu, dışa aktar |
 | Moderasyon | **Yorum Moderasyonu** | Bekleyen / onaylı / reddedilen / gizli; doktor ve klinik yorumları ayrı |
 | | **İçerik Moderasyonu** | Şikâyet edilen gönderi ve yorumlar: gizle, sil, şikâyeti kapat |
 | Sistem | **Katalog Yönetimi** | Branşlar, tedaviler, semptom eş anlamlıları (halk dili → branş), şehir / ülke |
-| | **Sistem Ayarları** | Site ayarları, özellik anahtarları: modül aç / kapat |
 | | **Denetim Kayıtları** | Kim, ne zaman, neyi değiştirdi; tarih ve kullanıcıya göre süz |
-| | **Destek Talepleri** | Kullanıcı destek talepleri; yanıtla, kapat |
-| | **Duyurular** | Rol bazlı duyuru (hasta / doktor / klinik / hepsi), öncelik, kapatılabilir mi, aktif / pasif |
 
 ### A.3 Roller
 
@@ -49,8 +46,7 @@ Sürüm 1.1 · Eylül 2026 · Sözleşme madde 2.2 kapsamında teslim edilen bel
 | Yönetici | Tam yetki; salt-okunur türevi yalnız görüntüler |
 
 ### A.4 Günlük işleyiş önerisi
-1. Kontrol panelindeki uyarıları sıfırlayın: bekleyen doğrulama, şikâyet,
-   destek.
+1. Kontrol panelindeki uyarıları sıfırlayın: bekleyen doğrulama, şikâyet.
 2. Yorum moderasyonunda bekleyenleri geçirin. Yalnız randevusu tamamlanmış
    hasta yorum yazabildiği için sahte yorum beklenmez; yine de içerik
    denetimi gerekir.

@@ -1,20 +1,21 @@
 # Medagama — Test Raporu
 
-Sürüm 1.1 · 7 Eylül 2026 · Teslim tutanağının eki
+Sürüm 1.2 · 7 Eylül 2026 · Teslim tutanağının eki
 
 ## Kısaca
 
 Sözleşmedeki her modül, kod her değiştiğinde kendiliğinden koşan otomatik
-testlerle sınanıyor. Teslim günü tüm testler baştan koşuldu:
+testlerle sınanıyor. Sayılar teslim edilen kaynak kod arşivi üzerinde
+alındı:
 
 | | Test sayısı | Sonuç |
 |--|--|--|
-| Sunucu tarafı (API, yetki, iş kuralları, veri güvenliği) | 1 197 | **hepsi geçti** |
-| Arayüz birim ölçütleri (çeviri kapsamı, güvenlik başlıkları, yapı) | 375 | **hepsi geçti** |
-| Gerçek tarayıcıda kullanıcı akışları (randevu, fatura, yorum, mobil) | 194 | **hepsi geçti** |
+| Sunucu tarafı (API, yetki, iş kuralları, veri güvenliği) | 1 071 | **hepsi geçti** |
+| Arayüz birim ölçütleri (çeviri kapsamı, güvenlik başlıkları, yapı) | 355 | **hepsi geçti** |
+| Gerçek tarayıcıda kullanıcı akışları (randevu, fatura, yorum, mobil) — canlı site üzerinde | 194 | **hepsi geçti** |
 | Elle, canlı sitede (görüntülü görüşme + alt yazı, mobil, fiyat sıralaması) | — | **doğrulandı** (§3) |
 
-Başarısız test **yok**. 45 test atlandı; bunlar yalnız canlı ortamda
+Başarısız test **yok**. 21 sunucu testi atlandı; bunlar yalnız canlı ortamda
 anlamlı olanlar (gerçek e-posta gönderimi, hata izleme servisi, tarayıcı
 iznine bağlı akışlar). Atlama gerekçesi her testin içinde yazılı; koşulu
 sağlanınca kendiliğinden koşarlar.
@@ -27,12 +28,13 @@ sağlanınca kendiliğinden koşarlar.
 - **Tarayıcı** testleri gerçek bir Chromium tarayıcısında, gerçek kayıt
   oluşturarak koşar: randevu alır, fatura keser, yorum yazar, mesaj
   gönderir. Mobil ölçütler telefon (320 ve 375 px) ve tablet (768 px)
-  genişliğinde ölçer.
+  genişliğinde ölçer. Bu testler canlı site üzerinde koşuldu; demo
+  hesaplara bağlı oldukları için kod arşivine dahil edilmedi.
 - Ölçütlerin çoğu **karşı deneyle doğrulandı**: düzeltme geri alındığında
   testin kırmızıya döndüğü görüldü. Böylece test "her hâlükârda geçen" bir
   test değil, gerçekten o hatayı yakalayan bir test oldu.
-- Sayılar ve komutlar teslim edilen kaynak kod üzerinde alındı; Müşteri
-  aynı komutlarla yeniden koşabilir (§4).
+- Sunucu ve arayüz sayıları teslim edilen kaynak kod arşivi üzerinde
+  alındı; Müşteri aynı komutlarla yeniden koşabilir (§4).
 
 ## 2. Modül → test eşlemesi (sözleşme Ek-1 ve madde 1.2)
 
@@ -44,7 +46,7 @@ adları Ek'te.
 | 1 | Profiller, galeri, fiyat, değerlendirme, sıralama | Profil sayfaları herkese doğru açılıyor; yalnız sahibi düzenleyebiliyor; puan / deneyim / fiyat sıralaması doğru sırada; fiyat süzgeci yalnız seçilen para biriminde çalışıyor; fiyatı olmayanlar listenin sonunda | ✅ |
 | 2 | Kullanıcı tipleri ve panelleri | Her rol yalnız kendi ekranlarına girebiliyor (19 yetki senaryosu); hastane şubelerini görüyor, klinik yalnız kendini; yetki yükseltme denemeleri reddediliyor | ✅ |
 | 3 | Medikal sosyal ağ | Gönderi yayınlama, düzenleme, silme yalnız sahibine; beğeni, yorum, kaydet, takip; ülke ve branş süzgeci; kullanıcı adı güvenliği; indirme güvenliği | ✅ |
-| 4 | Gönderi tercümesi | Çevir düğmesi, hedef dil kullanıcının seçtiği dil, çeviri bütçesi, video alt yazısı üretimi | ✅ |
+| 4 | Gönderi tercümesi | Çevir düğmesi, hedef dil kullanıcının seçtiği dil, çeviri bütçesi | ✅ |
 | 5 | Güvenli veri (HIPAA / GDPR / KVKK), belge transferi | Hasta belgesi yalnız hastanın açtığı doktora, yalnız randevu süresince; ekler şifreli ve süreli bağlantıyla; erişim kaydı tutuluyor; KVKK hakları (indirme, silme); güvenlik başlıkları; hata izlemeye kişisel veri sızmıyor | ✅ |
 | 6 | Çok dilli | 22 dilde eksik çeviri yok; İngilizce sızıntısı yok; sağdan sola dillerde hizalama; arama motoru için dil etiketleri tutarlı | ✅ |
 | 7 | Yapay zekâ (Vasco) | Şikâyet → branş yönlendirmesi (9 senaryo); dış servis yanıt vermezse zaman aşımı | ✅ |
@@ -56,7 +58,7 @@ adları Ek'te.
 | 13 | Telehealth: görüşme + alt yazı + tercüme | Görüşmeye yalnız randevunun iki tarafı girebiliyor; alt yazı oturumu yetkisiz kişiye kapalı, süresi dolan anahtar reddediliyor (7 senaryo); yayın kesilince davranış; iki tarayıcılı gerçek görüşme (§3) | ✅ |
 | 14 | Mesajlaşma | Sohbete yalnız tarafları erişebiliyor (11 senaryo); canlı bildirim gerçekten ulaşıyor; okunmamış sayacı | ✅ |
 | 15 | Fatura / finans | Fatura hesabı (KDV, kısmi ödeme), hastanın yalnız kendi faturasını görmesi, ödeme akışı (sahte sağlayıcıyla, 14 senaryo) | ✅ |
-| 16 | Yönetim paneli | Yönetici olmayan giremiyor; doğrulama onay / red; katalog düzenleme; duyuru görünürlüğü; destek talebi; salt-okunur hesap hiçbir şey değiştiremiyor | ✅ |
+| 16 | Yönetim paneli | Yönetici olmayan giremiyor; doğrulama onay / red; katalog düzenleme; salt-okunur hesap hiçbir şey değiştiremiyor | ✅ |
 | 17 | Mobil uyumlu tasarım (madde 1.3) | 320 / 375 / 768 px'te yatay kayma yok; pencereler ekrana sığıyor; açılır listeler taşmıyor; dokunma hedefleri yeterli büyüklükte | ✅ |
 | 18 | REST API ve dokümantasyon | Her API ucu OpenAPI belgesinde; belge ile kod eşleşiyor; sayfa boyutu sınırı; gereksiz sorgu (N+1) yok | ✅ |
 | — | Yapısal korumalar | Göçler geri alınabilir; veritabanı yedeği alınıp geri yüklenebiliyor; her ekran hatasız açılıyor; erişilebilirlik; klavye odak tuzağı yok | ✅ |
@@ -82,36 +84,31 @@ cd backend && php artisan test
 # Arayüz birim
 node --test "src/**/__tests__/*.test.mjs" "tests/unit/*.test.mjs"
 
-# Tarayıcı (yerel yığına karşı)
-E2E_BASE_URL=http://127.0.0.1:3000 E2E_API_ORIGIN=http://127.0.0.1:8001 \
-E2E_DEMO_KEY=<demo anahtarı> npx playwright test --project=chromium
 ```
-Yönetici senaryoları için ayrıca `E2E_ADMIN_EMAIL` / `E2E_ADMIN_PASSWORD`.
 
 ## Ek: modül → test dosyaları
 
 Teknik okuyucu için. Sunucu testleri `backend/tests/Feature/`, arayüz
-birim testleri `src/**/__tests__/` ve `tests/unit/`, tarayıcı testleri
-`tests/e2e/` altında.
+birim testleri `src/**/__tests__/` ve `tests/unit/` altında.
 
-| # | Sunucu testleri | Tarayıcı / birim |
+| # | Sunucu testleri | Arayüz birim testleri |
 |---|-----------------|-------------------|
-| 1 | HerkeseAcikProfil, ProfilVarliklariSahiplik, DoktorProfiliKapisi, DoktorSuzgecleri, DoktorSiralama, FiyatAraligiSuzgeci, AcikDoktorListesi, DoktorListesiOnbellek | dinamik-sayfalar, arama-ve-arsiv, profil, klinikSayfasiVerisi, paraBirimiSecimi |
-| 2 | Permissions, KayitRolKurallari, RolListesiHizalamasi, RolSabitleriKaymasi, HastaneKapsami, KlinikYoneticisiKapisi, YetkiYukseltme | rol-uc-uyumu, yetki-sinirlari, hastane-ekranlari, giris |
-| 3 | MedStreamYayinVeSahiplik, MedStreamEtkilesim, MedStreamAkisSayilari, SosyalFavori, SosyalGecisler, UlkeSuzgeci, AkistaHandle, HandleGuvenligi, KaydedilenGonderiler, MedStreamIndirmeGuvenligi | medstream, sohbet-ve-canli-bildirim |
-| 4 | CeviriDurumu, TopluCeviriButcesi, VideoSubtitle | dil-ve-icerik-cevirisi, icerikCevirisiHedefDil, vtt |
-| 5 | HastaBelgesiPaylasim, HassasDosyaErisim, SohbetEkiBaglantisi, SohbetEkiGizliligi, IletisimEkiGizliligi, IletisimMesajiSifreleme, SaglikErisimKaydi, RizaEtkisi, KvkkHaklari, SilmeKapsami, SaklamaSuresiBudama, Compliance, Security, GuvenlikSertlestirme, SentryVeriTemizligi, VeritabaniBaglantiGuvenligi | arama-ve-arsiv, dogrulama-belgesi, guvenlikBasliklari, analitikMaskeleme |
-| 6 | EpostaCevirileri | dil-ve-icerik-cevirisi, yazi-yonu-hizasi, ceviriAnahtarlari, ingilizceSizintisi, ceviriKapsami, hreflangTutarliligi, dilYonu |
+| 1 | HerkeseAcikProfil, DoktorProfiliKapisi, DoktorSuzgecleri, DoktorSiralama, FiyatAraligiSuzgeci, AcikDoktorListesi, DoktorListesiOnbellek | klinikSayfasiVerisi, paraBirimiSecimi |
+| 2 | Permissions, KayitRolKurallari, RolListesiHizalamasi, RolSabitleriKaymasi, HastaneKapsami, KlinikYoneticisiKapisi, YetkiYukseltme | — |
+| 3 | MedStreamYayinVeSahiplik, MedStreamEtkilesim, MedStreamAkisSayilari, SosyalFavori, SosyalGecisler, UlkeSuzgeci, AkistaHandle, HandleGuvenligi, KaydedilenGonderiler, MedStreamIndirmeGuvenligi | — |
+| 4 | CeviriDurumu, TopluCeviriButcesi | icerikCevirisiHedefDil |
+| 5 | HastaBelgesiPaylasim, HassasDosyaErisim, SohbetEkiBaglantisi, SohbetEkiGizliligi, IletisimEkiGizliligi, IletisimMesajiSifreleme, SaglikErisimKaydi, RizaEtkisi, KvkkHaklari, SilmeKapsami, SaklamaSuresiBudama, Compliance, Security, GuvenlikSertlestirme, SentryVeriTemizligi, VeritabaniBaglantiGuvenligi | guvenlikBasliklari, analitikMaskeleme |
+| 6 | EpostaCevirileri | ceviriAnahtarlari, ingilizceSizintisi, ceviriKapsami, hreflangTutarliligi, dilYonu |
 | 7 | VascoYonlendirme, DisServisZamanAsimi | — |
-| 8 | Auth, OturumYasamDongusu, PasswordChangeRevokesSessions, LogoutAllDevices, SifreSifirlama, EpostaDogrulama, KimlikHizSiniri, KullaniciAdiGeriDoldurma | giris, oturum-dusunce, profil, bildirimler |
-| 9 | CrmAbonelikKapisi, CrmHastaListesiKapsami, CrmKayitKapsami, CrmKendiKendineAcma, AdayKapsam, SatisHatti, HastaEtiketi, HastaKaydiVeCrmKapsami, RaporVeSss, KlinikYonetimYazmalari, FinansDisaAktarim, GelirGrafigi, GelirIstatistikleri | crm-ekranlari, crm-randevular, muayene-ve-destek |
-| 10 | Appointment, BookingFlow, CiftRezervasyon, DoktorMusaitligi, TakvimSlotuYetki, TakvimAkisi, RandevuListesiKapsami, RandevuAnamnezErisimi, RetPenceresi, BaglantiSaatDilimi | randevu-yasam-dongusu, randevu-doktor-islemleri, randevu-eszamanlilik, randevular, mobil-randevu-takvimi, calendarLinks |
-| 11 | DoktorDegerlendirme, DegerlendirilebilirRandevu, KlinikYorumu, YorumDenetimi, YorumDenetimSayaclari, IcerikSikayeti | degerlendirmeler |
+| 8 | Auth, OturumYasamDongusu, PasswordChangeRevokesSessions, LogoutAllDevices, SifreSifirlama, EpostaDogrulama, KimlikHizSiniri, KullaniciAdiGeriDoldurma | — |
+| 9 | CrmAbonelikKapisi, CrmHastaListesiKapsami, CrmKayitKapsami, CrmKendiKendineAcma, AdayKapsam, SatisHatti, HastaEtiketi, HastaKaydiVeCrmKapsami, KlinikYonetimYazmalari, FinansDisaAktarim, GelirGrafigi, GelirIstatistikleri | — |
+| 10 | Appointment, BookingFlow, CiftRezervasyon, DoktorMusaitligi, TakvimSlotuYetki, TakvimAkisi, RandevuListesiKapsami, RandevuAnamnezErisimi, RetPenceresi, BaglantiSaatDilimi | calendarLinks |
+| 11 | DoktorDegerlendirme, DegerlendirilebilirRandevu, KlinikYorumu, YorumDenetimi, YorumDenetimSayaclari, IcerikSikayeti | — |
 | 12 | SiteHaritasi, OnbellekBasligi | seoJsonLd, hreflangTutarliligi, icBaglantilar |
-| 13 | TelehealthKatilimci, TelesaglikDurumu, TelesaglikTranskripti, CanliAltYazi, KanalYetkilendirme, YayinKesintisi | gorusme, telesaglikTranskripti, echo |
-| 14 | SohbetErisimSiniri, GercekZamanliSohbetSiniri, IletisimMesajiErisim, IletisimKutusuKapsami, ChatMedStream | sohbet-ve-canli-bildirim |
-| 15 | FaturaHesaplama, FaturaOdemeDurumu, HekimFaturalandirma, PatientInvoiceAccess, InvoiceAccessBoundary, Payment | faturalar, fatura-yasam-dongusu |
-| 16 | YoneticiYuzeyiReddi, YoneticiYetkiDegisimi, YoneticiOkumalari, YoneticiKalanUclar, YoneticiOlustur, SaltOkunurHesap, DogrulamaBasvurusu, DogrulamaBelgesiGoruntuleme, KlinikDogrulama, KatalogYazmaUclari, DuyuruGorunurluk, DestekTalebi, DemoYoneticiGirisi | yonetim-paneli, dogrulama-belgesi |
-| 17 | — | mobil-yatay-kayma, mobil-pencere, mobil-acilir-liste, mobil-randevu-takvimi, mobil-gorunum, dokunma-hedefleri, genel-tarayici-uyumu |
+| 13 | TelehealthKatilimci, TelesaglikDurumu, CanliAltYazi, KanalYetkilendirme, YayinKesintisi | echo |
+| 14 | SohbetErisimSiniri, GercekZamanliSohbetSiniri, IletisimMesajiErisim, IletisimKutusuKapsami, ChatMedStream | — |
+| 15 | FaturaHesaplama, FaturaOdemeDurumu, HekimFaturalandirma, PatientInvoiceAccess, InvoiceAccessBoundary, Payment | — |
+| 16 | YoneticiYuzeyiReddi, YoneticiYetkiDegisimi, YoneticiOkumalari, YoneticiKalanUclar, YoneticiOlustur, SaltOkunurHesap, DogrulamaBasvurusu, DogrulamaBelgesiGoruntuleme, KlinikDogrulama, KatalogYazmaUclari | — |
+| 17 | — | — |
 | 18 | ApiBelgesi, ApiBelgelendirmesi, OnYuzApiYollari, UcSagligi, SorguYuku, SayfaBoyutuSiniri | ucParametreleri, yanitBicimi |
-| — | GocGeriAlinabilirligi, IndeksSagligi, TeshisUclari, InitDbUcu, VeritabaniYedegi, TohumlamaTekrarlanabilir, TeslimHazirligi | genis-tarama, istek-yogunlugu, erisilebilirlik, gizli-odak-tuzagi, hata-yolu-uyarilari, yukleme-hatasi-durumlari |
+| — | GocGeriAlinabilirligi, IndeksSagligi, TeshisUclari, InitDbUcu, VeritabaniYedegi, TohumlamaTekrarlanabilir, TeslimHazirligi | — |

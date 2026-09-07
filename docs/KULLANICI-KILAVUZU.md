@@ -52,8 +52,7 @@ daha sorar. Örnek şikâyetler tek dokunuşla denenebilir.
 
 ### 1.5 Medstream — sosyal akış
 (`/medstream`) Klinik ve doktorların paylaşımları.
-- **Yeni / Öne Çıkan** sekmeleri; **Konum** düğmesiyle yakınınızdaki
-  paylaşımlar.
+- **Yeni / Öne Çıkan** sekmeleri.
 - Ülke ve branş süzgeci, metin araması.
 - Beğen, yorum yap, kaydet, paylaş. **Çevir** düğmesi gönderiyi sizin
   dilinize çevirir; çeviri kendi sunucumuzda yapılır, dışarı çıkmaz.
@@ -170,8 +169,7 @@ Hastadaki akışla aynı (bkz. 2.2). Görüşmeyi doktor başlatır.
 PDF. Dönemsel gelir raporu **CRM › Gelir** (CRM paketi).
 
 ### 3.7 Medstream'de paylaşım
-**Medstream › Paylaş:** metin, fotoğraf, video (video alt yazısı otomatik
-üretilir, düzenlenebilir), makale / PDF. Yorumları yanıtlayın.
+**Medstream › Paylaş:** metin, fotoğraf, video, makale / PDF. Yorumları yanıtlayın.
 
 ---
 
@@ -187,7 +185,7 @@ zaman açık; klinikte CRM paketine bağlı.
 
 ### 4.1 Klinik profili
 **Klinik Profili:** ad, açıklama, adres / harita, fotoğraf / video galerisi,
-önce / sonra, SSS, akreditasyonlar, çalışma saatleri. **Hizmetler ve fiyat
+önce / sonra, çalışma saatleri. **Hizmetler ve fiyat
 listesi:** işlem adı, en az / en çok, para birimi. Klinik listesindeki
 fiyat sıralaması ve süzgeci buradan beslenir. Profil ziyaretçiye sekmelerle
 görünür: Genel Bakış, Doktorlar, Hizmetler, Fiyatlar, Galeri, Yorumlar, Konum.
@@ -204,8 +202,6 @@ Hastane: **CRM › Şubeler** altında kliniklerini yönetir.
 | Akıllı Takvim | Doktor bazında müsaitlik; toplu saat açma |
 | Hastalar | Hasta kartları, etiket, aşama; **Hasta 360** tek ekranda geçmiş |
 | Lead'ler | Satış hunisi: aday hasta, aşama, kaynak, satışçı ataması |
-| Muayene | Anamnez, muayene notu, reçete (hasta arşivine düşer) |
-| Reçeteler | Yazılan reçeteler, PDF |
 | Dökümanlar | Klinik belgeleri; hasta belgeleri şifreli |
 | Mesajlar / İletişim Mesajları | Hasta yazışmaları ve site formundan gelenler |
 | Tahsilat | Fatura, ödeme durumu, PDF |
@@ -216,7 +212,6 @@ Hastane: **CRM › Şubeler** altında kliniklerini yönetir.
 | Klinik Yönetimi | Hastane: şube ve klinik ayarları |
 | Entegrasyonlar | Takvim bağlantısı |
 | Ayarlar | Profil, fiyatlar, galeri, bildirim tercihleri |
-| Yardım / SSS / Destek | Destek talebi açma |
 
 CRM paketine bağlı ekranlar (Telesağlık, Gelir, Tahsilat, Klinik Yönetimi,
 İletişim Mesajları) **CRM'e yükselt** düğmesiyle açılır.
