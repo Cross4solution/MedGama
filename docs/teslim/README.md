@@ -6,7 +6,7 @@ oradan üretilir (`pandoc → docx → LibreOffice`), elle düzenlenmez.
 | Dosya | Ne | Sayfa |
 |-------|----|------|
 | `TESLIM-TUTANAGI.pdf` | "Kısaca" özet; sözleşme kalemi → durum; müşteriden beklenen 6 girdi, her biri "ne, ne için, ne zaman istendi" ile (§3) | 5 |
-| `MUSTERIDEN-BEKLENENLER.pdf` | Dönüş yapılmayanlar: 7 kalem, tek sayfa | 1 |
+| `DONUS-YAPILMAYANLAR.pdf` | Dönüş yapılmayanlar: 7 kalem, tek sayfa | 1 |
 | `KULLANICI-KILAVUZU.pdf` | Hasta / doktor / klinik / hastane için kullanım | 6 |
 | `YONETICI-REHBERI.pdf` | Yönetim paneli ve işletme | 4 |
 | `TEST-RAPORU.pdf` | "Kısaca" özet; modül → ne sınandı; canlı doğrulamalar; test dosyaları ekte | 8 |

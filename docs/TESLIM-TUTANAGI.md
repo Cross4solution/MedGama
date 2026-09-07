@@ -68,7 +68,7 @@ tamamlanmaları **yalnız** Müşteri'nin sağlayacağı girdilere bağlıdır.
 Sözleşme madde 4.4 uyarınca API lisansları, ödeme entegrasyonları, bulut
 depolama, e-posta servisi ve alan adı Müşteri sorumluluğundadır. Her kalem
 daha önce de istenmiştir; tarih ve belge her maddede yazılıdır. Tek sayfalık
-özet: bu paketteki `MUSTERIDEN-BEKLENENLER.pdf`.
+özet: bu paketteki `DONUS-YAPILMAYANLAR.pdf`.
 
 ### 3.1 Sanal POS / ödeme sağlayıcısı hesabı
 
