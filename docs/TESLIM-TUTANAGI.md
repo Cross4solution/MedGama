@@ -110,14 +110,15 @@ daha önce de istenmiştir; tarih ve belge her maddede yazılıdır. Tek sayfal�
   ayrıca bildirildi.
 - **Sözleşme dayanağı:** 4.4 SMS / e-posta servisleri ve alan adı.
 
-### 3.5 AWS / bulut depolama hesabı
+### 3.5 Bulut dosya depolama hesabı
 
-- **Ne bekleniyor:** Müşteri adına AWS hesabı (Frankfurt bölgesi
-  kararlaştırıldı).
+- **Ne bekleniyor:** Müşteri adına S3 uyumlu bir depolama hesabı (AWS,
+  Google Cloud, Hetzner, DigitalOcean vb.; sağlayıcı Müşteri'nin tercihi).
+  Avrupa bölgesi önerilir.
 - **Ne açılacak:** hasta belgelerinin ve yedeklerin buluta taşınması; bugün
   dosyalar uygulama sunucusunun diskinde şifreli duruyor.
 - **Daha önce iletildi:** 12 Ağustos 2026 — "Dosya Saklama Seçenekleri"
-  belgesi; aynı gün AWS Frankfurt kararı teyit edildi, hesap bekleniyor.
+  belgesi; hesap bekleniyor.
 - **Sözleşme dayanağı:** 4.4 bulut depolama.
 
 ### 3.6 Hukuki metinler
