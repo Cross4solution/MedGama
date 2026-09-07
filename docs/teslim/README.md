@@ -12,7 +12,7 @@ oradan üretilir (`pandoc → docx → LibreOffice`), elle düzenlenmez.
 | `TEST-RAPORU.pdf` | "Kısaca" özet; modül → ne sınandı; canlı doğrulamalar; test dosyaları ekte | 8 |
 
 `Daha Once Gonderilen Belgeler/` — Müşteri'ye Temmuz–Ağustos 2026'da gönderilen
-10 karar belgesi (turizm, kapora, e-posta, dosya saklama, mevzuat, alt yazı,
+7 karar belgesi (turizm, kapora, e-posta, dosya saklama, alt yazı,
 arşiv paylaşımı, hasta deneyimi). "Dönüş Yapılmayanlar" bu klasöre atıf yapar.
 
 `Medagama-Kaynak-Kod-2026-09-07.zip` — sözleşme kapsamındaki modüllerin kaynak

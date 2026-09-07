@@ -124,16 +124,10 @@ daha önce de istenmiştir; tarih ve belge her maddede yazılıdır. Tek sayfal�
   belgesi; hesap bekleniyor.
 - **Sözleşme dayanağı:** 4.4 bulut depolama.
 
-### 3.6 Hukuki metinler
+### 3.6 Hukuki vb. metinler
 
-- **Ne bekleniyor:** hukuk onaylı KVKK aydınlatma metni, kullanım şartları,
-  çerez politikası; belge türüne göre yasal saklama süreleri.
-- **Ne açılacak:** son metinlerin siteye konması (bugün taslak metinler
-  yayında); saklama sürelerinin sistemde uygulanması.
-- **Daha önce iletildi:** 12 Ağustos 2026 — "Mevzuat Uyumu: İletilmesi
-  Gerekenler" ve "Saklama Süresi" belgeleri; 3 Ağustos 2026'da pazar
-  kararıyla birlikte istendi.
-- **Sözleşme dayanağı:** 4.2 yasal uyumluluk Müşteri'de.
+Sitede yer alacak hukuki vb. metinler Müşteri tarafından iletildiğinde
+siteye eklenecektir.
 
 ### Cevap bekleyen soru (teslimi engellemez)
 
