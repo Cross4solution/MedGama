@@ -2208,7 +2208,9 @@
     "addMore": "Add more...",
     "clear": "Clear",
     "connectionErrorTitle": "Could not load results",
-    "connectionErrorHint": "The server could not be reached. Check your connection and try again — this is not an empty search."
+    "connectionErrorHint": "The server could not be reached. Check your connection and try again — this is not an empty search.",
+    "sortPriceAsc": "Price: low to high",
+    "sortPriceDesc": "Price: high to low"
   },
   "doctorProfile": {
     "about": "About",

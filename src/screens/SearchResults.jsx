@@ -146,6 +146,7 @@ export default function SearchResults() {
   const [minRating, setMinRating] = useState(sp.get('min_rating') || '');
   const [online, setOnline] = useState(sp.get('online_only') === '1');
   const [verified, setVerified] = useState(sp.get('verified') === '1');
+  const [sort, setSort] = useState(sp.get('sort') || '');
   const [mobileFilter, setMobileFilter] = useState(false);
 
   // suggestions ("did you mean?")
@@ -176,6 +177,7 @@ export default function SearchResults() {
         min_rating: minRating || undefined,
         online_only: online ? '1' : undefined,
         verified: verified ? '1' : undefined,
+        sort: sort || undefined,
         page,
         per_page: 20,
       });
@@ -203,17 +205,17 @@ export default function SearchResults() {
     } finally {
       setLoading(false);
     }
-  }, [searchText, specId, cityId, lang, minRating, online, verified, page]);
+  }, [searchText, specId, cityId, lang, minRating, online, verified, sort, page]);
 
   useEffect(() => { fetch(); }, [fetch]);
 
   // sync URL
   const syncUrl = useCallback((overrides = {}) => {
     const p = new URLSearchParams();
-    const vals = { q: searchText, specialty_id: specId, city_id: cityId, language: lang, min_rating: minRating, online_only: online ? '1' : '', verified: verified ? '1' : '', ...overrides };
+    const vals = { q: searchText, specialty_id: specId, city_id: cityId, language: lang, min_rating: minRating, online_only: online ? '1' : '', verified: verified ? '1' : '', sort, ...overrides };
     Object.entries(vals).forEach(([k, v]) => { if (v) p.set(k, v); });
     setSp(p);
-  }, [searchText, specId, cityId, lang, minRating, online, verified, setSp]);
+  }, [searchText, specId, cityId, lang, minRating, online, verified, sort, setSp]);
 
   // hero submit
   const heroSubmit = (e) => {
@@ -278,6 +280,17 @@ export default function SearchResults() {
         <select id="suzgec-puan" value={minRating} onChange={e => setMinRating(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400">
           <option value="">{t('search.anyRating')}</option>
           {[4, 3, 2].map(n => <option key={n} value={n}>{t('search.starsAndAbove', { count: n })}</option>)}
+        </select>
+      </div>
+      {/* Sıralama — sözleşme: puan, deneyim ve fiyata göre */}
+      <div>
+        <label htmlFor="suzgec-siralama" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('search.sortBy')}</label>
+        <select id="suzgec-siralama" value={sort} onChange={e => setSort(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400">
+          <option value="">{t('search.sortName')}</option>
+          <option value="rating">{t('search.sortRating')}</option>
+          <option value="experience">{t('search.sortExperience')}</option>
+          <option value="price_asc">{t('search.sortPriceAsc')}</option>
+          <option value="price_desc">{t('search.sortPriceDesc')}</option>
         </select>
       </div>
       {/* Toggles */}

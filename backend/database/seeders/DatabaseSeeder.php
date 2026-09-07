@@ -365,6 +365,7 @@ class DatabaseSeeder extends Seeder
                     'insurance_providers'=> ['SGK', 'Allianz', 'AXA'],
                     'avg_rating'         => 4.8,
                     'review_count'       => 142,
+                    'prices'             => [['label' => 'Muayene', 'min' => 800, 'max' => 1500, 'currency' => 'TRY']],
                     'education'          => [
                         ['degree' => 'Tıp Doktorası', 'school' => 'Hacettepe Üniversitesi Tıp Fakültesi', 'year' => '2008'],
                         ['degree' => 'Kardiyoloji Uzmanlığı', 'school' => 'İstanbul Üniversitesi Kardiyoloji ABD', 'year' => '2013'],
@@ -393,6 +394,7 @@ class DatabaseSeeder extends Seeder
                     'insurance_providers'=> ['SGK', 'Allianz', 'Mapfre'],
                     'avg_rating'         => 4.9,
                     'review_count'       => 287,
+                    'prices'             => [['label' => 'Muayene', 'min' => 2500, 'max' => 4000, 'currency' => 'TRY']],
                     'education'          => [
                         ['degree' => 'Tıp Doktorası', 'school' => 'Marmara Üniversitesi Tıp Fakültesi', 'year' => '2001'],
                         ['degree' => 'Göz Hastalıkları Uzmanlığı', 'school' => 'İstanbul Eğitim Araştırma Hastanesi', 'year' => '2006'],
@@ -421,6 +423,7 @@ class DatabaseSeeder extends Seeder
                     'insurance_providers'=> ['SGK', 'AXA'],
                     'avg_rating'         => 4.7,
                     'review_count'       => 98,
+                    'prices'             => [['label' => 'Muayene', 'min' => 600, 'max' => 900, 'currency' => 'TRY']],
                     'education'          => [
                         ['degree' => 'Diş Hekimliği Doktorası (DDS)', 'school' => 'Gazi Üniversitesi Dişhekimliği Fakültesi', 'year' => '2012'],
                         ['degree' => 'Ortodonti Uzmanlığı', 'school' => 'İstanbul Üniversitesi', 'year' => '2016'],
@@ -449,6 +452,7 @@ class DatabaseSeeder extends Seeder
                     'insurance_providers'=> ['SGK', 'Allianz', 'Generali'],
                     'avg_rating'         => 4.6,
                     'review_count'       => 203,
+                    'prices'             => [['label' => 'Muayene', 'min' => 1200, 'max' => 2000, 'currency' => 'TRY']],
                     'education'          => [
                         ['degree' => 'Tıp Doktorası', 'school' => 'Ankara Üniversitesi Tıp Fakültesi', 'year' => '2005'],
                         ['degree' => 'Ortopedi Uzmanlığı', 'school' => 'Hacettepe Üniversitesi', 'year' => '2010'],
@@ -477,6 +481,7 @@ class DatabaseSeeder extends Seeder
                     'insurance_providers'=> ['SGK', 'AXA', 'Cigna'],
                     'avg_rating'         => 4.8,
                     'review_count'       => 175,
+                    'prices'             => [['label' => 'Muayene', 'min' => 1800, 'max' => 3000, 'currency' => 'TRY']],
                     'education'          => [
                         ['degree' => 'Tıp Doktorası', 'school' => 'Ege Üniversitesi Tıp Fakültesi', 'year' => '2009'],
                         ['degree' => 'Kardiyoloji Uzmanlığı', 'school' => 'İzmir Atatürk Eğitim Araştırma Hastanesi', 'year' => '2014'],

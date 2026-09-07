@@ -18,6 +18,36 @@ class DoctorProfile extends Model
     protected $keyType = 'string';
     public $incrementing = false;
 
+    /**
+     * `prices` JSON'undan en düşük fiyat.
+     *
+     * Her kalemde `min` yoksa `max` kullanılır; ikisi de yoksa kalem
+     * sayılmaz. Hiç fiyat yoksa null — sıralamada sona düşer.
+     */
+    public static function asgariFiyat(mixed $prices): ?float
+    {
+        $enDusuk = null;
+        foreach ((array) $prices as $kalem) {
+            if (!is_array($kalem)) continue;
+            $deger = $kalem['min'] ?? $kalem['max'] ?? null;
+            if ($deger === null || $deger === '' || !is_numeric($deger)) continue;
+            $deger = (float) $deger;
+            if ($enDusuk === null || $deger < $enDusuk) $enDusuk = $deger;
+        }
+        return $enDusuk;
+    }
+
+    protected static function booted(): void
+    {
+        // Fiyata göre sıralama `min_price` sütunundan yapılıyor; JSON'la
+        // birlikte güncel kalması için her kayıtta yeniden hesaplanır.
+        static::saving(function (self $profil) {
+            if ($profil->isDirty('prices') || $profil->min_price === null) {
+                $profil->min_price = self::asgariFiyat($profil->prices);
+            }
+        });
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -60,6 +90,7 @@ class DoctorProfile extends Model
         'certifications',
         'services',
         'prices',
+        'min_price',
         'languages',
         'address',
         'map_coordinates',
@@ -91,6 +122,7 @@ class DoctorProfile extends Model
             'certifications'     => 'array',
             'services'           => 'array',
             'prices'             => 'array',
+            'min_price'          => 'float',
             'languages'          => 'array',
             'map_coordinates'    => 'array',
             'gallery'            => 'array',

@@ -7,6 +7,8 @@ use App\Models\CalendarSlot;
 use App\Models\DoctorReview;
 use App\Models\Favorite;
 use App\Models\Specialty;
+use App\Models\DoctorProfile;
+use App\Support\Sorgu;
 use App\Models\User;
 use App\Notifications\NewReviewNotification;
 use App\Notifications\ReviewResponseNotification;
@@ -35,7 +37,7 @@ class DoctorService
             ->where('role_id', 'doctor')
             ->where('is_active', true)
             ->with([
-                'doctorProfile:id,user_id,clinic_id,title,specialty,specialty_id,sub_specialties,experience_years,address,online_consultation,bio,languages,prices,avg_rating,review_count',
+                'doctorProfile:id,user_id,clinic_id,title,specialty,specialty_id,sub_specialties,experience_years,address,online_consultation,bio,languages,prices,min_price,avg_rating,review_count',
                 'doctorProfile.specialtyRelation:id,name',
                 // address brief listede şehir join'ine gerek bırakmaz (Round 4 landing)
                 'clinic:id,name,codename,avatar,address',
@@ -180,10 +182,37 @@ class DoctorService
         }
 
         // ── Sorting ──
+        //
+        // `rating` ve `experience` seçenekleri VARDI ama üçü de aynı şeyi
+        // yapıyordu (doğrulanmış önce, sonra ada göre) — sıralama sahteydi.
+        // Sözleşme fiyata göre sıralama da istiyor. Profil sütunları alt
+        // sorguyla okunuyor: kullanıcı tablosuyla birleştirmek seçilen
+        // sütunları ve sayfalama sayısını bozuyor.
+        $profilSutunu = fn (string $sutun) => DoctorProfile::select($sutun)
+            ->whereColumn('doctor_profiles.user_id', 'users.id')
+            ->limit(1);
+        // Fiyatı olmayanlar en sona: `NULL` önce/sonra davranışı veritabanına
+        // göre değişir, açıkça yazılıyor.
+        $fiyatsizSona = DoctorProfile::selectRaw('CASE WHEN min_price IS NULL THEN 1 ELSE 0 END')
+            ->whereColumn('doctor_profiles.user_id', 'users.id')
+            ->limit(1);
+
         $sort = $filters['sort'] ?? 'name';
         match ($sort) {
-            'rating'     => $query->orderByDesc('is_verified')->orderBy('fullname'),
-            'experience' => $query->orderByDesc('is_verified')->orderBy('fullname'),
+            'rating'     => $query->orderByDesc($profilSutunu('avg_rating'))
+                                  ->orderByDesc($profilSutunu('review_count'))
+                                  ->orderBy('fullname'),
+            // Sütun metin; sayı olarak sıralanmazsa "5" > "20".
+            'experience' => $query->orderByDesc(
+                                    DoctorProfile::selectRaw(Sorgu::sayiIfadesi('experience_years'))
+                                        ->whereColumn('doctor_profiles.user_id', 'users.id')->limit(1))
+                                  ->orderBy('fullname'),
+            'price_asc'  => $query->orderBy($fiyatsizSona)
+                                  ->orderBy($profilSutunu('min_price'))
+                                  ->orderBy('fullname'),
+            'price_desc' => $query->orderBy($fiyatsizSona)
+                                  ->orderByDesc($profilSutunu('min_price'))
+                                  ->orderBy('fullname'),
             default      => $query->orderByDesc('is_verified')->orderBy('fullname'),
         };
 

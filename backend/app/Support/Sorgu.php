@@ -61,6 +61,24 @@ final class Sorgu
      *
      * PostgreSQL'de ILIKE gerekir; MySQL ve SQLite'ta LIKE zaten duyarsızdır.
      */
+    /**
+     * METİN sütunu sayı olarak okuyan ifade — sıralama ve karşılaştırma için.
+     *
+     * `doctor_profiles.experience_years` metin (`'12'`); metin olarak
+     * sıralanınca "5" > "20" oluyor ve deneyime göre sıralama ters
+     * çıkıyordu. Sütunun türünü değiştirmek yerine okurken çevriliyor:
+     * mevcut veride "12 yıl" gibi değerler de var, üç sürücü de baştaki
+     * sayıyı alır.
+     */
+    public static function sayiIfadesi(string $sutun): string
+    {
+        return match (self::surucu()) {
+            'pgsql'  => "NULLIF(REGEXP_REPLACE({$sutun}, '[^0-9.].*$', ''), '')::numeric",
+            'sqlite' => "CAST({$sutun} AS REAL)",
+            default  => "CAST({$sutun} AS DECIMAL(12,2))", // mysql / tidb
+        };
+    }
+
     public static function benzer(): string
     {
         return self::surucu() === 'pgsql' ? 'ilike' : 'like';

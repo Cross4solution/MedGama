@@ -2221,7 +2221,9 @@
     "addMore": "Daha ekle...",
     "clear": "Temizle",
     "connectionErrorTitle": "Sonuçlar yüklenemedi",
-    "connectionErrorHint": "Sunucuya ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin — arama sonucu boş olduğu için değil."
+    "connectionErrorHint": "Sunucuya ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin — arama sonucu boş olduğu için değil.",
+    "sortPriceAsc": "Fiyat: düşükten yükseğe",
+    "sortPriceDesc": "Fiyat: yüksekten düşüğe"
   },
   "doctorProfile": {
     "about": "Hakkında",
