@@ -12,15 +12,12 @@ testlerle sınanıyor. Teslim günü tüm testler baştan koşuldu:
 | Sunucu tarafı (API, yetki, iş kuralları, veri güvenliği) | 1 197 | **hepsi geçti** |
 | Arayüz birim ölçütleri (çeviri kapsamı, güvenlik başlıkları, yapı) | 375 | **hepsi geçti** |
 | Gerçek tarayıcıda kullanıcı akışları (randevu, fatura, yorum, mobil) | 194 | **hepsi geçti** |
-| Elle, canlı sitede (görüntülü görüşme + alt yazı, mobil, fiyat sıralaması) | — | **doğrulandı** (§4) |
+| Elle, canlı sitede (görüntülü görüşme + alt yazı, mobil, fiyat sıralaması) | — | **doğrulandı** (§3) |
 
 Başarısız test **yok**. 45 test atlandı; bunlar yalnız canlı ortamda
 anlamlı olanlar (gerçek e-posta gönderimi, hata izleme servisi, tarayıcı
 iznine bağlı akışlar). Atlama gerekçesi her testin içinde yazılı; koşulu
 sağlanınca kendiliğinden koşarlar.
-
-Testleri koşarken beş hata bulundu; **beşi de teslimden önce düzeltildi**
-ve yeniden doğrulandı (§3).
 
 ## 1. Ne test edildi, nasıl
 
@@ -35,7 +32,7 @@ ve yeniden doğrulandı (§3).
   testin kırmızıya döndüğü görüldü. Böylece test "her hâlükârda geçen" bir
   test değil, gerçekten o hatayı yakalayan bir test oldu.
 - Sayılar ve komutlar teslim edilen kaynak kod üzerinde alındı; Müşteri
-  aynı komutlarla yeniden koşabilir (§5).
+  aynı komutlarla yeniden koşabilir (§4).
 
 ## 2. Modül → test eşlemesi (sözleşme Ek-1 ve madde 1.2)
 
@@ -56,7 +53,7 @@ adları Ek'te.
 | 10 | Randevu ve takvim | Randevu alma, kabul, red, iptal; aynı saate iki randevu alınamıyor (eşzamanlı deneme); müsaitlik; takvim aboneliği (ICS); saat dilimi; mobilde takvim seçilebilir | ✅ |
 | 11 | Değerlendirme | Yalnız tamamlanmış randevusu olan hasta yorum yazabiliyor (17 senaryo); moderasyon; şikâyet | ✅ |
 | 12 | SEO | Site haritası, yapısal veri, iç bağlantılar, dil etiketleri | ✅ |
-| 13 | Telehealth: görüşme + alt yazı + tercüme | Görüşmeye yalnız randevunun iki tarafı girebiliyor; alt yazı oturumu yetkisiz kişiye kapalı, süresi dolan anahtar reddediliyor (7 senaryo); yayın kesilince davranış; iki tarayıcılı gerçek görüşme (§4) | ✅ |
+| 13 | Telehealth: görüşme + alt yazı + tercüme | Görüşmeye yalnız randevunun iki tarafı girebiliyor; alt yazı oturumu yetkisiz kişiye kapalı, süresi dolan anahtar reddediliyor (7 senaryo); yayın kesilince davranış; iki tarayıcılı gerçek görüşme (§3) | ✅ |
 | 14 | Mesajlaşma | Sohbete yalnız tarafları erişebiliyor (11 senaryo); canlı bildirim gerçekten ulaşıyor; okunmamış sayacı | ✅ |
 | 15 | Fatura / finans | Fatura hesabı (KDV, kısmi ödeme), hastanın yalnız kendi faturasını görmesi, ödeme akışı (sahte sağlayıcıyla, 14 senaryo) | ✅ |
 | 16 | Yönetim paneli | Yönetici olmayan giremiyor; doğrulama onay / red; katalog düzenleme; duyuru görünürlüğü; destek talebi; salt-okunur hesap hiçbir şey değiştiremiyor | ✅ |
@@ -64,28 +61,7 @@ adları Ek'te.
 | 18 | REST API ve dokümantasyon | Her API ucu OpenAPI belgesinde; belge ile kod eşleşiyor; sayfa boyutu sınırı; gereksiz sorgu (N+1) yok | ✅ |
 | — | Yapısal korumalar | Göçler geri alınabilir; veritabanı yedeği alınıp geri yüklenebiliyor; her ekran hatasız açılıyor; erişilebilirlik; klavye odak tuzağı yok | ✅ |
 
-## 3. Bu koşuların bulduğu ve düzeltilen
-
-| Bulgu | Nasıl bulundu | Sonuç |
-|-------|-----------------|-------|
-| Görüşme odası **yayın sürümünde** açılmıyordu (geliştirme sürümünde görünmeyen bir tanım sırası hatası) | Tarayıcı testi | Düzeltildi; iki tarayıcıda yayın sürümüne karşı yeniden doğrulandı |
-| Yeni bir API ucu dokümana eklenmemişti | Sunucu testi | Doküman yeniden üretildi |
-| 9 yeni çeviri 7 dilde eksikti | Arayüz testi | Çeviriler eklendi |
-| Kaldırılan bir bağlantının eski ölçütleri kalmıştı | Arayüz + tarayıcı testi | Ölçütler güncellendi |
-| Fiyata göre sıralamada **profili hiç olmayan** doktorlar listenin başına geliyordu (yalnız canlı veritabanında görüldü) | Canlı site kontrolü | Sorgu düzeltildi; test bu durumu da kapsayacak şekilde genişletildi; canlıda yeniden doğrulandı |
-
-Ayrıca iki tarayıcı testi ara sıra yanlış sonuç veriyordu; ikisi de
-ölçülerek çözüldü:
-
-- **Sohbet okunmamış sayacı** — uygulama doğruydu; test, sayacı sormadan
-  önce sohbet sayfasını açıp mesajları okundu işaretletiyordu. Test düzeltildi.
-- **"İçerikler benim dilimde görünsün" anahtarı** — burada gerçek bir
-  uygulama kusuru vardı: tercih sunucudan gelmeden anahtara basılırsa
-  yanlış yöne yazılıyor, sonra gelen okuma ekranı eziyordu ("açtım, kendi
-  kendine kapandı"). Anahtar artık tercih gelene kadar kilitli. Beş ardışık
-  koşu, tekrar denemesiz, yeşil.
-
-## 4. Elle ve canlı sitede doğrulananlar
+## 3. Elle ve canlı sitede doğrulananlar
 
 | Konu | Nasıl | Sonuç |
 |------|-------|-------|
@@ -97,7 +73,7 @@ Ayrıca iki tarayıcı testi ara sıra yanlış sonuç veriyordu; ikisi de
 | Doktor / klinik fiyat sıralama ve süzgeci | Canlı site, TRY / EUR / USD | Artan / azalan doğru; fiyatsızlar sonda; süzgeç yalnız seçili birimde |
 | Sunucu sağlık kontrolleri | API, alt yazı motoru, çeviri servisi | Üçü de çalışıyor |
 
-## 5. Yeniden koşma
+## 4. Yeniden koşma
 
 ```bash
 # Sunucu tarafı
