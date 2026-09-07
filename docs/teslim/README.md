@@ -10,9 +10,11 @@ oradan üretilir (`pandoc → docx → LibreOffice`), elle düzenlenmez.
 | `KULLANICI-KILAVUZU.pdf` | Hasta / doktor / klinik / hastane için kullanım | 6 |
 | `YONETICI-REHBERI.pdf` | Yönetim paneli ve işletme | 4 |
 | `TEST-RAPORU.pdf` | "Kısaca" özet; modül → ne sınandı; canlı doğrulamalar; test dosyaları ekte | 8 |
-| `Medagama_Tek_Tusla_Saglik_Turizmi.pdf` | Turizm modülü karar dokümanı (müşteri onayı bekliyor, tutanak §3) | 4 |
-| `Medagama_Kapora_Akisi.pdf` | Kapora akışı (sanal POS bekliyor, tutanak §3) | 1 |
 
-Zip: `Medagama-Teslim-2026-09-07.zip` (bu klasördeki PDF'ler).
+`Daha Once Gonderilen Belgeler/` — Müşteri'ye Temmuz–Ağustos 2026'da gönderilen
+10 karar belgesi (turizm, kapora, e-posta, dosya saklama, mevzuat, alt yazı,
+arşiv paylaşımı, hasta deneyimi). "Sizden Beklediklerimiz" bu klasöre atıf yapar.
+
+Zip: `Medagama-Teslim-2026-09-07.zip` (PDF'ler + bu klasör).
 
 Teslimle birlikte: Render'da `DEMO_ADMIN_AUTO_LOGIN` kaldırılır (tutanak §4).

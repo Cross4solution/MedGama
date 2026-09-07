@@ -74,7 +74,7 @@ daha önce de istenmiştir; tarih ve belge her maddede yazılıdır. Tek sayfal�
 - **Ne açılacak:** site içi online ödeme, randevu kaporası, ücretli
   profesyonel inceleme (modül 16 ve 18).
 - **Daha önce iletildi:** 12 Ağustos 2026 — "Randevu Kaporası — Ödeme
-  Akışı" ve "Hasta Deneyimi" belgeleri (bu pakette `Medagama_Kapora_Akisi.pdf`).
+  Akışı" ve "Hasta Deneyimi" belgeleri (paketteki "Daha Önce Gönderilen Belgeler" klasöründe).
 - **Sözleşme dayanağı:** 1.2 ödeme sistemi; 4.4 ödeme entegrasyonları.
 
 ### 3.2 Sağlık turizmi kararları ve API lisansları
@@ -83,7 +83,7 @@ daha önce de istenmiştir; tarih ve belge her maddede yazılıdır. Tek sayfal�
   verisi kullanılacaksa ilgili API lisansı (Skyscanner vb.).
 - **Ne açılacak:** tek tuşla paket oluşturma modülü (modül 17).
 - **Daha önce iletildi:** 10 Ağustos 2026 — "Tek Tuşla Sağlık Turizmi"
-  karar belgesi (bu pakette `Medagama_Tek_Tusla_Saglik_Turizmi.pdf`).
+  karar belgesi (aynı klasörde).
   Belge dört temel kararı ve Müşteri'nin seçeceği A / B seçeneğini içerir.
 - **Sözleşme dayanağı:** Ek-1 Turizm Programı; 4.4 API lisansları.
 

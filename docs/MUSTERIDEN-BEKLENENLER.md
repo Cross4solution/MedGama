@@ -14,5 +14,5 @@ Daha önce sorulan, cevap alınmayan konular.
 | 6 | **Sitede yer alacak hukuk vb. metinler** | Sitedeki metinlerin son hâline gelmesi |
 | 7 | **Semptom eş anlamlı listesi** için karar: plan uygun mu, listeyi kim girecek? | Halk diliyle arama ("burun estetiği", "nose job") |
 
-Bu konularla ilgili gönderdiğimiz belgeler bu pakette
-(`Medagama_Kapora_Akisi.pdf`, `Medagama_Tek_Tusla_Saglik_Turizmi.pdf`).
+Bu konularla ilgili daha önce gönderdiğimiz belgelerin hepsi bu paketteki
+**"Daha Önce Gönderilen Belgeler"** klasöründe.
