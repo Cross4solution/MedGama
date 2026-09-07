@@ -1,4 +1,4 @@
-# Medagama — Sizden Beklediklerimiz
+# Medagama — Dönüş Yapılmayanlar
 
 7 Eylül 2026
 

@@ -6,14 +6,14 @@ oradan üretilir (`pandoc → docx → LibreOffice`), elle düzenlenmez.
 | Dosya | Ne | Sayfa |
 |-------|----|------|
 | `TESLIM-TUTANAGI.pdf` | "Kısaca" özet; sözleşme kalemi → durum; müşteriden beklenen 6 girdi, her biri "ne, ne için, ne zaman istendi" ile (§3) | 5 |
-| `MUSTERIDEN-BEKLENENLER.pdf` | Sizden beklediklerimiz: 7 kalem, tek sayfa | 1 |
+| `MUSTERIDEN-BEKLENENLER.pdf` | Dönüş yapılmayanlar: 7 kalem, tek sayfa | 1 |
 | `KULLANICI-KILAVUZU.pdf` | Hasta / doktor / klinik / hastane için kullanım | 6 |
 | `YONETICI-REHBERI.pdf` | Yönetim paneli ve işletme | 4 |
 | `TEST-RAPORU.pdf` | "Kısaca" özet; modül → ne sınandı; canlı doğrulamalar; test dosyaları ekte | 8 |
 
 `Daha Once Gonderilen Belgeler/` — Müşteri'ye Temmuz–Ağustos 2026'da gönderilen
 10 karar belgesi (turizm, kapora, e-posta, dosya saklama, mevzuat, alt yazı,
-arşiv paylaşımı, hasta deneyimi). "Sizden Beklediklerimiz" bu klasöre atıf yapar.
+arşiv paylaşımı, hasta deneyimi). "Dönüş Yapılmayanlar" bu klasöre atıf yapar.
 
 Zip: `Medagama-Teslim-2026-09-07.zip` (PDF'ler + bu klasör).
 
