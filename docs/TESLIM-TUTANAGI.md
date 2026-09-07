@@ -154,11 +154,3 @@ askıya alınmış sayılır ve teslimin tamamlanmasına engel oluşturmaz.
   kapatılır (Yönetici Rehberi B.6).
 - Kaynak kod ve fikri haklar: madde 5.2 uyarınca son ödeme ve bu tutanağın
   imzasıyla Müşteri'ye geçer.
-
----
-
-**Geliştirici**  
-Ad / Unvan: ____________________  İmza: ____________
-
-**Müşteri**  
-Ad / Unvan: ____________________  İmza: ____________
