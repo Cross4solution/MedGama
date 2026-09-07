@@ -1,56 +1,64 @@
 # Medagama — Yönetici Rehberi
 
-Sürüm 1.0 · Eylül 2026 · Sözleşme madde 2.2 kapsamında teslim edilen belge
+Sürüm 1.1 · Eylül 2026 · Sözleşme madde 2.2 kapsamında teslim edilen belge
 
-İki bölüm: **(A) Yönetim paneli** — platformu işleten kişi için;
-**(B) İşletme** — sunucuları ve yayını yöneten teknik kişi için.
+## Kısaca
+
+İki okuyucu için iki bölüm:
+
+- **A. Yönetim paneli** — platformu günlük işleten kişi için: doktor
+  doğrulama, kullanıcılar, yorum denetimi, duyurular. Teknik bilgi gerekmez.
+- **B. İşletme** — sunucuları ve yayını yöneten teknik kişi için: nerede ne
+  çalışıyor, nasıl yayınlanır, yedek, sağlık kontrolü.
+
+Teslim günü yapılacak iki şey: yönetici hesabı açmak (B.4) ve şifresiz demo
+girişini kapatmak (B.6).
 
 ---
 
-## A. Yönetim paneli (`/admin`)
+## A. Yönetim paneli
 
 ### A.1 Giriş
-- Süper yönetici hesabı sunucuda oluşturulur (bkz. B.4); e-posta ve şifreyle
-  `/login` → `/admin`.
-- **Görüntüleme hesabı:** `--salt-okunur` ile açılan hesap paneli gezer ama
-  hiçbir kaydı ekleyemez, değiştiremez, silemez (403). Müşteri incelemesi için
-  düşünüldü.
-- **Demo şifresiz giriş:** `DEMO_ADMIN_AUTO_LOGIN` ortam değişkeni açıkken
-  `/admin` şifresiz açılır (yalnız salt-okunur hesaba bağlanabilir). Demo
-  bitince bu değişken **kaldırılmalıdır** (bkz. B.6).
+- Yönetici hesabı sunucuda açılır (B.4); e-posta ve şifreyle giriş yapıp
+  **Yönetim** menüsüne girilir (`/admin`).
+- **Görüntüleme hesabı:** "salt okunur" olarak açılan hesap paneli gezer
+  ama hiçbir kaydı ekleyemez, değiştiremez, silemez. Müşteri incelemesi
+  için düşünüldü.
+- **Demo şifresiz giriş:** demo süresince panel şifresiz açılıyor (yalnız
+  görüntüleme hesabıyla). Demo bitince bu kapatılır (B.6).
 
 ### A.2 Menü
 
 | Bölüm | Ekran | Ne yapılır |
 |-----|-------|----------------|
-| Genel Bakış | **Kontrol Paneli** `/admin` | Kullanıcı, randevu, gelir, bekleyen iş sayıları; acil uyarılar (doğrulama bekleyen doktor, şikâyet edilen içerik, açık destek talebi) |
-| Operasyon | **Doğrulama Merkezi** `/admin/verification` | Doktor ve klinik doğrulama başvuruları: belgeleri aç, **Onayla / Reddet** (gerekçe yazılır). Onaylanmayan doktor randevu alamaz |
-| | **Kullanıcı Yönetimi** `/admin/users` | Sekmeler: Tümü / Doktorlar / Hastalar / Klinikler. Ara, süz, **engelle / engeli kaldır**, **parolayı sıfırla**, rol ve seviye görüntüle, doğrulama durumu |
-| | **Finans** `/admin/financials` | Fatura ve gelir özeti, dönem raporu, dışa aktar |
-| Moderasyon | **Yorum Moderasyonu** `/admin/reviews` | Bekleyen / onaylı / reddedilen / gizli; doktor ve klinik yorumları ayrı sayılır |
-| | **İçerik Moderasyonu** `/admin/moderation` | Şikâyet edilen gönderi ve yorumlar: gizle, sil, şikâyeti kapat |
-| Sistem | **Katalog Yönetimi** `/admin/catalog` | Branşlar, tedaviler, semptom eş anlamlıları (halk dili → branş), şehir/ülke |
-| | **Sistem Ayarları** `/admin/settings` | Site ayarları, özellik anahtarları (`/admin/feature-toggles`): modül aç/kapat |
-| | **Denetim Kayıtları** `/admin/audit-logs` | Kim, ne zaman, neyi değiştirdi; tarih aralığı ve kullanıcıya göre süz |
-| | **Destek Talepleri** `/admin/support` | Kullanıcı destek talepleri; yanıtla, kapat |
-| | **Duyurular** `/admin/announcements` | Rol bazlı duyuru (hasta / doktor / klinik / hepsi), öncelik, kapatılabilir mi, aktif/pasif |
+| Genel Bakış | **Kontrol Paneli** | Kullanıcı, randevu, gelir, bekleyen iş sayıları; acil uyarılar (doğrulama bekleyen doktor, şikâyet edilen içerik, açık destek talebi) |
+| Operasyon | **Doğrulama Merkezi** | Doktor ve klinik doğrulama başvuruları: belgeleri aç, **Onayla / Reddet** (gerekçe yazılır). Onaylanmayan doktora randevu alınamaz |
+| | **Kullanıcı Yönetimi** | Sekmeler: Tümü / Doktorlar / Hastalar / Klinikler. Ara, süz, **engelle / engeli kaldır**, **parolayı sıfırla**, rol ve doğrulama durumunu gör |
+| | **Finans** | Fatura ve gelir özeti, dönem raporu, dışa aktar |
+| Moderasyon | **Yorum Moderasyonu** | Bekleyen / onaylı / reddedilen / gizli; doktor ve klinik yorumları ayrı |
+| | **İçerik Moderasyonu** | Şikâyet edilen gönderi ve yorumlar: gizle, sil, şikâyeti kapat |
+| Sistem | **Katalog Yönetimi** | Branşlar, tedaviler, semptom eş anlamlıları (halk dili → branş), şehir / ülke |
+| | **Sistem Ayarları** | Site ayarları, özellik anahtarları: modül aç / kapat |
+| | **Denetim Kayıtları** | Kim, ne zaman, neyi değiştirdi; tarih ve kullanıcıya göre süz |
+| | **Destek Talepleri** | Kullanıcı destek talepleri; yanıtla, kapat |
+| | **Duyurular** | Rol bazlı duyuru (hasta / doktor / klinik / hepsi), öncelik, kapatılabilir mi, aktif / pasif |
 
-### A.3 Roller ve seviyeler
+### A.3 Roller
 
-| Rol | Seviye | Not |
-|------|--|------------|
-| Hasta | 1 | Kayıtta e-posta doğrulaması |
-| Doktor | 2 | E-posta + yönetici doğrulaması (belge) |
-| Klinik | 3 | Kayıtta otomatik doğrulanır; CRM paketiyle CRM açılır |
-| Hastane / grup | 4 | Otomatik doğrulanır; CRM her zaman açık; şubeleri yönetir |
-| Süper yönetici | 5 | Tam yetki |
+| Rol | Not |
+|------|------------|
+| Hasta | Kayıtta e-posta doğrulaması |
+| Doktor | E-posta doğrulaması + yönetici doğrulaması (belge) |
+| Klinik | Kayıtta otomatik doğrulanır; CRM paketiyle CRM açılır |
+| Hastane / grup | Otomatik doğrulanır; CRM her zaman açık; şubelerini yönetir |
+| Yönetici | Tam yetki; salt-okunur türevi yalnız görüntüler |
 
 ### A.4 Günlük işleyiş önerisi
 1. Kontrol panelindeki uyarıları sıfırlayın: bekleyen doğrulama, şikâyet,
    destek.
-2. Yorum moderasyonunda bekleyenleri geçirin (yalnız tamamlanmış randevusu
-   olan hasta yorum yazabildiği için sahte yorum beklenmez; yine de içerik
-   denetimi gerekir).
+2. Yorum moderasyonunda bekleyenleri geçirin. Yalnız randevusu tamamlanmış
+   hasta yorum yazabildiği için sahte yorum beklenmez; yine de içerik
+   denetimi gerekir.
 3. Haftada bir denetim kayıtlarını gözden geçirin.
 
 ---
@@ -63,21 +71,21 @@ Sürüm 1.0 · Eylül 2026 · Sözleşme madde 2.2 kapsamında teslim edilen bel
 |--------|--------|--------|
 | Ön yüz (Next.js) | Vercel — `med-gama.vercel.app` | `main` dalına push → otomatik yayın |
 | Arka uç (Laravel 11) | Render — `medagama-backend.onrender.com` | Docker; ortam değişkenleri Render panelinden |
-| Veritabanı | TiDB Cloud (MySQL uyumlu) | Yerelde PostgreSQL/MySQL, testte SQLite |
-| Sinyal + TURN (görüntülü görüşme) | OVH `57.128.27.244` | soketi (Docker) + coturn, TLS |
-| **Alt yazı motoru + çeviri** | OVH, Docker | `deploy/stt/README.md` |
-| Dosyalar (PHI) | Arka uç diski, şifreli | AWS S3'e taşınması müşteride (tutanak) |
+| Veritabanı | TiDB Cloud (MySQL uyumlu) | Yerelde PostgreSQL / MySQL, testte SQLite |
+| Görüşme sinyal + TURN | OVH sunucu `57.128.27.244` | soketi (Docker) + coturn, TLS |
+| Alt yazı motoru + çeviri | OVH sunucu, Docker | `deploy/stt/README.md` |
+| Hasta dosyaları | Arka uç diski, şifreli | Buluta taşınması AWS hesabına bağlı (tutanak §3.5) |
 
 ### B.2 Yayın (deploy)
-- Ön yüz: `git push origin <dal>:main` → Vercel derler (2–4 dk). Derleme
+- Ön yüz: `git push origin <dal>:main` → Vercel derler (2–4 dk). Push
   öncesi yerelde `npm run build` yeşil olmalı.
-- Arka uç: aynı push Render'ı tetikler; konteyner açılışında göçler koşar
-  (`backend/docker/entrypoint.sh`). Göç gerekiyorsa Render konsolundan
+- Arka uç: aynı push Render'ı tetikler (derleme 5–10 dk); konteyner
+  açılışında göçler koşar. Göç gerekiyorsa Render konsolundan
   `php artisan migrate --force`.
 - Geri alma: `docs/GERI-ALMA-PLANI.md`.
 
 ### B.3 Ortam değişkenleri (Render)
-Tam liste `docs/PRODUCTION_DEPLOYMENT.md`. Bu teslimle **eklenenler**:
+Tam liste `docs/PRODUCTION_DEPLOYMENT.md`. Bu teslimle eklenenler:
 
 ```
 CAPTIONS_ENGINE=whisper
@@ -98,15 +106,17 @@ php artisan yonetici:olustur inceleyen@alanadi.com --salt-okunur
 
 ### B.5 Yedek ve geri yükleme
 `docs/YEDEK-VE-GERI-YUKLEME.md` ve `docs/RPO-RTO.md`. Veritabanı yedeği
-TiDB Cloud'da; dosya yedeği S3 bağlanınca tamamlanır.
+TiDB Cloud'da; dosya yedeği bulut depolama bağlanınca tamamlanır.
 
-### B.6 Teslim sonrası yapılacaklar
-- `DEMO_ADMIN_AUTO_LOGIN` değişkenini Render'dan **kaldırın** (şifresiz
-  panel girişi kapanır).
-- Alan adı bağlanınca: Vercel alan adı, Resend e-posta alan adı doğrulaması
-  (`docs/Medagama_Eposta_Secenekleri.pdf`), OVH sertifikası ve
-  `REVERB_HOST` / `TURN_URLS` / `CAPTIONS_WHISPER_URL` yeni alan adına.
-- GPU sunucu gelince alt yazı motorunu büyütün (`deploy/stt/README.md`).
+### B.6 Teslim günü ve sonrası
+
+| Ne zaman | Ne yapılır |
+|--|--|
+| Teslim günü | Render'dan `DEMO_ADMIN_AUTO_LOGIN` değişkenini **kaldırın**; şifresiz panel girişi kapanır |
+| Alan adı bağlanınca | Vercel'e alan adı; e-posta servisinde alan adı doğrulaması (`docs/Medagama_Eposta_Secenekleri.pdf`); OVH sertifikası ve `REVERB_HOST` / `TURN_URLS` / `CAPTIONS_WHISPER_URL` / `LIBRETRANSLATE_URL` yeni alan adına |
+| 8 Kasım 2026'dan önce | Alan adı hâlâ yoksa OVH geçici sertifikasını yenileyin |
+| GPU sunucu gelince | Alt yazı motorunu büyük modele taşıyın (`deploy/stt/README.md`) |
+| AWS hesabı gelince | Hasta dosyalarını ve yedekleri buluta taşıyın (`docs/PRODUCTION_DEPLOYMENT.md`) |
 
 ### B.7 Sağlık kontrolleri
 ```bash
@@ -118,8 +128,9 @@ Olay yönetimi: `docs/SECURITY_INCIDENT_RUNBOOK.md`.
 
 ### B.8 Testler
 ```bash
-cd backend && php artisan test                 # arka uç (SQLite)
+cd backend && php artisan test                 # arka uç
 npm run test:unit                               # ön yüz birim ölçütleri
-E2E_BASE_URL=... E2E_API_ORIGIN=... E2E_DEMO_KEY=... npx playwright test   # uçtan uca
+E2E_BASE_URL=... E2E_API_ORIGIN=... E2E_DEMO_KEY=... npx playwright test   # tarayıcı
 ```
-API dokümanı: `backend/docs/openapi.yaml`.
+Ayrıntı ve son sonuçlar: `TEST-RAPORU.pdf`. API dokümanı:
+`backend/docs/openapi.yaml`.
