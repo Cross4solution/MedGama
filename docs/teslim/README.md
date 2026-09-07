@@ -8,6 +8,7 @@ oradan üretilir (`pandoc → docx → LibreOffice`), elle düzenlenmez.
 | `TESLIM-TUTANAGI.pdf` | "Kısaca" özet; sözleşme kalemi → durum; müşteriden beklenen 6 girdi, her biri "ne, ne için, ne zaman istendi" ile (§3) | 5 |
 | `KULLANICI-KILAVUZU.pdf` | Hasta / doktor / klinik / hastane için kullanım | 6 |
 | `YONETICI-REHBERI.pdf` | Yönetim paneli ve işletme | 4 |
+| `LISANS-ENVANTERI.pdf` | Üçüncü taraf paketler ve lisansları | - |
 | `TEST-RAPORU.pdf` | "Kısaca" özet; modül → ne sınandı; canlı doğrulamalar; test dosyaları ekte | 8 |
 
 `2/` - sözleşme kalemlerine dayanak iki karar belgesi (turizm, kapora).

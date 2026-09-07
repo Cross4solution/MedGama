@@ -54,11 +54,12 @@ Bekliyor = Müşteri girdisi gelince yapılacak.
 | Mobil uyumlu tasarım | ✓ | Telefon, tablet ve masaüstü genişliklerinde ölçüldü; otomatik testleri var |
 | REST API altyapısı | ✓ | Arka uç kodunda; dokümanı aşağıda |
 | Güvenli veri şifreleme | ✓ | Hasta dosyaları şifreli; tüm bağlantılar TLS; görüşme uçtan uca şifreli |
-| Kaynak kodları (tüm dosyalar) | ✓ | Bu paketteki kod arşivi (zip); sözleşme kapsamındaki modüller. Canlı sitedeki ek geliştirmeler kapsam dışıdır |
+| Kaynak kodları (tüm dosyalar) | ✓ | Bu paketteki kod arşivi `Medagama-Kaynak-Kod-2026-09-07.zip`; sözleşme kapsamındaki modüller. Canlı sitedeki ek geliştirmeler kapsam dışıdır. SHA-256: `eda33c34a8409a3cb5e4e0ca6916fd312bae010bf181199956f6b6b48b8f5ff4` (5 718 437 bayt) |
 | Kapsamlı teknik dokümantasyon | ✓ | Depoda `docs/` klasörü: mimari, dağıtım, yedek, olay yönetimi, uyum |
 | Kullanıcı kılavuzu ve yönetici rehberi | ✓ | Bu paketteki `KULLANICI-KILAVUZU.pdf`, `YONETICI-REHBERI.pdf` |
 | API dokümantasyonu | ✓ | Depoda `backend/docs/openapi.yaml` |
 | Test raporu | ✓ | Bu paketteki `TEST-RAPORU.pdf` |
+| Üçüncü taraf lisans envanteri | ✓ | Bu paketteki `LISANS-ENVANTERI.pdf` |
 
 ## 3. Müşteri'den beklenen girdiler
 
@@ -107,3 +108,22 @@ e-posta servisi ve alan adı Müşteri sorumluluğundadır.
 
 Sitede yer alacak hukuki vb. metinler Müşteri tarafından iletildiğinde
 siteye eklenecektir.
+
+## 4. Bilinen sınırlamalar
+
+- E-posta gönderimi (kayıt doğrulama, şifre sıfırlama) alan adı bağlanana
+  kadar çalışmaz (Bölüm 3.4).
+- Görüşme ve alt yazı sunucusu geçici bir adres ve sertifikayla çalışır;
+  sertifika 8 Kasım 2026'da dolar, alan adı gelmezse yenilenmesi gerekir.
+- Canlı alt yazı, GPU olmadığı için küçük modelle çalışır; doğruluk ve
+  gecikme buna göredir. Konuşmacı başına yaklaşık 4 saniyelik parçalar hâlinde
+  gösterilir.
+- Hasta dosyaları uygulama sunucusunun diskinde şifreli tutulur; bulut
+  depolamaya taşıma Müşteri'nin sağlayacağı hesaba bağlıdır.
+- Site içi kartla ödeme ve kapora, sanal POS bağlanana kadar kapalıdır
+  (Bölüm 3.1).
+
+## 5. Teslim
+
+Bu tutanak ve ekleri 7 Eylül 2026 tarihinde Müşteri'ye elektronik
+ortamda iletilmiştir. Teslim alındığının yazılı olarak teyidi rica olunur.
