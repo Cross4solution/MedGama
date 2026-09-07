@@ -11,9 +11,6 @@ Sürüm 1.1 · Eylül 2026 · Sözleşme madde 2.2 kapsamında teslim edilen bel
 - **B. İşletme** — sunucuları ve yayını yöneten teknik kişi için: nerede ne
   çalışıyor, nasıl yayınlanır, yedek, sağlık kontrolü.
 
-Teslim günü yapılacak iki şey: yönetici hesabı açmak (B.4) ve şifresiz demo
-girişini kapatmak (B.6).
-
 ---
 
 ## A. Yönetim paneli
@@ -24,8 +21,6 @@ girişini kapatmak (B.6).
 - **Görüntüleme hesabı:** "salt okunur" olarak açılan hesap paneli gezer
   ama hiçbir kaydı ekleyemez, değiştiremez, silemez. Müşteri incelemesi
   için düşünüldü.
-- **Demo şifresiz giriş:** demo süresince panel şifresiz açılıyor (yalnız
-  görüntüleme hesabıyla). Demo bitince bu kapatılır (B.6).
 
 ### A.2 Menü
 
@@ -108,11 +103,10 @@ php artisan yonetici:olustur inceleyen@alanadi.com --salt-okunur
 `docs/YEDEK-VE-GERI-YUKLEME.md` ve `docs/RPO-RTO.md`. Veritabanı yedeği
 TiDB Cloud'da; dosya yedeği bulut depolama bağlanınca tamamlanır.
 
-### B.6 Teslim günü ve sonrası
+### B.6 İleride yapılacaklar
 
 | Ne zaman | Ne yapılır |
 |--|--|
-| Teslim günü | Render'dan `DEMO_ADMIN_AUTO_LOGIN` değişkenini **kaldırın**; şifresiz panel girişi kapanır |
 | Alan adı bağlanınca | Vercel'e alan adı; e-posta servisinde alan adı doğrulaması (`docs/Medagama_Eposta_Secenekleri.pdf`); OVH sertifikası ve `REVERB_HOST` / `TURN_URLS` / `CAPTIONS_WHISPER_URL` / `LIBRETRANSLATE_URL` yeni alan adına |
 | 8 Kasım 2026'dan önce | Alan adı hâlâ yoksa OVH geçici sertifikasını yenileyin |
 | GPU sunucu gelince | Alt yazı motorunu büyük modele taşıyın (`deploy/stt/README.md`) |

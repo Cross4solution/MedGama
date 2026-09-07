@@ -150,7 +150,5 @@ askıya alınmış sayılır ve teslimin tamamlanmasına engel oluşturmaz.
 ## 4. Teslim sonrası
 
 - Bakım ve destek: madde 7 uyarınca ayrı paket.
-- Demo erişimi: yönetim paneline şifresiz demo girişi teslimle birlikte
-  kapatılır (Yönetici Rehberi B.6).
 - Kaynak kod ve fikri haklar: madde 5.2 uyarınca son ödeme ve bu tutanağın
   imzasıyla Müşteri'ye geçer.
