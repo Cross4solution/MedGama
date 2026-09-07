@@ -13,12 +13,13 @@ yeniden koşabilir.
 |-------|-----------|-------|
 | Arka uç (Laravel, PHPUnit) — 184 dosya | API uçları, yetki sınırları, iş kuralları, veri güvenliği, göçler | **1197 geçti · 0 kırmızı · 21 atlandı** (3 346 doğrulama) |
 | Ön yüz birim (Node) — 68 dosya | Yardımcılar, çeviri kapsamı, güvenlik başlıkları, yapısal ölçütler | **375 geçti · 0 kırmızı** |
-| Uçtan uca (Playwright, Chromium) — 39 senaryo dosyası | Gerçek tarayıcıda, gerçek kayıt oluşturarak kullanıcı akışları; mobil düzen; erişilebilirlik | **{{E2E_SONUC}}** |
+| Uçtan uca (Playwright, Chromium) — 39 senaryo dosyası | Gerçek tarayıcıda, gerçek kayıt oluşturarak kullanıcı akışları; mobil düzen; erişilebilirlik | **194 geçti · 0 kırmızı · 0 kararsız · 24 atlandı** (13 dk) |
 | Elle / canlıda doğrulama | Görüntülü görüşme + alt yazı (iki tarayıcı), canlı site ölçümleri | §5 |
 
-**Atlanan 21 arka uç testi:** yalnız canlı ortamda ya da dış servisle
-anlamlı olanlar (gerçek e-posta gönderimi, Sentry, yönetici ortam
-değişkeni gerektirenler). Atlama gerekçesi her testin içinde yazılıdır.
+**Atlananlar:** arka uçta 21, uçtan ucada 24 test atlandı — yalnız canlı
+ortamda ya da dış servisle anlamlı olanlar (gerçek e-posta gönderimi,
+Sentry, yönetici oturumu ortam değişkeni, tarayıcı iznine bağlı akışlar).
+Atlama gerekçesi her testin içinde yazılıdır; koşulu sağlanınca koşarlar.
 
 ## 2. Modül → test eşlemesi (sözleşme Ek-1 ve madde 1.2)
 
@@ -56,9 +57,16 @@ teslimden önce düzeltildi ve yeniden koşuldu:
 | 9 yeni çeviri anahtarı 7 dilde eksikti | ön yüz `ceviriAnahtarlari` | Çeviriler eklendi |
 | Kaldırılan "içeriğe geç" bağlantısının eski ölçütleri | ön yüz + uçtan uca | Ölçütler kaldırıldı, ana içerik ölçütleri korundu |
 
-Bir uçtan uca test (sohbet okunmamış sayacı) tam koşuda iki kez kırmızı
-yandı; ölçüldü, uygulama doğruydu (API'den 0 → 1), testin kendisi
-yarışıyordu. Test düzeltildi.
+İki uçtan uca test tam koşuda kararsızdı ve ikisi de ölçülerek çözüldü:
+
+- **Sohbet okunmamış sayacı** — uygulama doğruydu (API'den 0 → 1); test,
+  sayacı sormadan önce sohbet sayfasını açıp okundu işaretletiyordu. Test
+  düzeltildi.
+- **"İçerikler benim dilimde görünsün" anahtarı** — burada uygulama kusuru
+  vardı: tercih sunucudan gelmeden anahtara basılırsa yanlış yöne yazılıyor,
+  sonra gelen okuma ekranı eziyordu ("açtım, kendi kendine kapandı"). Anahtar
+  artık tercih gelene kadar kilitli; test de durumu kilit kalkınca okuyor.
+  Beş ardışık koşu, tekrar denemesiz, yeşil.
 
 ## 4. Yöntem
 

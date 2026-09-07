@@ -46,6 +46,7 @@ Sözleşme madde 5.2 gereği hakların devri bu tutanağın imzasıyla başlar.
 | Kapsamlı teknik dokümantasyon | ✅ | `docs/` (mimari, dağıtım, yedek, olay yönetimi, RPO/RTO, uyum) |
 | Kullanıcı kılavuzu ve yönetici rehberi | ✅ | `docs/KULLANICI-KILAVUZU.md/.pdf`, `docs/YONETICI-REHBERI.md/.pdf` |
 | API dokümantasyonu | ✅ | `backend/docs/openapi.yaml` |
+| Test raporu (modül → test eşlemesi, son koşu sonuçları) | ✅ | `docs/TEST-RAPORU.md/.pdf` |
 
 ## 3. Müşteriden beklenen girdiler
 
