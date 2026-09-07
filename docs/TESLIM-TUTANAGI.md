@@ -126,4 +126,10 @@ siteye eklenecektir.
 ## 5. Teslim
 
 Bu tutanak ve ekleri 7 Eylül 2026 tarihinde Müşteri'ye elektronik
-ortamda iletilmiştir. Teslim alındığının yazılı olarak teyidi rica olunur.
+ortamda iletilmiştir.
+
+| Geliştirici | Müşteri |
+|----------------------------------|----------------------------------|
+| &nbsp; | &nbsp; |
+| &nbsp; | &nbsp; |
+| &nbsp; | &nbsp; |
