@@ -27,6 +27,3 @@ oldukları. Şifre ve anahtar içermez.
 | Bağlantı | `ssh -i medagama_deploy ubuntu@57.128.27.244` |
 | Üzerinde çalışanlar | soketi (görüşme sinyali), coturn (TURN), medagama-stt (alt yazı), libretranslate (çeviri); hepsi Docker |
 | Gizli ayarlar | Sunucuda `/etc/medagama/stt.env` |
-
-SSH özel anahtarı ve OVH panel girişi bu belgede yer almaz; ayrı ve güvenli
-bir kanaldan iletilir.
