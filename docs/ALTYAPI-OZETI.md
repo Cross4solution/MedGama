@@ -11,13 +11,12 @@ oldukları. Şifre ve anahtar içermez.
 | 2 | Render | Uygulama sunucusu (API), Docker | https://medagama-backend.onrender.com |
 | 3 | TiDB Cloud | Veritabanı (MySQL uyumlu): kullanıcılar, randevular, faturalar, mesajlar. Otomatik yedekleme | Avrupa (Frankfurt) |
 | 4 | OVH sunucu | Görüntülü görüşme sinyali ve TURN, canlı alt yazı (Whisper), çeviri (LibreTranslate) | Strasbourg (Fransa); 4 çekirdek, 15 GB RAM, 96 GB disk |
-| 5 | GitHub | Kaynak kod deposu | https://github.com/Cross4solution/Medagama |
-| 6 | Sentry | Hata izleme | - |
+| 5 | Sentry | Hata izleme | - |
 
 ## Nasıl çalışıyor
 
-- Kod GitHub'a gönderildiğinde Vercel (arayüz) ve Render (API) otomatik
-  olarak yeniden yayınlar.
+- Kod güncellendiğinde Vercel (arayüz) ve Render (API) otomatik olarak
+  yeniden yayınlar.
 - Görüşme, alt yazı ve çeviri tamamen kendi sunucumuzda (OVH) çalışır;
   hasta verisi üçüncü tarafa gitmez.
 - Hasta dosyaları uygulama sunucusunun diskinde şifreli tutulur. Bulut
