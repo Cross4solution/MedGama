@@ -1,6 +1,6 @@
 # Medagama - Dönüş Yapılmayanlar
 
-7 Eylül 2026
+10 Eylül 2026
 
 Daha önce sorulan, cevap alınmayan konular.
 
@@ -13,6 +13,3 @@ Daha önce sorulan, cevap alınmayan konular.
 | 5 | **Bulut dosya depolama hesabı** (S3 uyumlu: AWS, Google Cloud, Hetzner, DigitalOcean vb. - tercih sizin) | Hasta belgelerinin ve yedeklerin bulutta saklanması |
 | 6 | **Sitede yer alacak hukuki vb. metinler** | İletildiğinde siteye eklenecek |
 | 7 | **Semptom eş anlamlı listesi** için karar: plan uygun mu, listeyi kim girecek? | Halk diliyle arama ("burun estetiği", "nose job") |
-
-Bu konularla ilgili daha önce gönderdiğimiz belgelerin hepsi bu paketteki
-**"2"** klasöründe.
